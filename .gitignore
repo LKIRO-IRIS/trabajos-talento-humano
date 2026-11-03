@@ -1,0 +1,27 @@
+# Dependencias
+node_modules/
+.next/
+bun.lockb
+
+# Build
+dist/
+build/
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Temporales
+*.tmp
+*.bak
