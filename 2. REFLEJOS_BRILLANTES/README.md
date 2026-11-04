@@ -1,124 +1,63 @@
-# Reflejos Brillantes SAS — Formatos de Selección
+# Reflejos Brillantes SAS — Proceso de Selección
 
-Paquete completo de **32 formatos** para el proceso de **Selección de Personal** de Reflejos Brillantes SAS (empresa simulada SENA).
+Empresa simulada cosmética con fines pedagógicos SENA.
 
-## 📋 Estructura
+## 📁 Estructura
 
 ```
-Reflejos_Brillantes_GitHub/
-├── README.md (este archivo)
-├── 1. Preseleccion/                          ← (Tus archivos de preselección)
-└── 2. Seleccion/
-    ├── 1. Planeacion/                         ← 1 Excel
-    │   └── 1_PLANEACION_SELECCION.xlsx
-    ├── 2. Programador/                         ← 1 Excel
-    │   └── 2_PROGRAMADOR_SELECCION.xlsx
-    ├── 3. Correos Citacion Entrevistas/        ← 5 PDFs (1 por candidato)
-    ├── 4. Simulacion Entrevistas/              ← 5 Word (1 por candidato)
-    ├── 5. Registro Asistencia/                 ← 3 Word (1 por cargo)
-    ├── 6. Formato Integral Coordinacion/       ← 3 Word (1 por cargo)
-    ├── 7. Lista Alistamiento Espacio Virtual/  ← 3 Word (1 por cargo)
-    ├── 8. Correos Citacion Pruebas/            ← 3 PDFs (candidatos aptos)
-    ├── 9. Programacion Visita Domiciliaria/    ← 2 PDFs (seleccionados)
-    ├── 10. Modelo Visita Domiciliaria/         ← 2 Excel (seleccionados)
-    └── 11. Matriz Comparativa/                 ← 4 Excel (3 por cargo + 1 consolidado)
+Reflejos_Brillantes/
+├── 1. Preseleccion/    ← 35 archivos (12 categorías)
+└── 2. Seleccion/        ← 48 archivos (15 categorías)
 ```
 
-## 🎯 Candidatos por cargo
+## 📋 Preselección (35 archivos)
 
-| Cargo | Tipo convocatoria | Candidatos |
-|---|---|---|
-| **Jefe de Producción** | Externa | Andrés Felipe Gómez Torres (Seleccionado, 88/100) |
-|  |  | Daniel Esteban Rojas Valderrama (Banco talentos, 68/100) |
-| **Auxiliar Logístico** | Externa | Santiago Rincón Vargas (Banco talentos, 65/100) |
-|  |  | Valentina Torres Martínez (Banco talentos, 72/100) |
-| **Asistente de Talento Humano** | Interna | Daniel Alejandro Ramírez Torres (Seleccionado, 90/100) |
+1. Requisición Personal (3 Word)
+2. Hojas de Vida (4 Word)
+3. Listas de Chequeo (8 Excel)
+4. Verificación Requisitos (3 Word)
+5. Convocatorias (4 PNG)
+6. Ofertas Laborales (3 PNG)
+7. Bases de Datos Provisión (3 Excel)
+8. Matriz Comparativa Preselección (3 Excel)
+9. Lista Autorización Convocatorias (1 Excel)
+10. Checklist Auditoría Perfiles (1 Excel)
+11. Cronograma (1 Excel)
+12. Informe Ejecutivo Multicargo (1 Word)
 
-## ✅ Características incluidas en TODOS los formatos
+## 📋 Selección (48 archivos)
 
-### Normas APA — Bloque de metadatos
-- **Código:** RB-FS-XX-001 (variable según formato)
-- **Versión:** 01
-- **Fecha:** 03/11/2026
-- **Página:** 1 de 1
-- **Elaborado por:** Félix Daniel Perdomo Palomino
-- **Revisado por:** Carolina Ortiz Luna (Auxiliar TH)
-- **Aprobado por:** María Fernanda López Ruiz (Coordinadora TH)
+1. Planeación (1 Excel)
+2. Programador (1 Excel)
+3. Correos Citación Entrevistas (5 PDFs)
+4. Simulación Entrevistas (5 Word)
+5. Registro Asistencia (3 Word)
+6. Formato Integral Coordinación (3 Word)
+7. Lista Alistamiento Espacio Virtual (3 Word)
+8. BASE DE DATOS PROVISIÓN DE CARGOS (1 Word + 3 Excel)
+9. Correos Citación Pruebas (3 PDFs)
+10. Programación Visita Domiciliaria (2 PDFs)
+11. Modelo Visita Domiciliaria (2 Excel)
+12. Matriz Comparativa (4 Excel)
+13. BASE DE DATOS PROVISIÓN DE CARGOS Excel (1 Excel, 5 hojas)
+14. INFORME RESULTADOS PROCESO SELECCIÓN (1 Word, 7 secciones)
+15. Prompts Entrevistas (3 Word)
+16. Autorizaciones Habeas Data (5 Word)
 
-### Logo Reflejos Brillantes SAS
-- Aparece en la portada de cada archivo
-- En Word: como imagen inline junto al nombre de la empresa
-- En Excel: como imagen en celda A1
-- En PDF: en el header del correo
+## ✅ Características
 
-### Cajas de Calidad C / N/C
-- **C** (Cumple) — fondo verde claro `#C6EFCE`, texto verde oscuro
-- **N/C** (No Cumple) — fondo rojo claro `#FFC7CE`, texto rojo oscuro
-- **N/A** — fondo amarillo `#FFEB9C`
+- Normas APA (Código, Versión, Fecha, Elaborado/Revisado/Aprobado por)
+- Logo Reflejos Brillantes
+- Cajas de calidad C/NC con colores (verde, rojo, amarillo)
+- Pie de página institucional
+- Marco legal (Ley 1581 de 2012 - Habeas Data)
 
-### Pie de página institucional
-Todos los archivos Word tienen pie de página con:
-- Nombre empresa · NIT · Dirección
-- Teléfono · Correo · Web
+## 🎯 Candidatos
 
-## 📄 Detalle de cada formato
-
-### 1. Planeación (Excel)
-Matriz de planeación con 16 actividades del proceso de selección, columnas: Proceso, Sub-proceso, Actividades, Responsable, Fecha, Avance.
-
-### 2. Programador (Excel)
-Programador con 3 cargos, funciones, método de verificación (entrevista técnica, pruebas, etc.), fecha, hora, modalidad.
-
-### 3. Correos Citación Entrevistas (5 PDFs)
-Correo formal de citación para cada candidato. Incluye: cargo, fecha, hora, modalidad, tipo de entrevista, documentos a presentar.
-
-### 4. Simulación Entrevistas (5 Word)
-Entrevista estructurada por competencias (C1-C6). 18 preguntas por candidato con tabla de respuestas simuladas, evidencias y notas (1-5). Incluye consolidado final y concepto técnico.
-
-### 5. Registro Asistencia (3 Word)
-Control de asistencia por cargo. Tabla con: N°, Nombre, Documento, Teléfono, Hora citada, Hora llegada, Estado, Firma.
-
-### 6. Formato Integral Coordinación Logística (3 Word)
-10 secciones completas: Planificación, Coordinación entrevistadores, Lista chequeo previa, Verificación logística, Registro ejecución, Entrega evaluaciones, Estado candidato, Control evidencias, Instrucciones de uso, Firmas.
-
-### 7. Lista Alistamiento Espacio Virtual (3 Word)
-6 etapas: Confirmación/Planificación, Creación espacio virtual, Preparación técnica, Comunicación candidatos, Durante jornada, Después jornada. Total ítems verificados con cajas C.
-
-### 8. Correos Citación Pruebas (3 PDFs)
-Correo para candidatos aptos (score ≥ 70). Estructura de pruebas: técnica, psicotécnica, entrevista final.
-
-### 9. Programación Visita Domiciliaria (2 PDFs)
-Para candidatos seleccionados. Incluye objetivo, detalles, documentos a presentar, aspectos a evaluar.
-
-### 10. Modelo Visita Domiciliaria (2 Excel)
-Informe con 14 aspectos evaluados (escala 1-5): aspectos familiares, sociales, vivienda, valores, finanzas, expectativas, etc. Hoja INFORME + Hoja ESTADISTICAS.
-
-### 11. Matriz Comparativa (4 Excel)
-Por cargo: hoja Preselección (30%) + hoja Selección (70%). Consolidado: todos los candidatos con puntaje final y estado.
-
-## 🎨 Paleta de colores
-
-| Uso | Color | Hex |
-|---|---|---|
-| Primario (headers) | Azul oscuro | `#2C3E50` |
-| Acento (subtítulos) | Verde lima | `#92D050` |
-| Verde oscuro | `#4F8C28` |
-| Cajas C (Cumple) | Verde claro | `#C6EFCE` |
-| Cajas N/C (No Cumple) | Rojo claro | `#FFC7CE` |
-| N/A | Amarillo | `#FFEB9C` |
-
-## 🏢 Datos de la empresa simulada
-
-- **Nombre:** Reflejos Brillantes SAS
-- **NIT:** 901.234.567-8
-- **Dirección:** Calle 80 # 45-23, Zona Industrial, Bogotá D.C.
-- **Teléfono:** (601) 555-1234
-- **Correo:** talento.humano@reflejosbrillantes.com
-- **Web:** www.reflejosbrillantes.com
-- **Rubro:** Fabricación de cosméticos
-
----
-
-**Documento de uso académico — ejercicio formativo SENA.**
-**Reflejos Brillantes SAS es una empresa simulada con fines pedagógicos.**
-**Normas APA aplicadas en la presentación y citación.**
+| Cargo | Candidato | Score | Estado |
+|---|---|---|---|
+| Jefe de Producción | Andrés Felipe Gómez Torres | 88 | Seleccionado |
+| Jefe de Producción | Daniel Esteban Rojas Valderrama | 68 | Banco talentos |
+| Auxiliar Logístico | Santiago Rincón Vargas | 65 | Banco talentos |
+| Auxiliar Logístico | Valentina Torres Martínez | 72 | Banco talentos |
+| Asistente TH | Daniel Alejandro Ramírez Torres | 90 | Seleccionado |
