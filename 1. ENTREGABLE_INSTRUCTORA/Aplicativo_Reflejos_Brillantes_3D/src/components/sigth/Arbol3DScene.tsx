@@ -116,6 +116,27 @@ const PRODUCTOS_ECOLOGICOS = [
   { nombre: "Jabón Líquido Manos", color: "#FF9800", forma: "botella", descripcion: "500 ml · Hidrata e ilumina" },
 ];
 
+// ============ UTIL: verifica si una botella coincide con la búsqueda ============
+function coincideBusqueda(doc: any, busqueda: string): boolean {
+  if (!busqueda.trim()) return true;
+  const q = busqueda.toLowerCase().trim();
+  return (
+    doc.codigo.toLowerCase().includes(q) ||
+    doc.nombre.toLowerCase().includes(q) ||
+    doc.tipo.toLowerCase().includes(q)
+  );
+}
+
+// Cuenta total de coincidencias para mostrar en el buscador
+function contarCoincidencias(busqueda: string): number {
+  if (!busqueda.trim()) return 0;
+  let count = 0;
+  PROCESOS.forEach((p) => p.documentos.forEach((d) => {
+    if (coincideBusqueda(d, busqueda)) count++;
+  }));
+  return count;
+}
+
 // ============ VISTA DENTRO DE LA BOTELLA ============
 
 function ProductoEcologico({ producto, posicion, idx }: { producto: any; posicion: [number, number, number]; idx: number }) {
@@ -188,9 +209,50 @@ function ProductoEcologico({ producto, posicion, idx }: { producto: any; posicio
   );
 }
 
-function VistaDentroBotella({ documento, onVolver }: { documento: any; onVolver: () => void }) {
+// ============ ANIMACIÓN FLY-IN DE CÁMARA ============
+// Animación suave desde la posición actual hacia el centro de la botella.
+function CameraFlyIn({ posicionBotella, onComplete }: { posicionBotella: [number, number, number]; onComplete: () => void }) {
+  const { camera } = useThree();
+  const completado = React.useRef(false);
+
+  // Objetivo: posición ligeramente desplazada de la botella, mirando hacia ella
+  const targetPos = React.useMemo(() => {
+    return new THREE.Vector3(posicionBotella[0] * 0.4, posicionBotella[1] + 0.3, posicionBotella[2] * 0.4 + 4);
+  }, [posicionBotella]);
+
+  // Posición inicial de la cámara al iniciar la animación (la del árbol)
+  const startPos = React.useMemo(() => new THREE.Vector3(0, 2, 12), []);
+
+  useFrame(() => {
+    if (completado.current) return;
+
+    // Lerp suave de la cámara hacia el objetivo
+    camera.position.lerp(targetPos, 0.06);
+
+    // Mirar hacia la botella
+    const lookAt = new THREE.Vector3(posicionBotella[0], posicionBotella[1], posicionBotella[2]);
+    camera.lookAt(lookAt);
+
+    // Cuando estemos suficientemente cerca, completar
+    if (camera.position.distanceTo(targetPos) < 0.4) {
+      completado.current = true;
+      onComplete();
+    }
+  });
+
+  return null;
+}
+
+function VistaDentroBotella({ documento, posicionBotella, onVolver }: { documento: any; posicionBotella: [number, number, number]; onVolver: () => void }) {
+  const [animacionLista, setAnimacionLista] = React.useState(false);
+
   return (
     <>
+      {/* Animación fly-in de la cámara */}
+      {!animacionLista && (
+        <CameraFlyIn posicionBotella={posicionBotella} onComplete={() => setAnimacionLista(true)} />
+      )}
+
       {/* Iluminación interior */}
       <ambientLight intensity={0.6} color="#92D050" />
       <pointLight position={[0, 5, 0]} intensity={2} color="#4FC3F7" />
@@ -249,6 +311,8 @@ function VistaDentroBotella({ documento, onVolver }: { documento: any; onVolver:
             backdropFilter: "blur(8px)",
             boxShadow: "0 0 30px rgba(146, 208, 80, 0.4)",
             maxWidth: "400px",
+            opacity: animacionLista ? 1 : 0,
+            transition: "opacity 0.6s ease-in",
           }}
         >
           <div style={{ color: "#92D050", fontSize: "12px", fontFamily: "monospace", marginBottom: "4px" }}>
@@ -287,7 +351,10 @@ function VistaDentroBotella({ documento, onVolver }: { documento: any; onVolver:
 
 // ============ ESCENA PRINCIPAL ============
 
-function TroncoArbol() {
+function TroncoArbol({ busqueda, setBusqueda }: { busqueda: string; setBusqueda: (s: string) => void }) {
+  const coincidencias = contarCoincidencias(busqueda);
+  const totalDocs = PROCESOS.reduce((acc, p) => acc + p.documentos.length, 0);
+
   return (
     <group position={[0, -2, 0]}>
       {/* Tronco principal */}
@@ -300,38 +367,81 @@ function TroncoArbol() {
         <meshStandardMaterial color="#4E342E" roughness={0.95} />
       </Cylinder>
 
-      {/* Textura del buscador en el tronco */}
+      {/* Buscador FUNCIONAL en el tronco */}
       <Html position={[0, 1.5, 0.85]} center>
         <div
           style={{
             background: "rgba(62, 39, 35, 0.85)",
-            border: "2px solid #92D050",
+            border: `2px solid ${busqueda ? "#FFC107" : "#92D050"}`,
             borderRadius: "12px",
             padding: "10px 16px",
             backdropFilter: "blur(4px)",
-            boxShadow: "0 0 20px rgba(146, 208, 80, 0.4)",
+            boxShadow: busqueda
+              ? "0 0 20px rgba(255, 193, 7, 0.5)"
+              : "0 0 20px rgba(146, 208, 80, 0.4)",
+            minWidth: "220px",
           }}
         >
           <input
             type="text"
-            placeholder="Buscar documento..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            placeholder="Buscar documento (TH-FR-01, convocatoria...)"
             style={{
               background: "transparent",
               border: "none",
-              color: "#92D050",
-              fontSize: "14px",
+              color: busqueda ? "#FFC107" : "#92D050",
+              fontSize: "13px",
               fontFamily: "monospace",
               outline: "none",
-              width: "180px",
+              width: "100%",
+              caretColor: busqueda ? "#FFC107" : "#92D050",
             }}
           />
+          {/* Indicador de coincidencias */}
+          {busqueda && (
+            <div
+              style={{
+                marginTop: "6px",
+                paddingTop: "6px",
+                borderTop: "1px solid rgba(146, 208, 80, 0.3)",
+                color: "#FFC107",
+                fontSize: "10px",
+                fontFamily: "system-ui",
+              }}
+            >
+              {coincidencias > 0
+                ? `🔍 ${coincidencias} de ${totalDocs} botellas coinciden`
+                : "❌ Sin resultados — prueba otro término"}
+            </div>
+          )}
+          {/* Botón limpiar */}
+          {busqueda && (
+            <button
+              onClick={() => setBusqueda("")}
+              style={{
+                position: "absolute",
+                top: "8px",
+                right: "8px",
+                background: "transparent",
+                border: "none",
+                color: "#FFC107",
+                cursor: "pointer",
+                fontSize: "14px",
+                fontWeight: "bold",
+              }}
+              title="Limpiar búsqueda"
+            >
+              ✕
+            </button>
+          )}
         </div>
       </Html>
     </group>
   );
 }
 
-function Rama({ proceso, angulo, onBotellaClick }: { proceso: any; angulo: number; onBotellaClick: (doc: any) => void }) {
+function Rama({ proceso, angulo, onBotellaClick, busqueda }: { proceso: any; angulo: number; onBotellaClick: (doc: any, pos: [number, number, number]) => void; busqueda: string }) {
   const rad = (angulo * Math.PI) / 180;
   const longitudRama = 3.5;
 
@@ -354,12 +464,21 @@ function Rama({ proceso, angulo, onBotellaClick }: { proceso: any; angulo: numbe
       {/* Pequeñas ramitas */}
       {proceso.documentos.map((doc: any, idx: number) => {
         const offset = (idx - (proceso.documentos.length - 1) / 2) * 0.4;
-        const pos = [
+        const pos: [number, number, number] = [
           endX + Math.cos(rad) * offset,
           endY + 0.2 - idx * 0.15,
           endZ + Math.sin(rad) * offset,
         ];
-        return <Botella key={doc.codigo} doc={doc} posicion={pos} color={proceso.color} onClick={() => onBotellaClick(doc)} />;
+        return (
+          <Botella
+            key={doc.codigo}
+            doc={doc}
+            posicion={pos}
+            color={proceso.color}
+            onClick={() => onBotellaClick(doc, pos)}
+            busqueda={busqueda}
+          />
+        );
       })}
 
       {/* Hoja de la rama */}
@@ -383,14 +502,31 @@ function Rama({ proceso, angulo, onBotellaClick }: { proceso: any; angulo: numbe
   );
 }
 
-function Botella({ doc, posicion, color, onClick }: { doc: any; posicion: [number, number, number]; color: string; onClick: () => void }) {
+function Botella({ doc, posicion, color, onClick, busqueda }: { doc: any; posicion: [number, number, number]; color: string; onClick: () => void; busqueda: string }) {
   const [hovered, setHovered] = React.useState(false);
   const ref = React.useRef<THREE.Group>(null);
 
+  // Estado de coincidencia con la búsqueda
+  const hayBusqueda = busqueda.trim().length > 0;
+  const coincide = coincideBusqueda(doc, busqueda);
+
   useFrame((state) => {
-    if (ref.current && !hovered) {
+    if (ref.current) {
       // Movimiento sutil de las botellas (viento)
-      ref.current.rotation.z = Math.sin(state.clock.elapsedTime + posicion[0]) * 0.05;
+      if (!hovered) {
+        ref.current.rotation.z = Math.sin(state.clock.elapsedTime + posicion[0]) * 0.05;
+      }
+
+      // Si coincide con la búsqueda, pulse suave para llamar atención
+      if (hayBusqueda && coincide) {
+        const pulse = 1 + Math.sin(state.clock.elapsedTime * 4) * 0.08;
+        ref.current.scale.setScalar(pulse);
+      } else if (hayBusqueda && !coincide) {
+        // Atenuar las que no coinciden
+        ref.current.scale.setScalar(0.85);
+      } else {
+        ref.current.scale.setScalar(hovered ? 1.15 : 1);
+      }
     }
   });
 
@@ -400,23 +536,49 @@ function Botella({ doc, posicion, color, onClick }: { doc: any; posicion: [numbe
       position={posicion}
       onClick={(e) => {
         e.stopPropagation();
-        onClick();
+        // Solo permitir clic si coincide con la búsqueda (o no hay búsqueda)
+        if (!hayBusqueda || coincide) {
+          onClick();
+        }
       }}
-      onPointerOver={() => setHovered(true)}
-      onPointerOut={() => setHovered(false)}
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        if (!hayBusqueda || coincide) {
+          setHovered(true);
+          document.body.style.cursor = "pointer";
+        }
+      }}
+      onPointerOut={() => {
+        setHovered(false);
+        document.body.style.cursor = "default";
+      }}
     >
       {/* Cuerpo de la botella (transparente) */}
       <Cylinder args={[0.15, 0.15, 0.5, 16]}>
         <meshPhysicalMaterial
           color="white"
           transparent
-          opacity={hovered ? 0.6 : 0.3}
+          opacity={
+            hayBusqueda && !coincide
+              ? 0.08 // casi invisible si no coincide
+              : hovered
+              ? 0.6
+              : 0.3
+          }
           roughness={0.1}
           transmission={0.9}
           thickness={0.5}
           ior={1.5}
-          emissive={hovered ? color : "#000000"}
-          emissiveIntensity={hovered ? 0.3 : 0}
+          emissive={
+            hayBusqueda && coincide
+              ? "#FFC107" // amarillo destacado si coincide
+              : hovered
+              ? color
+              : "#000000"
+          }
+          emissiveIntensity={
+            hayBusqueda && coincide ? 0.5 : hovered ? 0.3 : 0
+          }
         />
       </Cylinder>
 
@@ -425,7 +587,7 @@ function Botella({ doc, posicion, color, onClick }: { doc: any; posicion: [numbe
         <meshPhysicalMaterial
           color="white"
           transparent
-          opacity={0.3}
+          opacity={hayBusqueda && !coincide ? 0.05 : 0.3}
           transmission={0.9}
           roughness={0.1}
         />
@@ -433,24 +595,45 @@ function Botella({ doc, posicion, color, onClick }: { doc: any; posicion: [numbe
 
       {/* Tapón */}
       <Cylinder args={[0.09, 0.09, 0.08, 12]} position={[0, 0.42, 0]}>
-        <meshStandardMaterial color={color} metalness={0.3} roughness={0.5} />
+        <meshStandardMaterial
+          color={color}
+          metalness={0.3}
+          roughness={0.5}
+          emissive={hayBusqueda && coincide ? "#FFC107" : "#000000"}
+          emissiveIntensity={hayBusqueda && coincide ? 0.4 : 0}
+        />
       </Cylinder>
 
       {/* Etiqueta con el código */}
       <Html position={[0, 0, 0.16]} center distanceFactor={8} pointerEvents="none">
         <div
           style={{
-            background: hovered ? color : "rgba(0,0,0,0.7)",
-            color: hovered ? "#000" : "#fff",
+            background:
+              hayBusqueda && coincide
+                ? "#FFC107"
+                : hovered
+                ? color
+                : "rgba(0,0,0,0.7)",
+            color:
+              hayBusqueda && coincide
+                ? "#1B1B1B"
+                : hovered
+                ? "#000"
+                : "#fff",
             padding: "2px 6px",
             borderRadius: "4px",
             fontSize: "9px",
             fontFamily: "monospace",
             whiteSpace: "nowrap",
-            border: `1px solid ${color}`,
+            border: `1px solid ${hayBusqueda && coincide ? "#FFC107" : color}`,
             cursor: "pointer",
             transition: "all 0.2s",
             pointerEvents: "none",
+            opacity: hayBusqueda && !coincide ? 0.3 : 1,
+            boxShadow:
+              hayBusqueda && coincide
+                ? "0 0 12px rgba(255, 193, 7, 0.8)"
+                : "none",
           }}
         >
           {doc.codigo}
@@ -592,10 +775,33 @@ function AudioControls() {
   );
 }
 
-function EscenaArbol({ documentoSeleccionado, setDocumentoSeleccionado }: { documentoSeleccionado: any; setDocumentoSeleccionado: (d: any) => void }) {
+function EscenaArbol({
+  documentoSeleccionado,
+  setDocumentoSeleccionado,
+  busqueda,
+  setBusqueda,
+  posicionBotellaSeleccionada,
+  setPosicionBotellaSeleccionada,
+}: {
+  documentoSeleccionado: any;
+  setDocumentoSeleccionado: (d: any) => void;
+  busqueda: string;
+  setBusqueda: (s: string) => void;
+  posicionBotellaSeleccionada: [number, number, number] | null;
+  setPosicionBotellaSeleccionada: (p: [number, number, number] | null) => void;
+}) {
   // Si hay un documento seleccionado, mostrar la vista dentro de la botella
-  if (documentoSeleccionado) {
-    return <VistaDentroBotella documento={documentoSeleccionado} onVolver={() => setDocumentoSeleccionado(null)} />;
+  if (documentoSeleccionado && posicionBotellaSeleccionada) {
+    return (
+      <VistaDentroBotella
+        documento={documentoSeleccionado}
+        posicionBotella={posicionBotellaSeleccionada}
+        onVolver={() => {
+          setDocumentoSeleccionado(null);
+          setPosicionBotellaSeleccionada(null);
+        }}
+      />
+    );
   }
   return (
     <>
@@ -610,12 +816,21 @@ function EscenaArbol({ documentoSeleccionado, setDocumentoSeleccionado }: { docu
       {/* Fondo */}
       <color attach="background" args={["#0a1520"]} />
 
-      {/* Tronco del árbol */}
-      <TroncoArbol />
+      {/* Tronco del árbol (con buscador funcional) */}
+      <TroncoArbol busqueda={busqueda} setBusqueda={setBusqueda} />
 
       {/* 7 ramas con botellas */}
       {PROCESOS.map((proc) => (
-        <Rama key={proc.id} proceso={proc} angulo={proc.angulo} onBotellaClick={setDocumentoSeleccionado} />
+        <Rama
+          key={proc.id}
+          proceso={proc}
+          angulo={proc.angulo}
+          onBotellaClick={(doc, pos) => {
+            setPosicionBotellaSeleccionada(pos);
+            setDocumentoSeleccionado(doc);
+          }}
+          busqueda={busqueda}
+        />
       ))}
 
       {/* Cascada de fondo */}
@@ -641,6 +856,8 @@ function EscenaArbol({ documentoSeleccionado, setDocumentoSeleccionado }: { docu
 
 export function Arbol3DScene() {
   const [documentoSeleccionado, setDocumentoSeleccionado] = React.useState<any>(null);
+  const [busqueda, setBusqueda] = React.useState("");
+  const [posicionBotella, setPosicionBotella] = React.useState<[number, number, number] | null>(null);
 
   return (
     <div style={{ width: "100vw", height: "100vh", position: "relative", overflow: "hidden" }}>
@@ -650,33 +867,15 @@ export function Arbol3DScene() {
         gl={{ antialias: true, alpha: false }}
         dpr={[1, 2]}
       >
-        <EscenaArbol documentoSeleccionado={documentoSeleccionado} setDocumentoSeleccionado={setDocumentoSeleccionado} />
+        <EscenaArbol
+          documentoSeleccionado={documentoSeleccionado}
+          setDocumentoSeleccionado={setDocumentoSeleccionado}
+          busqueda={busqueda}
+          setBusqueda={setBusqueda}
+          posicionBotellaSeleccionada={posicionBotella}
+          setPosicionBotellaSeleccionada={setPosicionBotella}
+        />
       </Canvas>
-
-      {/* Botón DEMO para ver dentro de la botella (temporal para pruebas) */}
-      {!documentoSeleccionado && (
-        <button
-          onClick={() => setDocumentoSeleccionado({ codigo: "TH-FR-01", nombre: "Requisición de personal", tipo: "Formato" })}
-          style={{
-            position: "absolute",
-            top: "80px",
-            right: "20px",
-            background: "rgba(146, 208, 80, 0.2)",
-            color: "#92D050",
-            border: "2px solid #92D050",
-            borderRadius: "12px",
-            padding: "10px 16px",
-            cursor: "pointer",
-            fontSize: "13px",
-            fontWeight: "bold",
-            zIndex: 1000,
-            backdropFilter: "blur(8px)",
-            boxShadow: "0 0 20px rgba(146, 208, 80, 0.3)",
-          }}
-        >
-          🍼 Ver demo: Dentro de la botella
-        </button>
-      )}
 
       {/* Overlay de título */}
       <div
@@ -716,25 +915,67 @@ export function Arbol3DScene() {
           zIndex: 100,
         }}
       >
-        {PROCESOS.map((proc) => (
-          <div
-            key={proc.id}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              background: "rgba(0,0,0,0.6)",
-              padding: "4px 10px",
-              borderRadius: "20px",
-              backdropFilter: "blur(4px)",
-            }}
-          >
-            <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: proc.color }} />
-            <span style={{ color: "#fff", fontSize: "11px" }}>{proc.nombre}</span>
-            <span style={{ color: "#999", fontSize: "10px" }}>({proc.documentos.length})</span>
-          </div>
-        ))}
+        {PROCESOS.map((proc) => {
+          // Calcula cuántas botellas de este proceso coinciden con la búsqueda
+          const totalProc = proc.documentos.length;
+          const coincidenProc = busqueda.trim()
+            ? proc.documentos.filter((d) => coincideBusqueda(d, busqueda)).length
+            : totalProc;
+          const activo = !busqueda.trim() || coincidenProc > 0;
+
+          return (
+            <div
+              key={proc.id}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                background: activo ? "rgba(0,0,0,0.6)" : "rgba(0,0,0,0.3)",
+                padding: "4px 10px",
+                borderRadius: "20px",
+                backdropFilter: "blur(4px)",
+                opacity: activo ? 1 : 0.4,
+                transition: "all 0.3s",
+              }}
+            >
+              <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: proc.color }} />
+              <span style={{ color: "#fff", fontSize: "11px" }}>{proc.nombre}</span>
+              <span style={{ color: "#999", fontSize: "10px" }}>
+                ({coincidenProc}/{totalProc})
+              </span>
+            </div>
+          );
+        })}
       </div>
+
+      {/* Botón de ayuda flotante (solo cuando no hay documento seleccionado) */}
+      {!documentoSeleccionado && (
+        <div
+          style={{
+            position: "absolute",
+            top: "80px",
+            right: "20px",
+            background: "rgba(10, 21, 32, 0.85)",
+            border: "1px solid #92D050",
+            borderRadius: "12px",
+            padding: "10px 14px",
+            backdropFilter: "blur(8px)",
+            color: "#92D050",
+            fontSize: "11px",
+            fontFamily: "system-ui",
+            maxWidth: "220px",
+            boxShadow: "0 0 15px rgba(146, 208, 80, 0.2)",
+            zIndex: 100,
+          }}
+        >
+          <div style={{ fontWeight: "bold", marginBottom: "4px", fontSize: "12px" }}>💡 Cómo usar</div>
+          <div style={{ color: "#A5D6FF", lineHeight: 1.4 }}>
+            • <b>Clic</b> en una botella para entrar<br/>
+            • <b>Buscador</b> en el tronco filtra por código o nombre<br/>
+            • <b>Hover</b> resalta cada botella
+          </div>
+        </div>
+      )}
     </div>
   );
 }

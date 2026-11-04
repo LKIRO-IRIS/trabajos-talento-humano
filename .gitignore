@@ -25,3 +25,8 @@ Thumbs.db
 # Temporales
 *.tmp
 *.bak
+
+# Build artifacts TypeScript / npm
+package-lock.json
+tsconfig.tsbuildinfo
+*.tsbuildinfo
