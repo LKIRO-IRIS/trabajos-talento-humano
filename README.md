@@ -1,104 +1,53 @@
 # 🎯 Trabajos Talento Humano — Proyecto SENA
 
 Sistema integral de gestión de talento humano para proyecto formativo SENA.
+Aprendiz: Félix Daniel Perdomo Palomino
 
 ## 📁 Estructura del repositorio (5 carpetas madre)
 
 ```
 trabajos-talento-humano/
-│
-├── 📁 1. ENTREGABLE_INSTRUCTORA/        ← Lo que se entrega a la instructora
-├── 📁 2. REFLEJOS_BRILLANTES/          ← Todo de Reflejos Brillantes SAS
-├── 📁 3. DETALLITOS_CON_AMOR/          ← Todo de Detallitos con Amor
-├── 📁 4. COPIA_SEGURIDAD/              ← Respaldo del trabajo
-└── 📁 5. ARCHIVOS_RECIBIDOS/           ← Lo que Félix sube de otras fuentes
+├── 1. ENTREGABLE_INSTRUCTORA/         ← Lo que se entrega a la instructora
+│   ├── Aplicativo_Instructora_Referencia/    ← App original de la instructora
+│   ├── Aplicativo_Reflejos_Brillantes_3D/    ← Nuestro árbol 3D para RB
+│   └── Aplicativo_Detallitos_con_Amor/        ← Árbol 3D para DCA (pendiente)
+├── 2. REFLEJOS_BRILLANTES/            ← Todo de Reflejos Brillantes SAS
+│   ├── 1. Preseleccion/                ← 35 archivos
+│   └── 2. Seleccion/                  ← 42 archivos
+├── 3. DETALLITOS_CON_AMOR/            ← Todo de Detallitos con Amor
+│   └── Multimedia_Productos/          ← 6 fotos + 1 video
+├── 4. COPIA_SEGURIDAD/                ← Respaldo del trabajo
+└── 5. ARCHIVOS_RECIBIDOS/             ← Lo que Félix sube de otras fuentes
 ```
-
-## 📋 Carpetas madre
-
-### 1. ENTREGABLE_INSTRUCTORA
-Aquí va todo lo que se le entrega a la instructora:
-- Aplicativo SIGTH
-- Formatos finales Word/Excel/PDF
-- Manual de uso
-- Presentaciones
-
-### 2. REFLEJOS_BRILLANTES
-Todo lo relacionado con Reflejos Brillantes SAS (cosméticos):
-- 📁 1. Preseleccion
-- 📁 2. Seleccion (32 formatos)
-- README con detalle de cada formato
-
-### 3. DETALLITOS_CON_AMOR
-Todo lo relacionado con Detallitos con Amor (regalos personalizados):
-- 📁 1. Preseleccion
-- 📁 2. Seleccion
-- README con detalle de cada formato
-
-### 4. COPIA_SEGURIDAD
-Respaldo del trabajo realizado. Incluye:
-- Backups .sigth
-- Snapshots del aplicativo
-- Versiones anteriores
-
-### 5. ARCHIVOS_RECIBIDOS
-Lo que Félix sube desde otras fuentes (Google Drive, WhatsApp, etc.).
-Yo (asistente) los proceso y los organizo en las carpetas correspondientes.
-
-## 🔄 Modo de trabajo
-
-1. **Félix sube archivos** → caen en `5. ARCHIVOS_RECIBIDOS/`
-2. **Le dice al asistente** qué hacer con ellos
-3. **El asistente procesa, genera, corrige** lo solicitado
-4. **El asistente mueve lo terminado** a las carpetas correspondientes:
-   - Formatos Reflejos Brillantes → `2. REFLEJOS_BRILLANTES/`
-   - Formatos Detallitos → `3. DETALLITOS_CON_AMOR/`
-   - Aplicativo final → `1. ENTREGABLE_INSTRUCTORA/`
-5. **Cada cierto tiempo, se hace backup** en `4. COPIA_SEGURIDAD/`
 
 ## 🏢 Empresas simuladas
 
-### Reflejos Brillantes SAS
-- **Rubro:** Fabricación de cosméticos
+### 1. Reflejos Brillantes SAS
+- **Rubro:** Productos ecológicos de limpieza
 - **NIT:** 901.234.567-8
 - **Dirección:** Calle 80 # 45-23, Zona Industrial, Bogotá D.C.
-- **Teléfono:** (601) 555-1234
-- **Correo:** talento.humano@reflejosbrillantes.com
-- **Cargos:**
-  - Jefe de Producción (convocatoria externa)
-  - Auxiliar Logístico (convocatoria externa)
-  - Asistente de Talento Humano (convocatoria interna)
+- **Web:** https://reflejosbrillantes.netlify.app/
+- **Cofundadoras:** Sara Mejía y Laura Puerta
+- **Productos:** Limpiador multiusos, detergente, desinfectante, limpiavidrios, pasta limpiadora, jabón manos
+- **Colores:** Azul oscuro (#2C3E50) + Verde lima (#92D050)
+- **Cargos:** Jefe de Producción, Auxiliar Logístico, Asistente TH
 
-### Detallitos con Amor
-- **Rubro:** Diseño y elaboración de regalos personalizados
+### 2. Detallitos con Amor
+- **Rubro:** Regalos personalizados artesanales
 - **Teléfono:** +57 305 255 4170
-- **Correo:** detallitosconamorth@gmail.com
-- **Eslogan:** "Cada detalle cuenta una historia de amor"
 - **Web:** https://detallitosconamor.space-z.ai/
-- **Cargos:** (próximamente)
-
-## ✅ Características de los formatos
-
-Todos los formatos incluyen:
-- **Normas APA:** Bloque de metadatos (Código, Versión, Fecha, Elaborado por, Revisado por, Aprobado por)
-- **Logo como marca de agua:** En portada de cada archivo
-- **Cajas de Calidad C/N/C:** Verde para C, Rojo para N/C, Amarillo para N/A
-- **Pie de página institucional:** Con datos de la empresa
+- **Eslogan:** "Cada detalle cuenta una historia de amor"
+- **Productos:** Macetas kawaii, ramos temáticos, llaveros, móviles colgantes
+- **Colores:** Rosa magenta (#d7068e) + Crema (#fffbf7) + Dorado (#ffd24b)
+- **Cargos:** (pendientes de definir)
 
 ## 📋 Candidatos — Reflejos Brillantes
 
-| Cargo | Tipo | Candidatos |
-|---|---|---|
-| **Jefe de Producción** | Externa | Andrés Felipe Gómez Torres (Seleccionado, 88/100) |
-|  |  | Daniel Esteban Rojas Valderrama (Banco talentos, 68/100) |
-| **Auxiliar Logístico** | Externa | Santiago Rincón Vargas (Banco talentos, 65/100) |
-|  |  | Valentina Torres Martínez (Banco talentos, 72/100) |
-| **Asistente de Talento Humano** | Interna | Daniel Alejandro Ramírez Torres (Seleccionado, 90/100) |
+| Cargo | Tipo | Candidato | Score | Estado |
+|---|---|---|---|---|
+| Jefe de Producción | Externa | Andrés Felipe Gómez Torres | 88 | Seleccionado |
+| Jefe de Producción | Externa | Daniel Esteban Rojas Valderrama | 68 | Banco talentos |
+| Auxiliar Logístico | Externa | Santiago Rincón Vargas | 65 | Banco talentos |
+| Auxiliar Logístico | Externa | Valentina Torres Martínez | 72 | Banco talentos |
+| Asistente TH | Interna | Daniel Alejandro Ramírez Torres | 90 | Seleccionado |
 
----
-
-**Documento de uso académico — ejercicio formativo SENA.**
-**Las empresas mencionadas son simuladas con fines pedagógicos.**
-**Normas APA aplicadas en la presentación y citación.**
-
-**Aprendiz:** Félix Daniel Perdomo Palomino
