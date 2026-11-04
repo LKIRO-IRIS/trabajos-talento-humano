@@ -653,6 +653,31 @@ export function Arbol3DScene() {
         <EscenaArbol documentoSeleccionado={documentoSeleccionado} setDocumentoSeleccionado={setDocumentoSeleccionado} />
       </Canvas>
 
+      {/* Botón DEMO para ver dentro de la botella (temporal para pruebas) */}
+      {!documentoSeleccionado && (
+        <button
+          onClick={() => setDocumentoSeleccionado({ codigo: "TH-FR-01", nombre: "Requisición de personal", tipo: "Formato" })}
+          style={{
+            position: "absolute",
+            top: "80px",
+            right: "20px",
+            background: "rgba(146, 208, 80, 0.2)",
+            color: "#92D050",
+            border: "2px solid #92D050",
+            borderRadius: "12px",
+            padding: "10px 16px",
+            cursor: "pointer",
+            fontSize: "13px",
+            fontWeight: "bold",
+            zIndex: 1000,
+            backdropFilter: "blur(8px)",
+            boxShadow: "0 0 20px rgba(146, 208, 80, 0.3)",
+          }}
+        >
+          🍼 Ver demo: Dentro de la botella
+        </button>
+      )}
+
       {/* Overlay de título */}
       <div
         style={{
