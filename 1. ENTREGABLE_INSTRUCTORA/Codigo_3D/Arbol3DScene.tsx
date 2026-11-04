@@ -106,17 +106,186 @@ const PROCESOS = [
   },
 ];
 
-// Productos cosméticos de Reflejos Brillantes (ficticios)
-const PRODUCTOS_COSMETICOS = [
-  { nombre: "Crema Hidratante", color: "#F5E6D3", forma: "cilindro" },
-  { nombre: "Labial Rosado", color: "#E91E63", forma: "cilindro_largo" },
-  { nombre: "Jabón Artesanal", color: "#8BC34A", forma: "cubo" },
-  { nombre: "Shampoo Natural", color: "#03A9F4", forma: "botella" },
-  { nombre: "Mascarilla Facial", color: "#9C27B0", forma: "tubo" },
-  { nombre: "Perfume Floral", color: "#FFC107", forma: "esfera" },
+// Productos ecológicos de Reflejos Brillantes (del catálogo oficial)
+const PRODUCTOS_ECOLOGICOS = [
+  { nombre: "Limpiador Multiusos", color: "#4CAF50", forma: "botella", descripcion: "500 ml · Desinfecta todas las superficies" },
+  { nombre: "Detergente Líquido", color: "#FFC107", forma: "botella_grande", descripcion: "1 Litro · Biodegradable para ropa" },
+  { nombre: "Desinfectante Natural", color: "#8BC34A", forma: "galon", descripcion: "2 Litros · Elimina bacterias" },
+  { nombre: "Limpiavidrios Ecológico", color: "#03A9F4", forma: "botella", descripcion: "500 ml · Vidrios sin manchas" },
+  { nombre: "Pasta Limpiadora", color: "#E0E0E0", forma: "tubo", descripcion: "500 g · Superficies difíciles" },
+  { nombre: "Jabón Líquido Manos", color: "#FF9800", forma: "botella", descripcion: "500 ml · Hidrata e ilumina" },
 ];
 
-// ============ COMPONENTES 3D ============
+// ============ VISTA DENTRO DE LA BOTELLA ============
+
+function ProductoEcologico({ producto, posicion, idx }: { producto: any; posicion: [number, number, number]; idx: number }) {
+  const ref = React.useRef<THREE.Group>(null);
+
+  useFrame((state) => {
+    if (ref.current) {
+      // Flotar suavemente
+      ref.current.position.y = posicion[1] + Math.sin(state.clock.elapsedTime * 0.5 + idx) * 0.3;
+      ref.current.rotation.y = state.clock.elapsedTime * 0.2;
+      ref.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.3 + idx) * 0.1;
+    }
+  });
+
+  return (
+    <group ref={ref} position={posicion}>
+      {/* Cuerpo del producto (botella) */}
+      <Cylinder args={[0.3, 0.3, 0.8, 16]}>
+        <meshPhysicalMaterial
+          color={producto.color}
+          transparent
+          opacity={0.7}
+          transmission={0.5}
+          roughness={0.2}
+          metalness={0.1}
+          emissive={producto.color}
+          emissiveIntensity={0.2}
+        />
+      </Cylinder>
+
+      {/* Tapón */}
+      <Cylinder args={[0.15, 0.15, 0.12, 12]} position={[0, 0.5, 0]}>
+        <meshStandardMaterial color={producto.color} metalness={0.5} roughness={0.3} />
+      </Cylinder>
+
+      {/* Etiqueta con el nombre */}
+      <Html position={[0, 0, 0.32]} center distanceFactor={6}>
+        <div
+          style={{
+            background: `${producto.color}DD`,
+            color: "#fff",
+            padding: "3px 8px",
+            borderRadius: "6px",
+            fontSize: "10px",
+            fontFamily: "system-ui",
+            whiteSpace: "nowrap",
+            boxShadow: `0 0 12px ${producto.color}88`,
+            border: "1px solid rgba(255,255,255,0.3)",
+          }}
+        >
+          {producto.nombre}
+        </div>
+      </Html>
+
+      {/* Etiqueta con descripción */}
+      <Html position={[0, -0.6, 0]} center distanceFactor={8}>
+        <div
+          style={{
+            color: "#A5D6FF",
+            fontSize: "8px",
+            fontFamily: "system-ui",
+            whiteSpace: "nowrap",
+            opacity: 0.7,
+          }}
+        >
+          {producto.descripcion}
+        </div>
+      </Html>
+    </group>
+  );
+}
+
+function VistaDentroBotella({ documento, onVolver }: { documento: any; onVolver: () => void }) {
+  return (
+    <>
+      {/* Iluminación interior */}
+      <ambientLight intensity={0.6} color="#92D050" />
+      <pointLight position={[0, 5, 0]} intensity={2} color="#4FC3F7" />
+      <pointLight position={[3, 0, 3]} intensity={1} color="#92D050" />
+      <pointLight position={[-3, 0, -3]} intensity={1} color="#B8941F" />
+
+      {/* Fondo dentro de la botella — verde ecológico */}
+      <color attach="background" args={["#0a1f0a"]} />
+      <fog attach="fog" args={["#0a1f0a", 5, 20]} />
+
+      {/* Paredes de la botella (efecto de estar dentro) */}
+      <Cylinder args={[3, 3, 8, 32]} position={[0, 0, 0]}>
+        <meshPhysicalMaterial
+          color="#E0F7FA"
+          transparent
+          opacity={0.15}
+          transmission={0.9}
+          roughness={0.1}
+          side={THREE.BackSide}
+        />
+      </Cylinder>
+
+      {/* Productos ecológicos flotando */}
+      {PRODUCTOS_ECOLOGICOS.map((prod, idx) => {
+        const angle = (idx / PRODUCTOS_ECOLOGICOS.length) * Math.PI * 2;
+        const radius = 1.8;
+        return (
+          <ProductoEcologico
+            key={idx}
+            producto={prod}
+            posicion={[
+              Math.cos(angle) * radius,
+              Math.sin(idx * 0.8) * 0.8,
+              Math.sin(angle) * radius,
+            ]}
+            idx={idx}
+          />
+        );
+      })}
+
+      {/* Burbujas flotando hacia arriba */}
+      <Sparkles count={60} scale={[5, 5, 5]} size={4} speed={0.5} color="#4FC3F7" opacity={0.6} />
+
+      {/* Partículas verdes (eco) */}
+      <Sparkles count={40} scale={[4, 4, 4]} size={2} speed={0.3} color="#92D050" opacity={0.4} />
+
+      {/* Información del documento seleccionado */}
+      <Html position={[0, 3.5, 0]} center>
+        <div
+          style={{
+            background: "rgba(10, 31, 10, 0.9)",
+            border: "2px solid #92D050",
+            borderRadius: "16px",
+            padding: "16px 24px",
+            textAlign: "center",
+            backdropFilter: "blur(8px)",
+            boxShadow: "0 0 30px rgba(146, 208, 80, 0.4)",
+            maxWidth: "400px",
+          }}
+        >
+          <div style={{ color: "#92D050", fontSize: "12px", fontFamily: "monospace", marginBottom: "4px" }}>
+            {documento.codigo}
+          </div>
+          <div style={{ color: "#fff", fontSize: "18px", fontWeight: "bold", marginBottom: "4px" }}>
+            {documento.nombre}
+          </div>
+          <div style={{ color: "#A5D6FF", fontSize: "12px", marginBottom: "12px" }}>
+            Tipo: {documento.tipo} · Estado: Disponible
+          </div>
+          <div style={{ color: "#92D050", fontSize: "11px", marginBottom: "12px" }}>
+            🌿 Reflejos Brillantes S.A.S. — Productos ecológicos de limpieza
+          </div>
+          <button
+            onClick={onVolver}
+            style={{
+              background: "#92D050",
+              color: "#1B1B1B",
+              border: "none",
+              padding: "8px 20px",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontSize: "13px",
+              fontWeight: "bold",
+              fontFamily: "system-ui",
+            }}
+          >
+            ← Volver al árbol
+          </button>
+        </div>
+      </Html>
+    </>
+  );
+}
+
+// ============ ESCENA PRINCIPAL ============
 
 function TroncoArbol() {
   return (
@@ -162,7 +331,7 @@ function TroncoArbol() {
   );
 }
 
-function Rama({ proceso, angulo }: { proceso: any; angulo: number }) {
+function Rama({ proceso, angulo, onBotellaClick }: { proceso: any; angulo: number; onBotellaClick: (doc: any) => void }) {
   const rad = (angulo * Math.PI) / 180;
   const longitudRama = 3.5;
 
@@ -190,7 +359,7 @@ function Rama({ proceso, angulo }: { proceso: any; angulo: number }) {
           endY + 0.2 - idx * 0.15,
           endZ + Math.sin(rad) * offset,
         ];
-        return <Botella key={doc.codigo} doc={doc} posicion={pos} color={proceso.color} />;
+        return <Botella key={doc.codigo} doc={doc} posicion={pos} color={proceso.color} onClick={() => onBotellaClick(doc)} />;
       })}
 
       {/* Hoja de la rama */}
@@ -214,7 +383,7 @@ function Rama({ proceso, angulo }: { proceso: any; angulo: number }) {
   );
 }
 
-function Botella({ doc, posicion, color }: { doc: any; posicion: [number, number, number]; color: string }) {
+function Botella({ doc, posicion, color, onClick }: { doc: any; posicion: [number, number, number]; color: string; onClick: () => void }) {
   const [hovered, setHovered] = React.useState(false);
   const ref = React.useRef<THREE.Group>(null);
 
@@ -231,7 +400,7 @@ function Botella({ doc, posicion, color }: { doc: any; posicion: [number, number
       position={posicion}
       onClick={(e) => {
         e.stopPropagation();
-        console.log("Click en botella:", doc.codigo);
+        onClick();
       }}
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
@@ -268,7 +437,7 @@ function Botella({ doc, posicion, color }: { doc: any; posicion: [number, number
       </Cylinder>
 
       {/* Etiqueta con el código */}
-      <Html position={[0, 0, 0.16]} center distanceFactor={8}>
+      <Html position={[0, 0, 0.16]} center distanceFactor={8} pointerEvents="none">
         <div
           style={{
             background: hovered ? color : "rgba(0,0,0,0.7)",
@@ -281,6 +450,7 @@ function Botella({ doc, posicion, color }: { doc: any; posicion: [number, number
             border: `1px solid ${color}`,
             cursor: "pointer",
             transition: "all 0.2s",
+            pointerEvents: "none",
           }}
         >
           {doc.codigo}
@@ -422,7 +592,11 @@ function AudioControls() {
   );
 }
 
-function EscenaArbol() {
+function EscenaArbol({ documentoSeleccionado, setDocumentoSeleccionado }: { documentoSeleccionado: any; setDocumentoSeleccionado: (d: any) => void }) {
+  // Si hay un documento seleccionado, mostrar la vista dentro de la botella
+  if (documentoSeleccionado) {
+    return <VistaDentroBotella documento={documentoSeleccionado} onVolver={() => setDocumentoSeleccionado(null)} />;
+  }
   return (
     <>
       {/* Iluminación */}
@@ -441,7 +615,7 @@ function EscenaArbol() {
 
       {/* 7 ramas con botellas */}
       {PROCESOS.map((proc) => (
-        <Rama key={proc.id} proceso={proc} angulo={proc.angulo} />
+        <Rama key={proc.id} proceso={proc} angulo={proc.angulo} onBotellaClick={setDocumentoSeleccionado} />
       ))}
 
       {/* Cascada de fondo */}
@@ -466,6 +640,8 @@ function EscenaArbol() {
 }
 
 export function Arbol3DScene() {
+  const [documentoSeleccionado, setDocumentoSeleccionado] = React.useState<any>(null);
+
   return (
     <div style={{ width: "100vw", height: "100vh", position: "relative", overflow: "hidden" }}>
       <Canvas
@@ -474,7 +650,7 @@ export function Arbol3DScene() {
         gl={{ antialias: true, alpha: false }}
         dpr={[1, 2]}
       >
-        <EscenaArbol />
+        <EscenaArbol documentoSeleccionado={documentoSeleccionado} setDocumentoSeleccionado={setDocumentoSeleccionado} />
       </Canvas>
 
       {/* Overlay de título */}
