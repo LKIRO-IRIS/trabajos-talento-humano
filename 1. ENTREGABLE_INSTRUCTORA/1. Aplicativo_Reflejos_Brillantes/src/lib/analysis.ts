@@ -866,3 +866,96 @@ export function clearAnalyzedHVs(): void {
     window.dispatchEvent(new CustomEvent("sigth-analyzed-hvs-changed"));
   } catch {}
 }
+
+/* ------------------------------------------------------------------ */
+/*  Empresa dinámica — configuración persistente                       */
+/* ------------------------------------------------------------------ */
+
+export interface EmpresaConfig {
+  id: string;
+  name: string;
+  tagline: string;
+  logo: string;        // data URL or external URL
+  primaryColor: string; // hex with #
+  accentColor: string;  // hex with #
+}
+
+export const DEFAULT_EMPRESA: EmpresaConfig = {
+  id: "default",
+  name: "Mi Empresa SAS",
+  tagline: "Gestión de Talento Humano",
+  logo: "",
+  primaryColor: "#2C3E50",
+  accentColor: "#92D050",
+};
+
+const EMPRESA_LS_KEY = "sigth-empresa-config";
+
+export function loadEmpresaConfig(): EmpresaConfig | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(EMPRESA_LS_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as EmpresaConfig;
+  } catch {
+    return null;
+  }
+}
+
+export function saveEmpresaConfig(cfg: EmpresaConfig): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(EMPRESA_LS_KEY, JSON.stringify(cfg));
+    window.dispatchEvent(new CustomEvent("sigth-empresa-changed"));
+  } catch {}
+}
+
+export function darken(hex: string, percent: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const darkenChannel = (c: number) => Math.max(0, Math.round(c * (1 - percent / 100)));
+  return `#${darkenChannel(r).toString(16).padStart(2, "0")}${darkenChannel(g).toString(16).padStart(2, "0")}${darkenChannel(b).toString(16).padStart(2, "0")}`;
+}
+
+export function lighten(hex: string, percent: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const lightenChannel = (c: number) => Math.min(255, Math.round(c + (255 - c) * percent / 100));
+  return `#${lightenChannel(r).toString(16).padStart(2, "0")}${lightenChannel(g).toString(16).padStart(2, "0")}${lightenChannel(b).toString(16).padStart(2, "0")}`;
+}
+
+export function withAlpha(hex: string, alphaHex: string): string {
+  return `${hex}${alphaHex}`;
+}
+
+export function refreshCompanyThemes(): void {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent("sigth-empresa-changed"));
+}
+
+export function buildCompanyTheme(empresa: EmpresaConfig): CompanyTheme {
+  const dark = darken(empresa.primaryColor, 20);
+  const medium = darken(empresa.primaryColor, 10);
+  const light = lighten(empresa.primaryColor, 85);
+  const bg = lighten(empresa.primaryColor, 95);
+  return {
+    id: empresa.id as CompanyId,
+    name: empresa.name,
+    primary: empresa.primaryColor.replace("#", ""),
+    dark: dark.replace("#", ""),
+    medium: medium.replace("#", ""),
+    accent: empresa.accentColor.replace("#", ""),
+    light: light.replace("#", ""),
+    bg: bg.replace("#", ""),
+    logoText: empresa.name.slice(0, 2).toUpperCase(),
+    logoBg: dark,
+    logoFg: empresa.accentColor,
+    tabActiveBg: empresa.accentColor,
+    tabActiveFg: empresa.primaryColor,
+    headerGradient: `from-[${empresa.primaryColor}] to-[${dark}]`,
+    headerBorder: empresa.accentColor,
+    tagline: empresa.tagline,
+  };
+}

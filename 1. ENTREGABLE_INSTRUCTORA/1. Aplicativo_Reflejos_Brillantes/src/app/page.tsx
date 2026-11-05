@@ -15,6 +15,10 @@ import { cn } from "@/lib/utils";
 import { RBLogo } from "@/components/sigth/RBLogo";
 import { FormatsModule } from "@/components/sigth/FormatsModule";
 import { GestionModule } from "@/components/sigth/GestionModule";
+import { ArchivadorDocumentos } from "@/components/sigth/ArchivadorDocumentos";
+import { BackupBar } from "@/components/sigth/BackupBar";
+import { EmpresaConfigModal } from "@/components/sigth/EmpresaConfigModal";
+import { EmpresaProvider, useEmpresa } from "@/components/sigth/EmpresaContext";
 import {
   loadDarkModeFromStorage,
   saveDarkModeToStorage,
@@ -48,17 +52,36 @@ function saveCompanyToStorage(c: CompanyId) {
   } catch {}
 }
 
-export default function SIGTHPage() {
+function SIGTHPage() {
   const [activeTab, setActiveTab] = React.useState<ActiveTab>("gestion");
   const [darkMode, setDarkMode] = React.useState(false);
   const [company, setCompany] = React.useState<CompanyId>("reflejos_brillantes");
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const [empresaModalOpen, setEmpresaModalOpen] = React.useState(false);
+  const [forceConfig, setForceConfig] = React.useState(false);
+  const { empresa } = useEmpresa();
 
   /* ---- Initialise dark mode + company from LocalStorage ---- */
   React.useEffect(() => {
     const stored = loadDarkModeFromStorage();
     setDarkMode(stored);
     setCompany(loadCompanyFromStorage());
+
+    // Verificar si hay empresa configurada — si no, abrir modal
+    try {
+      const cfg = window.localStorage.getItem("sigth-empresa-config");
+      if (!cfg) {
+        setForceConfig(true);
+        setEmpresaModalOpen(true);
+      }
+    } catch {}
+  }, []);
+
+  /* ---- Listen for "open empresa modal" events ---- */
+  React.useEffect(() => {
+    const handler = () => setEmpresaModalOpen(true);
+    window.addEventListener("sigth-open-empresa-modal", handler);
+    return () => window.removeEventListener("sigth-open-empresa-modal", handler);
   }, []);
 
   /* ---- Apply dark mode class to <html> + persist ---- */
@@ -97,34 +120,34 @@ export default function SIGTHPage() {
         style={{ borderColor: theme.headerBorder }}
       >
         <div className="max-w-[1600px] mx-auto px-3 sm:px-6 py-2.5 flex items-center justify-between gap-3">
-          {/* Left: logo + Reflejos Brillantes name */}
+          {/* Left: logo + nombre empresa dinámica */}
           <button
             className="flex items-center gap-3 min-w-0 group"
             onClick={() => setActiveTab("gestion")}
-            title="Reflejos Brillantes SAS — Inicio"
+            title={empresa.name}
           >
-            <RBLogo size={42} company={company} />
+            {empresa.logo ? (
+              <img src={empresa.logo} alt={empresa.name} className="w-10 h-10 rounded-md object-contain bg-white p-1" />
+            ) : (
+              <div
+                className="w-10 h-10 rounded-full flex items-center justify-center font-extrabold text-sm shrink-0"
+                style={{ background: empresa.primaryColor, color: empresa.accentColor }}
+              >
+                {empresa.name.slice(0, 2).toUpperCase()}
+              </div>
+            )}
             <div className="leading-tight min-w-0 text-left">
-              <div className="font-display text-base sm:text-lg font-extrabold tracking-tight flex items-center gap-1.5">
-                Reflejos Brillantes
-                <span
-                  className="hidden sm:inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded uppercase tracking-wider"
-                  style={{
-                    background: `#${theme.accent}`,
-                    color: `#${theme.dark}`,
-                  }}
-                >
-                  SAS
-                </span>
+              <div className="font-display text-base sm:text-lg font-extrabold tracking-tight">
+                {empresa.name}
               </div>
               <div className="text-[10px] sm:text-xs text-white/85 truncate flex items-center gap-1">
-                <Sparkles className="w-2.5 h-2.5" style={{ color: `#${theme.accent}` }} />
-                Gestión de Talento Humano
+                <Sparkles className="w-2.5 h-2.5" style={{ color: empresa.accentColor }} />
+                {empresa.tagline}
               </div>
             </div>
           </button>
 
-          {/* Right: tabs (desktop) + dark/light toggle */}
+          {/* Right: tabs (desktop) + respaldo + configurar + dark/light */}
           <div className="flex items-center gap-2">
             <nav className="hidden md:flex items-center gap-1">
               {TABS.map((t) => (
@@ -155,7 +178,15 @@ export default function SIGTHPage() {
               <ChevronDown className={cn("w-4 h-4 transition-transform", mobileMenuOpen && "rotate-180")} />
             </button>
 
-            <CompanySelector value={company} onChange={selectCompany} />
+            <BackupBar />
+            <button
+              onClick={() => setEmpresaModalOpen(true)}
+              className="p-2 rounded-md hover:bg-white/10 transition-colors"
+              title="Configurar empresa"
+              aria-label="Configurar empresa"
+            >
+              <Building2 className="w-4 h-4" style={{ color: theme.headerBorder }} />
+            </button>
             <button
               onClick={toggleDarkMode}
               className="p-2 rounded-md hover:bg-white/10 transition-colors"
@@ -220,11 +251,34 @@ export default function SIGTHPage() {
         </div>
 
         {activeTab === "formatos" && (
-          <FormatsModule company={company} onGoToGestion={() => setActiveTab("gestion")} />
+          <ArchivadorDocumentos company={company} />
         )}
         {activeTab === "gestion" && <GestionModule company={company} />}
       </main>
+
+      {/* Modal de configuración de empresa */}
+      <EmpresaConfigModal
+        open={empresaModalOpen}
+        onOpenChange={(v) => {
+          if (!v && forceConfig && empresa.id === "default") {
+            return;
+          }
+          setEmpresaModalOpen(v);
+          if (!v) setForceConfig(false);
+        }}
+        forceConfigure={forceConfig && empresa.id === "default"}
+        onSaved={() => setForceConfig(false)}
+      />
     </div>
+  );
+}
+
+// Envolver en EmpresaProvider para que useEmpresa() funcione
+export default function SIGTHPageWrapper() {
+  return (
+    <EmpresaProvider>
+      <SIGTHPage />
+    </EmpresaProvider>
   );
 }
 
