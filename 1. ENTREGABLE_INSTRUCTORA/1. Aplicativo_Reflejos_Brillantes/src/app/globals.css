@@ -1,0 +1,603 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  /* Reflejos Brillantes SAS — brand palette */
+  --color-rb-green: #92D050;
+  --color-rb-green-dark: #6FB83A;
+  --color-rb-green-darker: #4F8C28;
+  --color-rb-green-light: #E8F5E9;
+  --color-rb-blue: #2C3E50;
+  --color-rb-blue-light: #34495E;
+  --color-rb-blue-dark: #1B2A38;
+  --color-rb-orange: #FF9800;
+  --color-rb-cream: #FFFDE7;
+  --color-rb-ink: #1B1B1B;
+  --color-rb-gray: #666666;
+}
+
+/* =================================================================== */
+/*  Multi-company themes — apply by setting data-company on <html>     */
+/*  - data-company="royal_eventos"     → wine + gold                    */
+/*  - data-company="reflejos_brillantes" (default) → green + dark blue  */
+/* =================================================================== */
+html[data-company="royal_eventos"] {
+  --radius: 0.625rem;
+  --background: #FFF8E7;
+  --foreground: #2C2C2C;
+  --card: #FFFFFF;
+  --card-foreground: #2C2C2C;
+  --popover: #FFFFFF;
+  --popover-foreground: #2C2C2C;
+  --primary: #6B1F2E;
+  --primary-foreground: #FFFFFF;
+  --secondary: #FFF3D6;
+  --secondary-foreground: #6B1F2E;
+  --muted: #FBF5E6;
+  --muted-foreground: #6B5B3E;
+  --accent: #B8941F;
+  --accent-foreground: #FFFFFF;
+  --destructive: #C62828;
+  --border: #E8D9B5;
+  --input: #FBF5E6;
+  --ring: #B8941F;
+  --chart-1: #6B1F2E;
+  --chart-2: #B8941F;
+  --chart-3: #D4AF37;
+  --chart-4: #8B2E3C;
+  --chart-5: #5C4A1E;
+  --sidebar: #FFF8E7;
+  --sidebar-foreground: #2C2C2C;
+  --sidebar-primary: #6B1F2E;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #FFF3D6;
+  --sidebar-accent-foreground: #6B1F2E;
+  --sidebar-border: #E8D9B5;
+  --sidebar-ring: #B8941F;
+}
+
+html[data-company="royal_eventos"].dark {
+  --background: #2C1A1F;
+  --foreground: #FFF8E7;
+  --card: #3D2230;
+  --card-foreground: #FFF8E7;
+  --popover: #3D2230;
+  --popover-foreground: #FFF8E7;
+  --primary: #B8941F;
+  --primary-foreground: #2C2C2C;
+  --secondary: #4A2A36;
+  --secondary-foreground: #FFF8E7;
+  --muted: #3D2230;
+  --muted-foreground: #E8D9B5;
+  --accent: #D4AF37;
+  --accent-foreground: #2C2C2C;
+  --destructive: #EF5350;
+  --border: #5C3340;
+  --input: #5C3340;
+  --ring: #B8941F;
+  --chart-1: #B8941F;
+  --chart-2: #6B1F2E;
+  --chart-3: #D4AF37;
+  --chart-4: #8B2E3C;
+  --chart-5: #FFF3D6;
+  --sidebar: #2C1A1F;
+  --sidebar-foreground: #FFF8E7;
+  --sidebar-primary: #B8941F;
+  --sidebar-primary-foreground: #2C2C2C;
+  --sidebar-accent: #4A2A36;
+  --sidebar-accent-foreground: #FFF8E7;
+  --sidebar-border: #5C3340;
+  --sidebar-ring: #B8941F;
+}
+
+/* Reflejos Brillantes SAS — Light theme (white with green accents) */
+:root,
+html[data-company="reflejos_brillantes"] {
+  --radius: 0.625rem;
+  --background: #FFFFFF;
+  --foreground: #1B1B1B;
+  --card: #FFFFFF;
+  --card-foreground: #1B1B1B;
+  --popover: #FFFFFF;
+  --popover-foreground: #1B1B1B;
+  --primary: #2C3E50;
+  --primary-foreground: #FFFFFF;
+  --secondary: #E8F5E9;
+  --secondary-foreground: #2C3E50;
+  --muted: #F5F7F5;
+  --muted-foreground: #666666;
+  --accent: #92D050;
+  --accent-foreground: #1B1B1B;
+  --destructive: #C62828;
+  --border: #E0E5E0;
+  --input: #F5F7F5;
+  --ring: #92D050;
+  --chart-1: #92D050;
+  --chart-2: #2C3E50;
+  --chart-3: #FF9800;
+  --chart-4: #6FB83A;
+  --chart-5: #4F8C28;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #1B1B1B;
+  --sidebar-primary: #92D050;
+  --sidebar-primary-foreground: #1B1B1B;
+  --sidebar-accent: #E8F5E9;
+  --sidebar-accent-foreground: #2C3E50;
+  --sidebar-border: #E0E5E0;
+  --sidebar-ring: #92D050;
+}
+
+html[data-company="reflejos_brillantes"].dark,
+html[data-company="reflejos_brillantes"] .dark {
+  --background: #1B2A38;
+  --foreground: #FFFFFF;
+  --card: #2C3E50;
+  --card-foreground: #FFFFFF;
+  --popover: #34495E;
+  --popover-foreground: #FFFFFF;
+  --primary: #92D050;
+  --primary-foreground: #1B1B1B;
+  --secondary: #34495E;
+  --secondary-foreground: #FFFFFF;
+  --muted: #233344;
+  --muted-foreground: #B0BEC5;
+  --accent: #FF9800;
+  --accent-foreground: #1B1B1B;
+  --destructive: #EF5350;
+  --border: #3A4F66;
+  --input: #3A4F66;
+  --ring: #92D050;
+  --chart-1: #92D050;
+  --chart-2: #2C3E50;
+  --chart-3: #FF9800;
+  --chart-4: #6FB83A;
+  --chart-5: #4F8C28;
+  --sidebar: #233344;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #92D050;
+  --sidebar-primary-foreground: #1B1B1B;
+  --sidebar-accent: #34495E;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #3A4F66;
+  --sidebar-ring: #92D050;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6, .font-display {
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+}
+
+/* Custom scrollbar — Reflejos Brillantes */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #F5F7F5;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #92D050, #4F8C28);
+  border-radius: 8px;
+  border: 2px solid #F5F7F5;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #6FB83A, #2C3E50);
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #1B2A38;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #92D050, #2C3E50);
+  border: 2px solid #1B2A38;
+}
+
+/* Smooth scrolling for in-page navigation */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 96px;
+}
+
+/* SIGTH/RB animations */
+@keyframes rb-fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes rb-pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.2); }
+}
+
+@keyframes rb-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-rb-fade-up {
+  animation: rb-fade-up 0.5s ease-out both;
+}
+
+.rb-pulse-dot {
+  animation: rb-pulse-dot 1.4s ease-in-out infinite;
+}
+
+.rb-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(146,208,80,0.15), transparent);
+  background-size: 200% 100%;
+  animation: rb-shimmer 2s linear infinite;
+}
+
+/* RB gradient text */
+.rb-gradient-text {
+  background: linear-gradient(90deg, #92D050 0%, #4F8C28 50%, #2C3E50 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Subtle paper texture for the page background */
+.rb-paper {
+  background-color: #FFFFFF;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(146, 208, 80, 0.05) 0, transparent 35%),
+    radial-gradient(circle at 88% 8%, rgba(44, 62, 80, 0.04) 0, transparent 30%),
+    radial-gradient(circle at 50% 100%, rgba(255, 152, 0, 0.03) 0, transparent 40%);
+}
+.dark .rb-paper {
+  background-color: #1B2A38;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(146, 208, 80, 0.08) 0, transparent 35%),
+    radial-gradient(circle at 88% 8%, rgba(146, 208, 80, 0.05) 0, transparent 30%);
+}
+/* Royal Eventos — wine + gold paper texture */
+html[data-company="royal_eventos"] .rb-paper {
+  background-color: #FFF8E7;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(184, 148, 31, 0.10) 0, transparent 35%),
+    radial-gradient(circle at 88% 8%, rgba(107, 31, 46, 0.07) 0, transparent 30%),
+    radial-gradient(circle at 50% 100%, rgba(184, 148, 31, 0.05) 0, transparent 40%);
+}
+html[data-company="royal_eventos"].dark .rb-paper,
+html[data-company="royal_eventos"] .dark .rb-paper {
+  background-color: #2C1A1F;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(212, 175, 55, 0.12) 0, transparent 35%),
+    radial-gradient(circle at 88% 8%, rgba(184, 148, 31, 0.08) 0, transparent 30%);
+}
+
+/* Chat/scroll slim scrollbar */
+.rb-chat-scroll::-webkit-scrollbar { width: 6px; }
+.rb-chat-scroll::-webkit-scrollbar-thumb {
+  background: #92D050;
+  border-radius: 4px;
+  border: none;
+}
+.rb-chat-scroll::-webkit-scrollbar-track { background: transparent; }
+
+/* =================================================================== */
+/*  ATS RESUME PREVIEW — always white background regardless of theme   */
+/* =================================================================== */
+.ats-sheet {
+  background: #FFFFFF;
+  color: #1B1B1B;
+  font-family: Arial, "Helvetica Neue", sans-serif;
+  font-size: 11pt;
+  line-height: 1.45;
+}
+
+.ats-sheet h1.at-name {
+  font-size: 22pt;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: #1B1B1B;
+  letter-spacing: -0.01em;
+}
+
+.ats-sheet h2.at-section {
+  font-size: 12pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #2C3E50;
+  border-bottom: 1.5px solid #92D050;
+  padding-bottom: 2px;
+  margin: 14px 0 6px 0;
+}
+
+.ats-sheet h3.at-job {
+  font-size: 11pt;
+  font-weight: 700;
+  margin: 8px 0 0 0;
+  color: #1B1B1B;
+}
+
+.ats-sheet .at-meta {
+  font-size: 10pt;
+  color: #555;
+  margin: 1px 0 4px 0;
+}
+
+.ats-sheet .at-contact {
+  font-size: 10pt;
+  color: #444;
+  margin: 2px 0 8px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ats-sheet ul.at-bullets {
+  list-style: disc outside none;
+  margin: 4px 0 4px 18px;
+  padding: 0;
+}
+
+.ats-sheet ul.at-bullets li {
+  margin: 1px 0;
+  font-size: 11pt;
+  line-height: 1.4;
+}
+
+.ats-sheet .at-photo {
+  width: 90px;
+  height: 110px;
+  object-fit: cover;
+  border: 1px solid #ccc;
+  float: right;
+  margin: 0 0 6px 12px;
+}
+
+/* =================================================================== */
+/*  PRINT STYLES — show only the resume sheet, A4 size                  */
+/* =================================================================== */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm 14mm 14mm 14mm;
+  }
+
+  html, body {
+    background: #FFFFFF !important;
+    color: #1B1B1B !important;
+  }
+
+  /* Hide ALL app chrome — header, tabs, panels, sidebar, buttons */
+  .rb-no-print {
+    display: none !important;
+  }
+
+  /* Force the resume preview to be the only visible content */
+  .rb-print-area {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    background: #FFFFFF !important;
+  }
+
+  /* The actual A4 sheet inside the preview */
+  .ats-sheet {
+    box-shadow: none !important;
+    border: none !important;
+    width: 100% !important;
+    min-height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 11pt !important;
+    color: #1B1B1B !important;
+    background: #FFFFFF !important;
+  }
+
+  /* Keep job entries together — don't split title across pages */
+  .ats-sheet .at-job-block {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Keep section headings with their following content */
+  .ats-sheet h2.at-section {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  /* Avoid orphaned list items at page bottom */
+  .ats-sheet ul.at-bullets li {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Hide the floating photo on print if empty */
+  .ats-sheet .at-photo[src=""],
+  .ats-sheet .at-photo:not([src]) {
+    display: none !important;
+  }
+}
+
+/* RB UI accent helpers (kept simple) */
+.rb-btn-primary {
+  background: #92D050;
+  color: #1B1B1B;
+  font-weight: 600;
+  transition: background 0.15s ease;
+}
+.rb-btn-primary:hover {
+  background: #6FB83A;
+}
+.rb-btn-dark {
+  background: #2C3E50;
+  color: #FFFFFF;
+  font-weight: 600;
+  transition: background 0.15s ease;
+}
+.rb-btn-dark:hover {
+  background: #1B2A38;
+}
+
+/* Range slider override for tabs visual indicator */
+.rb-tab-active {
+  background: #92D050;
+  color: #1B1B1B;
+}
+.rb-tab-inactive {
+  background: transparent;
+  color: #FFFFFF;
+}
+.rb-tab-inactive:hover {
+  background: rgba(146, 208, 80, 0.15);
+}
+
+/* Royal Eventos — theme-aware tab styles override */
+html[data-company="royal_eventos"] .rb-tab-active {
+  background: #B8941F;
+  color: #2C2C2C;
+}
+html[data-company="royal_eventos"] .rb-tab-inactive:hover {
+  background: rgba(184, 148, 31, 0.18);
+}
+
+/* =================================================================== */
+/*  GESTION TAB — interactive format viewer styles                     */
+/* =================================================================== */
+
+.rb-gestion-format {
+  background: #FFFFFF;
+  color: #1B1B1B;
+}
+
+.rb-gestion-format .dark & {
+  background: var(--card);
+  color: var(--card-foreground);
+}
+
+/* Print rules for the Gestión tab — show only the active format,
+   hide sidebar, header, tabs, footer, action buttons and breadcrumbs */
+@media print {
+  /* Hide all app chrome (header, tabs, sidebar, footer, breadcrumb, action buttons) */
+  .rb-gestion-sidebar,
+  .rb-no-print {
+    display: none !important;
+  }
+
+  /* The format shell should be the only visible content */
+  .rb-gestion-format {
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    background: #FFFFFF !important;
+    color: #1B1B1B !important;
+    page-break-inside: auto;
+  }
+
+  /* Inside the format, force inputs/textareas to look like printed text */
+  .rb-gestion-format input,
+  .rb-gestion-format textarea,
+  .rb-gestion-format select {
+    border: 1px solid #999 !important;
+    background: transparent !important;
+    color: #1B1B1B !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    box-shadow: none !important;
+    height: auto !important;
+    padding: 2px 4px !important;
+    font-size: 11pt !important;
+  }
+
+  /* Print empty inputs as blank space */
+  .rb-gestion-format input[value=""],
+  .rb-gestion-format textarea:empty {
+    border-bottom: 1px solid #888 !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-top: none !important;
+  }
+
+  /* Table tweaks for printing */
+  .rb-gestion-format table {
+    page-break-inside: auto;
+  }
+  .rb-gestion-format tr {
+    page-break-inside: avoid;
+  }
+  .rb-gestion-format thead {
+    background: #1B1B1B !important;
+    color: #FFFFFF !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Format header gradient → solid dark color for printing */
+  .rb-gestion-header {
+    background: #2C3E50 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color: #FFFFFF !important;
+  }
+
+  /* Force any colored section title to print as-is */
+  .rb-gestion-format [style*="background"] {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Avoid breaking form rows across pages */
+  .rb-gestion-format .grid {
+    page-break-inside: avoid;
+  }
+}
