@@ -8,6 +8,7 @@ export type FormatId =
   | "TH-08" | "TH-09" | "TH-10" | "TH-11" | "TH-12" | "TH-13"
   | "TH-14" | "TH-15" | "TH-16" | "TH-17" | "TH-19" | "TH-20"
   | "TH-18" | "TH-21" | "TH-22"
+  | "TH-CONTRATO" | "TH-AFILIACIONES"
   | "TH-MD-01" | "TH-MD-02" | "TH-MD-03" | "TH-MD-04" | "TH-MD-05"
   | "TH-MD-06" | "TH-MD-07" | "TH-MD-08" | "TH-MD-09" | "TH-MD-10";
 
@@ -42,6 +43,8 @@ export const FORMAT_CATALOG: FormatCatalogEntry[] = [
   { id: "TH-11", name: "Chequeo Inducción", category: "contratacion", implemented: true, version: "02", date: "26/10/2025" },
   { id: "TH-12", name: "Control de Asistencia", category: "contratacion", implemented: true, version: "02", date: "26/10/2025" },
   { id: "TH-13", name: "Satisfacción Inducción", category: "contratacion", implemented: true, version: "02", date: "26/10/2025" },
+  { id: "TH-CONTRATO", name: "Contrato Laboral (Auto-generado)", category: "contratacion", implemented: true, version: "01", date: "05/11/2026" },
+  { id: "TH-AFILIACIONES", name: "Afiliaciones Seguridad Social (Auto-generado)", category: "contratacion", implemented: true, version: "01", date: "05/11/2026" },
 
   // Desempeño & Desarrollo
   { id: "TH-14", name: "Evaluación Desempeño", category: "desempeno", implemented: true, version: "02", date: "26/10/2025" },

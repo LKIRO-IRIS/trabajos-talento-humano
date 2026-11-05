@@ -43,6 +43,8 @@ import { TH06Tracker } from "@/components/sigth/gestion/formats/TH06-Tracker";
 import { TH07Entrevista } from "@/components/sigth/gestion/formats/TH07-Entrevista";
 import { TH09ChequeoDocumentos } from "@/components/sigth/gestion/formats/TH09-ChequeoDocumentos";
 import { TH11ChequeoInduccion } from "@/components/sigth/gestion/formats/TH11-ChequeoInduccion";
+import { ContratoLaboral } from "@/components/sigth/gestion/formats/ContratoLaboral";
+import { AfiliacionesSeguridadSocial } from "@/components/sigth/gestion/formats/AfiliacionesSeguridadSocial";
 import { THMD01Convocatoria } from "@/components/sigth/gestion/formats/THMD01-Convocatoria";
 import { GenericFormat } from "@/components/sigth/gestion/formats/GenericFormat";
 import { FORMAT_CONFIGS } from "@/components/sigth/gestion/format-configs";
@@ -100,7 +102,7 @@ const PROCESS_ACCORDION: {
     icon: <UserCheck className="w-4 h-4" />,
     color: "#B8941F",
     description: "Documentos, contrato, EPP, dotación, inducción.",
-    formats: ["TH-08", "TH-09", "TH-10", "TH-11", "TH-12", "TH-13"],
+    formats: ["TH-08", "TH-09", "TH-10", "TH-11", "TH-12", "TH-13", "TH-CONTRATO", "TH-AFILIACIONES"],
     processIdx: 2,
     defaultOpen: true,
   },
@@ -430,6 +432,10 @@ export function GestionModule({
         return <TH22Cronograma company={company} />;
       case "TH-MD-01":
         return <THMD01Convocatoria company={company} />;
+      case "TH-CONTRATO":
+        return <ContratoLaboral />;
+      case "TH-AFILIACIONES":
+        return <AfiliacionesSeguridadSocial />;
       default: {
         const cfg = FORMAT_CONFIGS[activeId];
         if (cfg) return <GenericFormat config={cfg} company={company} />;
