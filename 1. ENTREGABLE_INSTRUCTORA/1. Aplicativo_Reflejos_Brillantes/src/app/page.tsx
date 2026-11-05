@@ -7,24 +7,18 @@ import {
   Moon,
   Building2,
   LayoutDashboard,
-  UploadCloud,
   ChevronDown,
   Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { RBLogo } from "@/components/sigth/RBLogo";
-import { FormatsModule } from "@/components/sigth/FormatsModule";
 import { GestionModule } from "@/components/sigth/GestionModule";
 import { ArchivadorCandidatos } from "@/components/sigth/ArchivadorCandidatos";
-import { ArchivadorDocumentos } from "@/components/sigth/ArchivadorDocumentos";
 import { BackupBar } from "@/components/sigth/BackupBar";
 import { EmpresaConfigModal } from "@/components/sigth/EmpresaConfigModal";
 import { EmpresaProvider, useEmpresa } from "@/components/sigth/EmpresaContext";
 import {
   loadDarkModeFromStorage,
   saveDarkModeToStorage,
-  COMPANY_THEMES,
-  type CompanyId,
 } from "@/lib/resume";
 
 type ActiveTab = "formatos" | "gestion";
@@ -34,41 +28,23 @@ const TABS: { id: ActiveTab; label: string; icon: React.ReactNode; short: string
   { id: "gestion", label: "Gestión de Procesos", icon: <LayoutDashboard className="w-4 h-4" />, short: "Gestión" },
 ];
 
-const COMPANY_IDS: CompanyId[] = ["royal_eventos", "reflejos_brillantes"];
-
-const COMPANY_STORAGE_KEY = "sigth-company";
-
-function loadCompanyFromStorage(): CompanyId {
-  if (typeof window === "undefined") return "reflejos_brillantes";
-  try {
-    const v = window.localStorage.getItem(COMPANY_STORAGE_KEY);
-    if (v === "royal_eventos" || v === "reflejos_brillantes") return v;
-  } catch {}
-  return "reflejos_brillantes";
-}
-
-function saveCompanyToStorage(c: CompanyId) {
-  try {
-    window.localStorage.setItem(COMPANY_STORAGE_KEY, c);
-  } catch {}
-}
-
 function SIGTHPage() {
   const [activeTab, setActiveTab] = React.useState<ActiveTab>("gestion");
   const [darkMode, setDarkMode] = React.useState(false);
-  const [company, setCompany] = React.useState<CompanyId>("reflejos_brillantes");
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [empresaModalOpen, setEmpresaModalOpen] = React.useState(false);
   const [forceConfig, setForceConfig] = React.useState(false);
   const { empresa } = useEmpresa();
 
-  /* ---- Initialise dark mode + company from LocalStorage ---- */
+  // Colores dinámicos desde la empresa configurada
+  const primaryColor = empresa.primaryColor || "#2C3E50";
+  const accentColor = empresa.accentColor || "#92D050";
+
+  /* ---- Initialise dark mode + check empresa ---- */
   React.useEffect(() => {
     const stored = loadDarkModeFromStorage();
     setDarkMode(stored);
-    setCompany(loadCompanyFromStorage());
 
-    // Verificar si hay empresa configurada — si no, abrir modal
     try {
       const cfg = window.localStorage.getItem("sigth-empresa-config");
       if (!cfg) {
@@ -93,32 +69,31 @@ function SIGTHPage() {
     saveDarkModeToStorage(darkMode);
   }, [darkMode]);
 
-  /* ---- Apply data-company attribute to <html> ---- */
+  /* ---- Apply CSS vars from empresa ---- */
   React.useEffect(() => {
     const root = document.documentElement;
-    root.setAttribute("data-company", company);
-    saveCompanyToStorage(company);
-  }, [company]);
+    root.style.setProperty("--rb-primary", primaryColor);
+    root.style.setProperty("--rb-accent", accentColor);
+    root.style.setProperty("--primary", accentColor);
+    root.style.setProperty("--ring", accentColor);
+    root.setAttribute("data-company", "reflejos_brillantes");
+  }, [primaryColor, accentColor]);
 
   const toggleDarkMode = React.useCallback(() => {
     setDarkMode((v) => !v);
   }, []);
 
-  const selectCompany = React.useCallback((c: CompanyId) => {
-    setCompany(c);
-  }, []);
-
-  const theme = COMPANY_THEMES[company];
+  const headerGradient = `from-[${primaryColor}] to-[${primaryColor}cc]`;
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground rb-paper">
-      {/* ===================== HEADER (sticky, theme-driven) ===================== */}
+      {/* ===================== HEADER ===================== */}
       <header
         className={cn(
           "rb-no-print sticky top-0 z-40 text-white border-b-4 shadow-md bg-gradient-to-r",
-          theme.headerGradient,
+          headerGradient,
         )}
-        style={{ borderColor: theme.headerBorder }}
+        style={{ borderColor: accentColor, background: `linear-gradient(135deg, ${primaryColor}, ${primaryColor}cc)` }}
       >
         <div className="max-w-[1600px] mx-auto px-3 sm:px-6 py-2.5 flex items-center justify-between gap-3">
           {/* Left: logo + nombre empresa dinámica */}
@@ -132,7 +107,7 @@ function SIGTHPage() {
             ) : (
               <div
                 className="w-10 h-10 rounded-full flex items-center justify-center font-extrabold text-sm shrink-0"
-                style={{ background: empresa.primaryColor, color: empresa.accentColor }}
+                style={{ background: primaryColor, color: accentColor, border: `2px solid ${accentColor}` }}
               >
                 {empresa.name.slice(0, 2).toUpperCase()}
               </div>
@@ -142,13 +117,13 @@ function SIGTHPage() {
                 {empresa.name}
               </div>
               <div className="text-[10px] sm:text-xs text-white/85 truncate flex items-center gap-1">
-                <Sparkles className="w-2.5 h-2.5" style={{ color: empresa.accentColor }} />
+                <Sparkles className="w-2.5 h-2.5" style={{ color: accentColor }} />
                 {empresa.tagline}
               </div>
             </div>
           </button>
 
-          {/* Right: tabs (desktop) + respaldo + configurar + dark/light */}
+          {/* Right: tabs + respaldo + configurar + dark/light */}
           <div className="flex items-center gap-2">
             <nav className="hidden md:flex items-center gap-1">
               {TABS.map((t) => (
@@ -186,7 +161,7 @@ function SIGTHPage() {
               title="Configurar empresa"
               aria-label="Configurar empresa"
             >
-              <Building2 className="w-4 h-4" style={{ color: theme.headerBorder }} />
+              <Building2 className="w-4 h-4" style={{ color: accentColor }} />
             </button>
             <button
               onClick={toggleDarkMode}
@@ -195,15 +170,15 @@ function SIGTHPage() {
               aria-label="Cambiar modo claro/oscuro"
             >
               {darkMode ? (
-                <Sun className="w-4 h-4" style={{ color: theme.headerBorder }} />
+                <Sun className="w-4 h-4" style={{ color: accentColor }} />
               ) : (
-                <Moon className="w-4 h-4" style={{ color: theme.headerBorder }} />
+                <Moon className="w-4 h-4" style={{ color: accentColor }} />
               )}
             </button>
           </div>
         </div>
 
-        {/* Mobile tabs (below header, collapsible) */}
+        {/* Mobile tabs */}
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-white/10 bg-black/20 animate-rb-fade-up">
             <div className="max-w-[1600px] mx-auto px-2 py-2 grid grid-cols-2 gap-1">
@@ -216,9 +191,7 @@ function SIGTHPage() {
                   }}
                   className={cn(
                     "flex items-center justify-center gap-1.5 px-2 py-2 rounded-md text-xs font-semibold transition-colors",
-                    activeTab === t.id
-                      ? "rb-tab-active"
-                      : "rb-tab-inactive",
+                    activeTab === t.id ? "rb-tab-active" : "rb-tab-inactive",
                   )}
                 >
                   {t.icon}
@@ -237,33 +210,28 @@ function SIGTHPage() {
           "max-w-[1600px]",
         )}
       >
-        {/* Tab subtitle (the long label of the current tab) */}
         <div className="rb-no-print flex items-center gap-2 text-sm">
           {React.createElement(
             TABS.find((t) => t.id === activeTab)!.icon.type,
-            { className: "w-4 h-4", style: { color: theme.headerBorder } },
+            { className: "w-4 h-4", style: { color: accentColor } },
           )}
           <h1
             className="font-display text-lg sm:text-xl font-bold"
-            style={{ color: `#${theme.primary}` }}
+            style={{ color: primaryColor }}
           >
             {TABS.find((t) => t.id === activeTab)!.label}
           </h1>
         </div>
 
-        {activeTab === "formatos" && (
-          <ArchivadorCandidatos />
-        )}
-        {activeTab === "gestion" && <GestionModule company={company} />}
+        {activeTab === "formatos" && <ArchivadorCandidatos />}
+        {activeTab === "gestion" && <GestionModule company="reflejos_brillantes" />}
       </main>
 
       {/* Modal de configuración de empresa */}
       <EmpresaConfigModal
         open={empresaModalOpen}
         onOpenChange={(v) => {
-          if (!v && forceConfig && empresa.id === "default") {
-            return;
-          }
+          if (!v && forceConfig && empresa.id === "default") return;
           setEmpresaModalOpen(v);
           if (!v) setForceConfig(false);
         }}
@@ -274,116 +242,10 @@ function SIGTHPage() {
   );
 }
 
-// Envolver en EmpresaProvider para que useEmpresa() funcione
 export default function SIGTHPageWrapper() {
   return (
     <EmpresaProvider>
       <SIGTHPage />
     </EmpresaProvider>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  Company selector (used in header)                                  */
-/* ------------------------------------------------------------------ */
-
-function CompanySelector({
-  value,
-  onChange,
-}: {
-  value: CompanyId;
-  onChange: (c: CompanyId) => void;
-}) {
-  const [open, setOpen] = React.useState(false);
-  const ref = React.useRef<HTMLDivElement | null>(null);
-
-  React.useEffect(() => {
-    const onClick = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
-  }, []);
-
-  const current = COMPANY_THEMES[value];
-
-  return (
-    <div className="relative" ref={ref}>
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-semibold bg-white/10 hover:bg-white/20 transition-colors"
-        title={`Empresa: ${current.name}`}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-      >
-        <Building2 className="w-3.5 h-3.5" style={{ color: current.headerBorder ? `#${current.accent}` : undefined }} />
-        <span className="hidden sm:inline truncate max-w-[120px]">{current.name}</span>
-        <span className="sm:hidden">{current.logoText}</span>
-      </button>
-
-      {open && (
-        <div
-          className="absolute right-0 mt-1 w-72 rounded-lg shadow-xl overflow-hidden z-50 border border-border bg-card text-card-foreground"
-          role="listbox"
-        >
-          <div className="px-3 py-2 text-[10px] uppercase tracking-wider text-muted-foreground border-b border-border bg-muted/40">
-            Selecciona la empresa
-          </div>
-          {COMPANY_IDS.map((id) => {
-            const t = COMPANY_THEMES[id];
-            const active = id === value;
-            return (
-              <button
-                key={id}
-                onClick={() => {
-                  onChange(id);
-                  setOpen(false);
-                }}
-                role="option"
-                aria-selected={active}
-                className={cn(
-                  "w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors",
-                  active
-                    ? "bg-accent/15"
-                    : "hover:bg-muted/50",
-                )}
-              >
-                <div
-                  className="w-9 h-9 rounded-full flex items-center justify-center font-extrabold text-sm shrink-0 ring-2"
-                  style={{
-                    background: `linear-gradient(135deg, #${t.dark}, #${t.dark}dd)`,
-                    color: `#${t.accent}`,
-                    // @ts-expect-error CSS var for ring colour
-                    "--tw-ring-color": `#${t.accent}99`,
-                  }}
-                >
-                  {t.logoText}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold truncate">{t.name}</div>
-                  <div className="text-[10px] text-muted-foreground flex items-center gap-1.5">
-                    <span
-                      className="inline-block w-2 h-2 rounded-full"
-                      style={{ background: `#${t.primary}` }}
-                    />
-                    <span>{t.tagline}</span>
-                  </div>
-                </div>
-                {active && (
-                  <span
-                    className="text-[10px] font-bold px-2 py-0.5 rounded-full text-white"
-                    style={{ background: `#${t.accent}`, color: `#${t.dark}` }}
-                  >
-                    ✓
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      )}
-    </div>
   );
 }

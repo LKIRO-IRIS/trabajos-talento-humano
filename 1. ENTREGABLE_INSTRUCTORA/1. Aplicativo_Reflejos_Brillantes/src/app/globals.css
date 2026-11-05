@@ -601,3 +601,171 @@ html[data-company="royal_eventos"] .rb-tab-inactive:hover {
     page-break-inside: avoid;
   }
 }
+
+/* =================================================================== */
+/*  MODO OSCURO — Arreglo de textos invisibles                         */
+/* =================================================================== */
+.dark .rb-gestion-sidebar {
+  background: #1a2332 !important;
+}
+
+.dark .rb-gestion-sidebar .text-primary,
+.dark [class*="text-primary"] {
+  color: #92D050 !important;
+}
+
+.dark .rb-gestion-sidebar button[style*="color"],
+.dark .rb-gestion-sidebar span[style*="color"] {
+  color: #E0E0E0 !important;
+}
+
+.dark .rb-gestion-sidebar .bg-card {
+  background: #1a2332 !important;
+}
+
+.dark .rb-gestion-format {
+  background: #1a2332 !important;
+}
+
+.dark .rb-gestion-header {
+  background: linear-gradient(135deg, #1B2A38, #2C3E50) !important;
+}
+
+/* Arreglar textos oscuros sobre fondos oscuros */
+.dark text-primary {
+  color: #92D050 !important;
+}
+
+.dark .text-muted-foreground {
+  color: #B0BEC5 !important;
+}
+
+.dark .rb-tab-active {
+  background: #92D050 !important;
+  color: #1B1B1B !important;
+}
+
+.dark .rb-tab-inactive {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.dark .rb-tab-inactive:hover {
+  color: #92D050 !important;
+}
+
+/* Asegurar que el archivador de candidatos se vea bien en oscuro */
+.dark .bg-white {
+  background: #1a2332 !important;
+}
+
+.dark .text-slate-700,
+.dark .text-slate-600 {
+  color: #E0E0E0 !important;
+}
+
+.dark .text-slate-800 {
+  color: #F0F0F0 !important;
+}
+
+.dark .text-slate-500 {
+  color: #A0AEC0 !important;
+}
+
+.dark .text-slate-400 {
+  color: #718096 !important;
+}
+
+.dark .border-slate-200,
+.dark .border-slate-100 {
+  border-color: #2D3748 !important;
+}
+
+.dark .bg-slate-50,
+.dark .bg-slate-100 {
+  background: #1a2332 !important;
+}
+
+.dark .bg-slate-800 {
+  background: #0f172a !important;
+}
+
+.dark .bg-green-50,
+.dark .bg-green-100 {
+  background: rgba(22, 163, 74, 0.15) !important;
+}
+
+.dark .text-green-700,
+.dark .text-green-600 {
+  color: #4ADE80 !important;
+}
+
+.dark .text-amber-700,
+.dark .text-amber-600 {
+  color: #FBBF24 !important;
+}
+
+.dark .text-blue-700,
+.dark .text-blue-600,
+.dark .text-blue-800 {
+  color: #60A5FA !important;
+}
+
+.dark .text-red-700,
+.dark .text-red-600 {
+  color: #F87171 !important;
+}
+
+.dark .text-purple-700,
+.dark .text-purple-600 {
+  color: #C084FC !important;
+}
+
+.dark .text-orange-700,
+.dark .text-orange-600 {
+  color: #FB923C !important;
+}
+
+.dark .text-pink-700,
+.dark .text-pink-600 {
+  color: #F472B6 !important;
+}
+
+/* Contraste del header del archivador */
+.dark .from-slate-800 {
+  --tw-gradient-from: #0f172a !important;
+}
+
+.dark .to-slate-900 {
+  --tw-gradient-to: #050a14 !important;
+}
+
+/* Asegurar que los inputs se vean bien */
+.dark input,
+.dark textarea {
+  background: #1a2332 !important;
+  color: #E0E0E0 !important;
+  border-color: #3A4F66 !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #718096 !important;
+}
+
+/* Asegurar que las tablas se vean */
+.dark table {
+  color: #E0E0E0 !important;
+}
+
+.dark thead {
+  background: #0f172a !important;
+}
+
+.dark th {
+  color: #92D050 !important;
+}
+
+.dark td {
+  color: #E0E0E0 !important;
+  border-color: #2D3748 !important;
+}
