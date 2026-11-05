@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { RBLogo } from "@/components/sigth/RBLogo";
 import { FormatsModule } from "@/components/sigth/FormatsModule";
 import { GestionModule } from "@/components/sigth/GestionModule";
+import { ArchivadorCandidatos } from "@/components/sigth/ArchivadorCandidatos";
 import { ArchivadorDocumentos } from "@/components/sigth/ArchivadorDocumentos";
 import { BackupBar } from "@/components/sigth/BackupBar";
 import { EmpresaConfigModal } from "@/components/sigth/EmpresaConfigModal";
@@ -251,7 +252,7 @@ function SIGTHPage() {
         </div>
 
         {activeTab === "formatos" && (
-          <ArchivadorDocumentos company={company} />
+          <ArchivadorCandidatos />
         )}
         {activeTab === "gestion" && <GestionModule company={company} />}
       </main>
