@@ -385,11 +385,14 @@ export function FormatShell({
           size="sm"
           variant="outline"
           onClick={() => {
-            setTempName(companyName);
-            setEditingCompany((v) => !v);
+            // Abrir el modal global de configuración de empresa (mismo que el
+            // botón "Empresa" del header) — evita duplicar la funcionalidad.
+            if (typeof window !== "undefined") {
+              window.dispatchEvent(new CustomEvent("sigth-open-empresa-modal"));
+            }
           }}
         >
-          <Settings2 className="w-3.5 h-3.5 mr-1" /> Personalizar
+          <Settings2 className="w-3.5 h-3.5 mr-1" /> Empresa
         </Button>
         <Button size="sm" variant="outline" onClick={handlePrint}>
           <Printer className="w-3.5 h-3.5 mr-1" /> Imprimir

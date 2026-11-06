@@ -4,7 +4,6 @@ import * as React from "react";
 import {
   Download,
   Upload,
-  Hash,
   Building2,
   Loader2,
   Copy,
@@ -223,17 +222,9 @@ export function BackupBar({ showConfigEmpresa = true, compact }: BackupBarProps)
             <span className="hidden lg:inline ml-1 text-xs">Restaurar</span>
           )}
         </Button>
-        <Button
-          variant="ghost"
-          size={compact ? "icon" : "sm"}
-          className="text-white hover:bg-white/10 h-8 hidden sm:inline-flex"
-          onClick={handleDownload}
-          disabled={busy !== null}
-          title="Generar código de respaldo"
-          aria-label="Código de respaldo"
-        >
-          <Hash className="w-4 h-4" />
-        </Button>
+        {/* Botón "Generar código de respaldo" eliminado — era redundante con el
+            botón "Respaldo" (ambos llamaban a handleDownload y abrían el mismo
+            modal con el código de 8 caracteres). */}
         <input
           ref={restoreFileRef}
           type="file"

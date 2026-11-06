@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { FileSignature, Save, Printer, RefreshCw, Building2, User, Shield } from "lucide-react";
+import { FileSignature, Save, Printer, RefreshCw, Building2, User, Shield, FileText, Download, BookOpen, ChevronDown, ChevronRight, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +12,45 @@ import { toast } from "sonner";
 /* ------------------------------------------------------------------ */
 /*  Contrato Laboral — Auto-generado desde TH-01 + TH-03              */
 /* ------------------------------------------------------------------ */
+
+/* Modelos de contrato de referencia (subidos a GitHub)
+ * Archivos .docx alojados en /public/download/contratos/ */
+const MODELOS_CONTRATO_REFERENCIA: {
+  id: string;
+  nombre: string;
+  descripcion: string;
+  archivo: string;
+  tipo: "contrato" | "guia";
+  color: string;
+}[] = [
+  {
+    id: "indefinido",
+    nombre: "Contrato a Término Indefinido",
+    descripcion:
+      "Modelo académico para empresa simulada — Colombia. Basado en CST, Ley 2466 de 2025 y Ley 2101 de 2021.",
+    archivo: "/download/contratos/Contrato_indefinido_modelo_academico_Colombia.docx",
+    tipo: "contrato",
+    color: "#2C3E50",
+  },
+  {
+    id: "fijo",
+    nombre: "Contrato a Término Fijo",
+    descripcion:
+      "Modelo académico para empresa simulada — Colombia. Debe constar por escrito e indicar fechas de inicio y terminación.",
+    archivo: "/download/contratos/Contrato_termino_fijo_modelo_academico_Colombia.docx",
+    tipo: "contrato",
+    color: "#B8941F",
+  },
+  {
+    id: "prompts",
+    nombre: "Prompts para elaboración de contratos laborales",
+    descripcion:
+      "Guía de apoyo con 4 prompts (elaborar contrato, funciones del cargo, revisión y formato en Word) — para uso con ChatGPT u otra IA.",
+    archivo: "/download/contratos/Prompts_para_elaboracion_de_contratos_laborales.docx",
+    tipo: "guia",
+    color: "#7B2D8B",
+  },
+];
 
 interface ContratoData {
   // Datos de la empresa (de la requisición TH-01)
@@ -142,6 +181,8 @@ function cargarDatosDesdeFormatos(): ContratoData {
 export function ContratoLaboral() {
   const [data, setData] = React.useState<ContratoData>(CONTRATO_VACIO);
   const [cargado, setCargado] = React.useState(false);
+  // Acordeón de modelos de referencia — cerrado por defecto, se abre al hacer clic
+  const [modelosAbierto, setModelosAbierto] = React.useState(false);
 
   React.useEffect(() => {
     const loaded = cargarDatosDesdeFormatos();
@@ -203,6 +244,99 @@ export function ContratoLaboral() {
           <Badge className="bg-green-100 text-green-700 border-green-300">
             ✓ Auto-generado para: {data.nombreEmpleado}
           </Badge>
+        )}
+      </div>
+
+      {/* ============ Modelos de contrato de referencia ============ */}
+      <div className="rb-no-print rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-700 overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setModelosAbierto((v) => !v)}
+          className="w-full flex items-center justify-between gap-3 px-4 py-3 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+          aria-expanded={modelosAbierto}
+        >
+          <div className="flex items-center gap-3 text-left">
+            <div className="w-9 h-9 rounded-md flex items-center justify-center text-white shrink-0" style={{ background: "linear-gradient(135deg, #2C3E50, #7B2D8B)" }}>
+              <BookOpen className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="text-sm font-bold text-slate-700 dark:text-slate-200">
+                Modelos de Contrato de Referencia
+              </div>
+              <div className="text-xs text-slate-500 dark:text-slate-400">
+                2 contratos académicos (indefinido + término fijo) y 1 guía de prompts para IA ·{" "}
+                <span className="text-blue-600 dark:text-blue-400 font-semibold">
+                  {modelosAbierto ? "Ocultar" : "Ver"} modelos
+                </span>
+              </div>
+            </div>
+          </div>
+          {modelosAbierto ? (
+            <ChevronDown className="w-4 h-4 text-slate-500 shrink-0" />
+          ) : (
+            <ChevronRight className="w-4 h-4 text-slate-500 shrink-0" />
+          )}
+        </button>
+
+        {modelosAbierto && (
+          <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-3 bg-white dark:bg-slate-900 animate-rb-fade-up">
+            {MODELOS_CONTRATO_REFERENCIA.map((m) => (
+              <div
+                key={m.id}
+                className="rounded-lg border-2 overflow-hidden flex flex-col"
+                style={{ borderColor: `${m.color}40` }}
+              >
+                <div
+                  className="px-3 py-2 flex items-center gap-2 text-white"
+                  style={{ background: `linear-gradient(135deg, ${m.color}, ${m.color}cc)` }}
+                >
+                  {m.tipo === "contrato" ? (
+                    <FileSignature className="w-4 h-4 shrink-0" />
+                  ) : (
+                    <BookOpen className="w-4 h-4 shrink-0" />
+                  )}
+                  <span className="text-xs font-bold uppercase tracking-tight truncate">
+                    {m.tipo === "contrato" ? "Modelo de contrato" : "Guía de prompts"}
+                  </span>
+                </div>
+                <div className="p-3 flex flex-col gap-2 flex-1">
+                  <div className="text-sm font-bold text-slate-800 dark:text-white leading-tight">
+                    {m.nombre}
+                  </div>
+                  <div className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed flex-1">
+                    {m.descripcion}
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <a
+                      href={m.archivo}
+                      download
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-semibold text-white transition-transform hover:scale-105"
+                      style={{ background: m.color }}
+                      onClick={() => toast.success(`Descargando: ${m.nombre}`)}
+                    >
+                      <Download className="w-3 h-3" /> Descargar .docx
+                    </a>
+                    <a
+                      href={m.archivo}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-semibold text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800"
+                    >
+                      <ExternalLink className="w-3 h-3" /> Ver
+                    </a>
+                  </div>
+                </div>
+              </div>
+            ))}
+            <div className="md:col-span-3 mt-2 p-3 rounded-md bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-xs text-amber-800 dark:text-amber-300">
+              <strong>Nota importante:</strong> Estos modelos son plantillas
+              pedagógicas para empresas simuladas SENA. Los campos entre
+              corchetes <code className="px-1 rounded bg-amber-100 dark:bg-amber-900/50">[ ]</code>{" "}
+              deben diligenciarse con la información real de la empresa y el
+              trabajador. Antes de usarlos en una relación laboral real,
+              solicita revisión jurídica y verifica la normativa vigente.
+            </div>
+          </div>
         )}
       </div>
 
