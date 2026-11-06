@@ -655,7 +655,18 @@ export function GestionModule({
           <div className="text-[10px] text-muted-foreground flex items-center justify-between">
             <span className="flex items-center gap-1">
               <Building2 className="w-3 h-3" />
-              {theme.name}
+              {(() => {
+                try {
+                  if (typeof window !== "undefined") {
+                    const cfg = window.localStorage.getItem("sigth-empresa-config");
+                    if (cfg) {
+                      const parsed = JSON.parse(cfg);
+                      if (parsed.name) return parsed.name;
+                    }
+                  }
+                } catch {}
+                return theme.name;
+              })()}
             </span>
             <Badge
               variant="outline"
@@ -701,7 +712,18 @@ export function GestionModule({
           </div>
           <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
             <Building2 className="w-3.5 h-3.5" />
-            <span>{theme.name}</span>
+            <span>{(() => {
+              try {
+                if (typeof window !== "undefined") {
+                  const cfg = window.localStorage.getItem("sigth-empresa-config");
+                  if (cfg) {
+                    const parsed = JSON.parse(cfg);
+                    if (parsed.name) return parsed.name;
+                  }
+                }
+              } catch {}
+              return theme.name;
+            })()}</span>
           </div>
         </div>
 

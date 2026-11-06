@@ -161,7 +161,21 @@ export function FormatShell({
 }: FormatShellProps) {
   const theme = getCompanyTheme(company);
   const { logo, save: saveLogo, remove: removeLogo } = useSharedLogo();
-  const { name: companyName, save: saveCompanyName } = useSharedCompanyName(theme.name);
+  // Usar empresa dinámica del contexto si está disponible
+  let empresaName = theme.name;
+  let empresaTagline = "Sistema de Gestión de Talento Humano";
+  try {
+    // Intentar leer la empresa del localStorage
+    if (typeof window !== "undefined") {
+      const cfg = window.localStorage.getItem("sigth-empresa-config");
+      if (cfg) {
+        const parsed = JSON.parse(cfg);
+        if (parsed.name) empresaName = parsed.name;
+        if (parsed.tagline) empresaTagline = parsed.tagline;
+      }
+    }
+  } catch {}
+  const { name: companyName, save: saveCompanyName } = useSharedCompanyName(empresaName);
   const fileLogoRef = React.useRef<HTMLInputElement>(null);
   const fileImportRef = React.useRef<HTMLInputElement>(null);
   const [editingCompany, setEditingCompany] = React.useState(false);
@@ -342,7 +356,7 @@ export function FormatShell({
               </div>
             )}
             <div className="text-xs sm:text-sm font-semibold opacity-90">
-              Sistema de Gestión de Talento Humano
+              {empresaTagline}
             </div>
             <div
               className="mt-2 text-sm sm:text-lg font-bold"
