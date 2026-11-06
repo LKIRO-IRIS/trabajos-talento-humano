@@ -84,7 +84,7 @@ const PROCESS_ACCORDION: {
     color: "#2C3E50",
     description: "KPIs globales del proceso de Talento Humano.",
     formats: ["TH-TB-01"],
-    defaultOpen: true,
+    defaultOpen: false,
   },
   {
     id: "atraccion",
@@ -94,7 +94,7 @@ const PROCESS_ACCORDION: {
     description: "Requisición, perfil, HV, matrices, verificación, entrevistas.",
     formats: ["TH-01", "TH-02", "TH-03", "TH-04", "TH-05", "TH-06", "TH-07"],
     processIdx: 0,
-    defaultOpen: true,
+    defaultOpen: false,
   },
   {
     id: "contratacion",
@@ -104,7 +104,7 @@ const PROCESS_ACCORDION: {
     description: "Documentos, contrato, EPP, dotación, inducción.",
     formats: ["TH-08", "TH-09", "TH-10", "TH-11", "TH-12", "TH-13", "TH-CONTRATO", "TH-AFILIACIONES"],
     processIdx: 2,
-    defaultOpen: true,
+    defaultOpen: false,
   },
   {
     id: "desempeno",
@@ -114,7 +114,7 @@ const PROCESS_ACCORDION: {
     description: "Evaluación, mejoramiento, PAC, brechas, PID.",
     formats: ["TH-14", "TH-15", "TH-16", "TH-17", "TH-19", "TH-20"],
     processIdx: 4,
-    defaultOpen: true,
+    defaultOpen: false,
   },
   {
     id: "estrategia",
@@ -124,7 +124,7 @@ const PROCESS_ACCORDION: {
     description: "Presupuesto anual, plan de bienestar, cronograma.",
     formats: ["TH-18", "TH-21", "TH-22"],
     processIdx: 7,
-    defaultOpen: true,
+    defaultOpen: false,
   },
   {
     id: "modelos",
@@ -133,7 +133,7 @@ const PROCESS_ACCORDION: {
     color: "#34495E",
     description: "Convocatorias, correos, informes, contratos, cartas, memorandos.",
     formats: ["TH-MD-01", "TH-MD-02", "TH-MD-03", "TH-MD-04", "TH-MD-05", "TH-MD-06", "TH-MD-07", "TH-MD-08", "TH-MD-09", "TH-MD-10"],
-    defaultOpen: true,
+    defaultOpen: false,
   },
 ];
 
@@ -165,21 +165,12 @@ export function GestionModule({
       }, {} as Record<string, boolean>),
   );
 
-  // Track the previous active format so we can auto-open its accordion when it
-  // changes, but never force-open it back if the user manually closed it.
+  // Acordeones cerrados por defecto — solo se abren cuando el usuario hace clic
   const prevActiveRef = React.useRef<FormatId>(activeId);
   React.useEffect(() => {
     if (activeId === prevActiveRef.current) return;
     prevActiveRef.current = activeId;
-    // Find which process this format belongs to and auto-open that accordion
-    const ownerProc = PROCESS_ACCORDION.find((p) =>
-      p.formats.includes(activeId),
-    );
-    if (ownerProc) {
-      setOpenAccordions((prev) =>
-        prev[ownerProc.id] ? prev : { ...prev, [ownerProc.id]: true },
-      );
-    }
+    // NO abrir automáticamente — todo cerrado hasta que el usuario haga clic
   }, [activeId]);
 
   /* ---- Track analyzed HVs (shared via localStorage) ---- */
@@ -454,6 +445,38 @@ export function GestionModule({
 
   const activeEntry = FORMAT_CATALOG.find((e) => e.id === activeId);
 
+  // Componente para minimizar/abrir el panel del formato
+  function FormatPanelMinimizable({ activeId, activeEntry, children }: { activeId: string; activeEntry: any; children: React.ReactNode }) {
+    const [minimizado, setMinimizado] = React.useState(false);
+
+    return (
+      <div className="space-y-2">
+        {/* Barra de título con botón minimizar */}
+        <div className="flex items-center justify-between gap-2 p-2 rounded-lg bg-muted/40 border">
+          <div className="flex items-center gap-2 text-sm">
+            <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-primary text-primary-foreground">
+              {activeId}
+            </span>
+            <span className="font-bold text-primary">{activeEntry?.name}</span>
+          </div>
+          <button
+            onClick={() => setMinimizado(!minimizado)}
+            className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold hover:bg-muted transition-colors"
+            title={minimizado ? "Abrir panel" : "Minimizar panel"}
+          >
+            {minimizado ? (
+              <><ChevronRight className="w-4 h-4" /> Abrir</>
+            ) : (
+              <><ChevronDown className="w-4 h-4" /> Minimizar</>
+            )}
+          </button>
+        </div>
+        {/* Contenido del formato */}
+        {!minimizado && <div>{children}</div>}
+      </div>
+    );
+  }
+
   const toggleAccordion = (id: string) => {
     setOpenAccordions((prev) => ({ ...prev, [id]: !prev[id] }));
   };
@@ -727,8 +750,10 @@ export function GestionModule({
           </div>
         </div>
 
-        {/* Active format content */}
-        <div>{renderActiveFormat()}</div>
+        {/* Active format content — con opción de minimizar/abrir */}
+        <FormatPanelMinimizable activeId={activeId} activeEntry={activeEntry}>
+          {renderActiveFormat()}
+        </FormatPanelMinimizable>
       </main>
 
       {/* Mobile drawer */}

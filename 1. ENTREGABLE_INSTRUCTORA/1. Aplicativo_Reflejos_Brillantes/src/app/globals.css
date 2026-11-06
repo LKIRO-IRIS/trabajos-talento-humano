@@ -769,3 +769,357 @@ html[data-company="royal_eventos"] .rb-tab-inactive:hover {
   color: #E0E0E0 !important;
   border-color: #2D3748 !important;
 }
+
+/* =================================================================== */
+/*  MODO OSCURO — Arreglo completo de textos invisibles                */
+/* =================================================================== */
+
+/* Sidebar del archivador */
+.dark .rb-gestion-sidebar {
+  background: #0f172a !important;
+  color: #e2e8f0 !important;
+}
+
+.dark .rb-gestion-sidebar * {
+  color: #e2e8f0 !important;
+}
+
+.dark .rb-gestion-sidebar button[style*="color"],
+.dark .rb-gestion-sidebar span[style*="color"],
+.dark .rb-gestion-sidebar div[style*="color"] {
+  color: #e2e8f0 !important;
+}
+
+/* Header del archivador */
+.dark .rb-gestion-header {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+}
+
+.dark .rb-gestion-header * {
+  color: #f1f5f9 !important;
+}
+
+/* Formato (FormatShell) */
+.dark .rb-gestion-format {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+}
+
+.dark .rb-gestion-format * {
+  color: #e2e8f0 !important;
+}
+
+.dark .rb-gestion-format input,
+.dark .rb-gestion-format textarea {
+  background: #0f172a !important;
+  color: #f1f5f9 !important;
+  border-color: #334155 !important;
+}
+
+/* Cuerpo del formato */
+.dark .rb-gestion-format .bg-white {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+}
+
+/* Tablas en modo oscuro */
+.dark table {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+}
+
+.dark thead {
+  background: #0f172a !important;
+}
+
+.dark th {
+  color: #f1f5f9 !important;
+  background: #0f172a !important;
+}
+
+.dark td {
+  color: #e2e8f0 !important;
+  border-color: #334155 !important;
+}
+
+.dark td input {
+  background: #0f172a !important;
+  color: #f1f5f9 !important;
+  border-color: #334155 !important;
+}
+
+/* Cajas de calidad en modo oscuro */
+.dark .bg-\[\#C6EFCE\],
+.dark td[style*="background: rgb(198, 239, 206)"],
+.dark td[style*="C6EFCE"] {
+  background: rgba(22, 163, 74, 0.25) !important;
+  color: #4ade80 !important;
+}
+
+/* Botones */
+.dark .rb-tab-active {
+  background: #92D050 !important;
+  color: #1B1B1B !important;
+}
+
+.dark .rb-tab-inactive {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.dark .rb-tab-inactive:hover {
+  color: #92D050 !important;
+  background: rgba(146, 208, 80, 0.15) !important;
+}
+
+/* Textos generales */
+.dark .text-primary {
+  color: #92D050 !important;
+}
+
+.dark .text-muted-foreground {
+  color: #94a3b8 !important;
+}
+
+.dark .text-foreground {
+  color: #e2e8f0 !important;
+}
+
+.dark .text-card-foreground {
+  color: #e2e8f0 !important;
+}
+
+/* Borders */
+.dark .border-border {
+  border-color: #334155 !important;
+}
+
+/* Inputs del FormatShell */
+.dark .rb-gestion-format input[type="text"],
+.dark .rb-gestion-format input[type="email"],
+.dark .rb-gestion-format input[type="date"],
+.dark .rb-gestion-format input[type="number"],
+.dark .rb-gestion-format textarea {
+  background: #0f172a !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #334155 !important;
+}
+
+.dark .rb-gestion-format input::placeholder,
+.dark .rb-gestion-format textarea::placeholder {
+  color: #64748b !important;
+}
+
+/* Labels */
+.dark label {
+  color: #cbd5e1 !important;
+}
+
+/* Badges */
+.dark .bg-white\/10 {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Footer del sidebar */
+.dark .rb-gestion-sidebar .border-t {
+  border-color: #334155 !important;
+}
+
+/* Acordeones */
+.dark .rb-gestion-sidebar button {
+  color: #e2e8f0 !important;
+}
+
+.dark .rb-gestion-sidebar button:hover {
+  background: rgba(146, 208, 80, 0.1) !important;
+}
+
+/* Texto del breadcrumb */
+.dark main span,
+.dark main div,
+.dark main p {
+  color: #e2e8f0 !important;
+}
+
+/* Cajas de color verde (C - Cumple) */
+.dark td[style*="C6EFCE"] * {
+  color: #4ade80 !important;
+}
+
+/* Cajas de color rojo (N/C - No Cumple) */
+.dark td[style*="FFC7CE"] * {
+  color: #f87171 !important;
+}
+
+/* Cajas de color amarillo (N/A) */
+.dark td[style*="FFEB9C"] * {
+  color: #fbbf24 !important;
+}
+
+/* Arreglo específico: título "Gestión de Procesos" y botones */
+.dark h1[style*="color"],
+.dark h1.font-display {
+  color: #92D050 !important;
+}
+
+.dark .rb-gestion-format button {
+  color: #e2e8f0 !important;
+}
+
+.dark .rb-gestion-format button:hover {
+  background: rgba(146, 208, 80, 0.15) !important;
+}
+
+.dark .rb-gestion-format button[style*="color"],
+.dark .rb-gestion-format span[style*="color"],
+.dark .rb-gestion-format div[style*="color"] {
+  color: #e2e8f0 !important;
+}
+
+/* Asegurar que los iconos de acción se vean */
+.dark .rb-gestion-format svg {
+  color: #e2e8f0 !important;
+}
+
+/* Header del FormatShell en oscuro */
+.dark .rb-gestion-format .text-white {
+  color: #f1f5f9 !important;
+}
+
+/* Asegurar que TODOS los elementos dentro del formato sean legibles */
+.dark .rb-gestion-format div,
+.dark .rb-gestion-format span,
+.dark .rb-gestion-format p,
+.dark .rb-gestion-format label,
+.dark .rb-gestion-format td,
+.dark .rb-gestion-format th {
+  color: #e2e8f0 !important;
+}
+
+/* Arreglo final: título y avisos amarillos en oscuro */
+.dark h1 {
+  color: #92D050 !important;
+}
+
+.dark .bg-yellow-50,
+.dark .bg-amber-50 {
+  background: rgba(180, 83, 9, 0.2) !important;
+  color: #fbbf24 !important;
+}
+
+.dark .bg-yellow-50 *,
+.dark .bg-amber-50 * {
+  color: #fde68a !important;
+}
+
+.dark .text-yellow-800,
+.dark .text-amber-800 {
+  color: #fbbf24 !important;
+}
+
+.dark .text-yellow-600,
+.dark .text-amber-600 {
+  color: #fcd34d !important;
+}
+
+.dark .border-yellow-200,
+.dark .border-amber-200 {
+  border-color: rgba(180, 83, 9, 0.3) !important;
+}
+
+/* Arreglo definitivo: avisos amarillos en modo oscuro */
+.dark .bg-yellow-50,
+.dark .bg-amber-50,
+.dark .bg-yellow-100 {
+  background: rgba(180, 83, 9, 0.3) !important;
+}
+
+.dark .bg-yellow-50 *,
+.dark .bg-amber-50 *,
+.dark .bg-yellow-100 * {
+  color: #fef3c7 !important;
+}
+
+.dark .text-yellow-800,
+.dark .text-amber-800,
+.dark .text-yellow-900,
+.dark .text-amber-900 {
+  color: #fde68a !important;
+}
+
+.dark .text-yellow-700,
+.dark .text-amber-700 {
+  color: #fcd34d !important;
+}
+
+.dark .text-yellow-600,
+.dark .text-amber-600 {
+  color: #fbbf24 !important;
+}
+
+.dark .border-yellow-200,
+.dark .border-amber-200,
+.dark .border-yellow-300 {
+  border-color: rgba(251, 191, 36, 0.3) !important;
+}
+
+/* Arreglo DEFINITIVO: avisos amarillos/amber en modo oscuro */
+.dark .text-amber-900 {
+  color: #713f12 !important;
+}
+
+.dark .text-amber-800 {
+  color: #92400e !important;
+}
+
+.dark .text-amber-700 {
+  color: #b45309 !important;
+}
+
+.dark .text-amber-600 {
+  color: #d97706 !important;
+}
+
+.dark .text-amber-500 {
+  color: #f59e0b !important;
+}
+
+.dark .bg-amber-50 {
+  background: #422006 !important;
+}
+
+.dark .bg-amber-100 {
+  background: #451a03 !important;
+}
+
+.dark .border-amber-200 {
+  border-color: #78350f !important;
+}
+
+.dark .border-amber-300 {
+  border-color: #92400e !important;
+}
+
+/* FORZAR visibilidad del aviso amarillo en modo oscuro */
+html.dark .text-amber-900,
+html.dark div.text-amber-900,
+html.dark p.text-amber-900,
+html.dark span.text-amber-900 {
+  color: #fde68a !important;
+}
+
+html.dark .text-amber-700,
+html.dark svg.text-amber-700,
+html.dark .text-amber-700 {
+  color: #fbbf24 !important;
+}
+
+html.dark .bg-amber-50,
+html.dark div.bg-amber-50 {
+  background-color: #422006 !important;
+}
+
+html.dark .border-amber-200,
+html.dark div.border-amber-200 {
+  border-color: #78350f !important;
+}

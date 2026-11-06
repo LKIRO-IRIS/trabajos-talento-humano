@@ -545,14 +545,10 @@ export function TH03HojaVida({ company, onNavigate }: TH03Props) {
         </div>
       ) : (
         <div
-          className="mb-4 rounded-md border-l-4 px-3 py-2.5 flex items-center gap-3 flex-wrap"
-          style={{
-            background: "#FEF3C7",
-            borderLeftColor: "#F59E0B",
-          }}
+          className="mb-4 rounded-md border-l-4 px-3 py-2.5 flex items-center gap-3 flex-wrap bg-amber-50 border-amber-400 dark:bg-amber-950 dark:border-amber-500"
         >
-          <AlertTriangle className="w-4 h-4 shrink-0 text-amber-700" />
-          <div className="flex-1 min-w-[220px] text-xs sm:text-sm text-amber-900">
+          <AlertTriangle className="w-4 h-4 shrink-0 text-amber-700 dark:text-amber-400" />
+          <div className="flex-1 min-w-[220px] text-xs sm:text-sm text-amber-900 dark:text-amber-100">
             No hay una requisición activa. Crea una en{" "}
             <strong>TH-01</strong> para vincularla con este proceso de
             selección y pre-llenar el cargo.
