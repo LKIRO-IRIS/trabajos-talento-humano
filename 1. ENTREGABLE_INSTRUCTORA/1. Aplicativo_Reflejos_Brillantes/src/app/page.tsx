@@ -156,14 +156,6 @@ function SIGTHPage() {
 
             <BackupBar />
             <button
-              onClick={() => setEmpresaModalOpen(true)}
-              className="p-2 rounded-md hover:bg-white/10 transition-colors"
-              title="Configurar empresa"
-              aria-label="Configurar empresa"
-            >
-              <Building2 className="w-4 h-4" style={{ color: accentColor }} />
-            </button>
-            <button
               onClick={toggleDarkMode}
               className="p-2 rounded-md hover:bg-white/10 transition-colors"
               title={darkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
