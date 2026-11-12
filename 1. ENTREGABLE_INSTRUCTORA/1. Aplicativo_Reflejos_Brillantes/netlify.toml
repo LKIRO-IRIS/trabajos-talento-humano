@@ -1,0 +1,43 @@
+# ===========================================================
+#  Netlify configuration — SIGTH (Reflejos Brillantes)
+#  Aplicativo de Gestión de Talento Humano — SENA
+# ===========================================================
+
+# Build command: solo `next build` (sin los `cp` del package.json,
+# porque el plugin @netlify/plugin-nextjs maneja el output automáticamente)
+[build]
+  command = "next build"
+  publish = ".next"
+
+# Node.js 20 LTS (recomendado para Next.js 16)
+[build.environment]
+  NODE_VERSION = "20"
+  NPM_FLAGS = "--legacy-peer-deps"
+  NEXT_TELEMETRY_DISABLED = "1"
+
+# El plugin oficial de Next.js se instala automáticamente cuando Netlify
+# detecta el framework, pero lo declaro aquí para ser explícito.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Headers de seguridad básicos
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# Cache largo para assets estáticos de Next.js
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Cache largo para los .docx de contratos de referencia
+[[headers]]
+  for = "/download/contratos/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+    Content-Disposition = "attachment"

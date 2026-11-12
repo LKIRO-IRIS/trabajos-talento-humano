@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import ZAI from 'z-ai-web-dev-sdk';
+import { getZai } from '@/lib/zai-client';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -110,7 +111,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const zai = await ZAI.create();
+    const zai = await getZai();
 
     const cargoContext = cargoRequerido
       ? `\n\nContexto del proceso de selección: el cargo a cubrir es "${cargoRequerido}". Evalúa "cumpleFormacion" y "cumpleExperiencia" considerando los requisitos típicos de ese cargo si la información es inferible. Evalúa también "perfilCompatible" analizando si el perfil profesional del candidato (área de formación, experiencia y cargos previos) es coherente con el cargo solicitado "${cargoRequerido}". Si "perfilCompatible" es false, explica brevemente el motivo en "motivoIncompatibilidad"; si es true, devuelve null o cadena vacía en "motivoIncompatibilidad".`

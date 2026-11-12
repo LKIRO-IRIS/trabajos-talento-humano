@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import ZAI from "z-ai-web-dev-sdk";
+import { getZai } from "@/lib/zai-client";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -82,7 +83,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const zai = await ZAI.create();
+    const zai = await getZai();
     const userPrompt = `Genera la hoja de vida para:
 - Nombre: ${body.nombre}
 - Cargo objetivo: ${body.cargo}

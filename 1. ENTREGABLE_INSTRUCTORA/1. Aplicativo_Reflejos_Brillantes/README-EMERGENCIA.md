@@ -205,6 +205,25 @@ Sin ella, el resto del aplicativo funciona normalmente.
 
 ---
 
+## 🌐 Despliegue en Netlify
+
+El aplicativo incluye `netlify.toml` y `.nvmrc` ya configurados.
+
+### Pasos
+1. https://app.netlify.com/start → "Import an existing project" → GitHub
+2. Selecciona el repo `LKIRO-IRIS/trabajos-talento-humano`
+3. **Base directory**: `1. ENTREGABLE_INSTRUCTORA/1. Aplicativo_Reflejos_Brillantes`
+4. Build command y publish directory se autodetectan desde `netlify.toml`
+5. (Opcional) Configura las variables de entorno `ZAI_API_KEY` y
+   `ZAI_BASE_URL` en Site settings → Environment variables
+6. Deploy → URL final: `https://<nombre>.netlify.app`
+
+### Sin API key en Netlify
+Las funciones de IA fallarán con error claro, pero los 33 formatos,
+archivador, respaldos, multi-empresa y árbol 3D siguen funcionando.
+
+---
+
 ## 📞 Soporte
 
 Este aplicativo fue construido como proyecto educativo SENA.
