@@ -48,6 +48,7 @@ import { ContratoLaboral } from "@/components/sigth/gestion/formats/ContratoLabo
 import { AfiliacionesSeguridadSocial } from "@/components/sigth/gestion/formats/AfiliacionesSeguridadSocial";
 import { CartaRenuncia } from "@/components/sigth/gestion/formats/CartaRenuncia";
 import { THMD01Convocatoria } from "@/components/sigth/gestion/formats/THMD01-Convocatoria";
+import { THMD04ModeloContrato } from "@/components/sigth/gestion/formats/THMD04ModeloContrato";
 import { GenericFormat } from "@/components/sigth/gestion/formats/GenericFormat";
 import { FORMAT_CONFIGS } from "@/components/sigth/gestion/format-configs";
 import { CRONOGRAMA_PROCESSES, CRONOGRAMA_ACTIVITIES } from "@/components/sigth/gestion/cronograma-data";
@@ -435,6 +436,8 @@ export function GestionModule({
         return <TH22Cronograma company={company} />;
       case "TH-MD-01":
         return <THMD01Convocatoria company={company} />;
+      case "TH-MD-04":
+        return <THMD04ModeloContrato company={company} />;
       case "TH-CONTRATO":
         return <ContratoLaboral />;
       case "TH-AFILIACIONES":
