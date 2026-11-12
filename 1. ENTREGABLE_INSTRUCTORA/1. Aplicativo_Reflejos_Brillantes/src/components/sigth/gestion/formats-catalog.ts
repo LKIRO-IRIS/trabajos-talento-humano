@@ -8,7 +8,7 @@ export type FormatId =
   | "TH-08" | "TH-09" | "TH-10" | "TH-11" | "TH-12" | "TH-13"
   | "TH-14" | "TH-15" | "TH-16" | "TH-17" | "TH-19" | "TH-20"
   | "TH-18" | "TH-21" | "TH-22"
-  | "TH-CONTRATO" | "TH-AFILIACIONES"
+  | "TH-CONTRATO" | "TH-AFILIACIONES" | "TH-RENUNCIA"
   | "TH-MD-01" | "TH-MD-02" | "TH-MD-03" | "TH-MD-04" | "TH-MD-05"
   | "TH-MD-06" | "TH-MD-07" | "TH-MD-08" | "TH-MD-09" | "TH-MD-10";
 
@@ -16,7 +16,7 @@ export interface FormatCatalogEntry {
   id: FormatId;
   name: string;
   /** Categoria del sidebar (Tablero, Atracción, Contratación, ...) */
-  category: "tablero" | "atraccion" | "contratacion" | "desempeno" | "estrategia" | "modelos";
+  category: "tablero" | "atraccion" | "contratacion" | "desempeno" | "estrategia" | "modelos" | "retiro";
   /** Indica si el formato tiene un formulario interactivo completo (true) o es "próximamente" (false) */
   implemented: boolean;
   version: string;
@@ -70,6 +70,9 @@ export const FORMAT_CATALOG: FormatCatalogEntry[] = [
   { id: "TH-MD-08", name: "Modelo Memorandos", category: "modelos", implemented: true, version: "02", date: "26/10/2025" },
   { id: "TH-MD-09", name: "Modelo Plan", category: "modelos", implemented: true, version: "02", date: "26/10/2025" },
   { id: "TH-MD-10", name: "Modelo Programa", category: "modelos", implemented: true, version: "02", date: "26/10/2025" },
+
+  // Desvinculación & Retiro
+  { id: "TH-RENUNCIA", name: "Carta de Renuncia Voluntaria (Auto-generada)", category: "retiro", implemented: true, version: "01", date: "12/11/2026" },
 ];
 
 export const FORMAT_CATEGORIES: { id: FormatCatalogEntry["category"]; label: string; icon: string }[] = [
@@ -78,6 +81,7 @@ export const FORMAT_CATEGORIES: { id: FormatCatalogEntry["category"]; label: str
   { id: "contratacion", label: "Contratación & Onboarding", icon: "UserCheck" },
   { id: "desempeno", label: "Desempeño & Desarrollo", icon: "TrendingUp" },
   { id: "estrategia", label: "Estrategia & Bienestar", icon: "HeartHandshake" },
+  { id: "retiro", label: "Desvinculación & Retiro", icon: "DoorOpen" },
   { id: "modelos", label: "Modelos de Documentos", icon: "FileText" },
 ];
 

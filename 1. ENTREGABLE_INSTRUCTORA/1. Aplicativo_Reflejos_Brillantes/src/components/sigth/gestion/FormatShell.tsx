@@ -33,13 +33,44 @@ export function useSharedLogo() {
   const [logo, setLogo] = React.useState<string>("");
   const [loaded, setLoaded] = React.useState(false);
 
-  React.useEffect(() => {
+  // Carga el logo desde dos fuentes:
+  //  1. LOGO_LS_KEY (logo subido manualmente en FormatShell)
+  //  2. sigth-empresa-config (logo configurado en el modal de empresa)
+  // Si ambos existen, gana el de FormatShell. Si solo existe el de empresa,
+  // se usa ese y se sincroniza hacia LOGO_LS_KEY para futuras cargas.
+  const loadFromSources = React.useCallback(() => {
     try {
-      const v = window.localStorage.getItem(LOGO_LS_KEY);
-      if (v) setLogo(v);
+      const manual = window.localStorage.getItem(LOGO_LS_KEY);
+      if (manual) {
+        setLogo(manual);
+        return;
+      }
+      // Fallback: logo configurado en el modal de empresa
+      const cfgRaw = window.localStorage.getItem("sigth-empresa-config");
+      if (cfgRaw) {
+        const cfg = JSON.parse(cfgRaw);
+        if (cfg.logo) {
+          setLogo(cfg.logo);
+          // Sincronizar: también guardarlo en LOGO_LS_KEY para que los
+          // demás formatos lo vean sin tener que leer empresa-config.
+          window.localStorage.setItem(LOGO_LS_KEY, cfg.logo);
+        }
+      }
     } catch {}
-    setLoaded(true);
   }, []);
+
+  React.useEffect(() => {
+    loadFromSources();
+    setLoaded(true);
+    // Escuchar cambios en la configuración de empresa para sincronizar
+    const onEmpresaChanged = () => loadFromSources();
+    window.addEventListener("sigth-empresa-changed", onEmpresaChanged);
+    window.addEventListener("storage", onEmpresaChanged);
+    return () => {
+      window.removeEventListener("sigth-empresa-changed", onEmpresaChanged);
+      window.removeEventListener("storage", onEmpresaChanged);
+    };
+  }, [loadFromSources]);
 
   const save = React.useCallback((value: string) => {
     setLogo(value);

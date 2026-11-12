@@ -20,6 +20,7 @@ import {
   CheckCircle2,
   AlertTriangle,
   Sparkles,
+  DoorOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -45,6 +46,7 @@ import { TH09ChequeoDocumentos } from "@/components/sigth/gestion/formats/TH09-C
 import { TH11ChequeoInduccion } from "@/components/sigth/gestion/formats/TH11-ChequeoInduccion";
 import { ContratoLaboral } from "@/components/sigth/gestion/formats/ContratoLaboral";
 import { AfiliacionesSeguridadSocial } from "@/components/sigth/gestion/formats/AfiliacionesSeguridadSocial";
+import { CartaRenuncia } from "@/components/sigth/gestion/formats/CartaRenuncia";
 import { THMD01Convocatoria } from "@/components/sigth/gestion/formats/THMD01-Convocatoria";
 import { GenericFormat } from "@/components/sigth/gestion/formats/GenericFormat";
 import { FORMAT_CONFIGS } from "@/components/sigth/gestion/format-configs";
@@ -64,6 +66,7 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   TrendingUp,
   HeartHandshake,
   FileText,
+  DoorOpen,
 };
 
 /** Process names mapped to TH categories for visual grouping */
@@ -133,6 +136,15 @@ const PROCESS_ACCORDION: {
     color: "#34495E",
     description: "Convocatorias, correos, informes, contratos, cartas, memorandos.",
     formats: ["TH-MD-01", "TH-MD-02", "TH-MD-03", "TH-MD-04", "TH-MD-05", "TH-MD-06", "TH-MD-07", "TH-MD-08", "TH-MD-09", "TH-MD-10"],
+    defaultOpen: false,
+  },
+  {
+    id: "retiro",
+    name: "6 · Desvinculación & Retiro",
+    icon: <DoorOpen className="w-4 h-4" />,
+    color: "#7F8C8D",
+    description: "Carta de renuncia, paz y salvo, desvinculación, fin de contrato.",
+    formats: ["TH-RENUNCIA"],
     defaultOpen: false,
   },
 ];
@@ -427,6 +439,8 @@ export function GestionModule({
         return <ContratoLaboral />;
       case "TH-AFILIACIONES":
         return <AfiliacionesSeguridadSocial />;
+      case "TH-RENUNCIA":
+        return <CartaRenuncia />;
       default: {
         const cfg = FORMAT_CONFIGS[activeId];
         if (cfg) return <GenericFormat config={cfg} company={company} />;
