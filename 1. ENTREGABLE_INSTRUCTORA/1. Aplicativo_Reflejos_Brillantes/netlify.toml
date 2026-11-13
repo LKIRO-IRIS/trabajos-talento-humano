@@ -3,20 +3,17 @@
 #  Aplicativo de Gestión de Talento Humano — SENA
 # ===========================================================
 
-# Build command: solo `next build` (sin los `cp` del package.json,
-# porque el plugin @netlify/plugin-nextjs maneja el output automáticamente)
 [build]
-  command = "next build"
+  command = "npm run build:netlify"
   publish = ".next"
 
-# Node.js 20 LTS (recomendado para Next.js 16)
 [build.environment]
   NODE_VERSION = "20"
   NPM_FLAGS = "--legacy-peer-deps"
   NEXT_TELEMETRY_DISABLED = "1"
+  NETLIFY_NEXT_PLUGIN_SKIP = "false"
 
-# El plugin oficial de Next.js se instala automáticamente cuando Netlify
-# detecta el framework, pero lo declaro aquí para ser explícito.
+# Plugin oficial de Next.js para Netlify
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
@@ -35,9 +32,8 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-# Cache largo para los .docx de contratos de referencia
+# Cache medio para los .docx de contratos y afiliaciones
 [[headers]]
-  for = "/download/contratos/*"
+  for = "/download/*"
   [headers.values]
     Cache-Control = "public, max-age=86400"
-    Content-Disposition = "attachment"
