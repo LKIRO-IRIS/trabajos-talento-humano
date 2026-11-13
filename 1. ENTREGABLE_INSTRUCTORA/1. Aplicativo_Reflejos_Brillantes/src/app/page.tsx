@@ -3,6 +3,7 @@
 import * as React from "react";
 import {
   Download,
+  Upload,
   Sun,
   Moon,
   Building2,
@@ -136,36 +137,39 @@ function SIGTHPage() {
         )}
         style={{ borderColor: accentColor, background: `linear-gradient(135deg, ${primaryColor}, ${primaryColor}cc)` }}
       >
-        <div className="max-w-[1600px] mx-auto px-3 sm:px-6 py-2.5 flex items-center justify-between gap-3">
+        {/* Fila 1: Logo + nombre (en móvil, nombre más corto) + botones esenciales */}
+        <div className="max-w-[1600px] mx-auto px-2 sm:px-4 lg:px-6 py-2 sm:py-2.5 flex items-center justify-between gap-2">
           {/* Left: logo + nombre empresa dinámica */}
           <button
-            className="flex items-center gap-3 min-w-0 group"
+            className="flex items-center gap-2 sm:gap-3 min-w-0 group flex-1"
             onClick={() => setActiveTab("gestion")}
             title={empresa.name}
           >
             {empresa.logo ? (
-              <img src={empresa.logo} alt={empresa.name} className="w-10 h-10 rounded-md object-contain bg-white p-1" />
+              <img src={empresa.logo} alt={empresa.name} className="w-8 h-8 sm:w-10 sm:h-10 rounded-md object-contain bg-white p-1 shrink-0" />
             ) : (
               <div
-                className="w-10 h-10 rounded-full flex items-center justify-center font-extrabold text-sm shrink-0"
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-extrabold text-xs sm:text-sm shrink-0"
                 style={{ background: primaryColor, color: accentColor, border: `2px solid ${accentColor}` }}
               >
                 {empresa.name.slice(0, 2).toUpperCase()}
               </div>
             )}
             <div className="leading-tight min-w-0 text-left">
-              <div className="font-display text-base sm:text-lg font-extrabold tracking-tight">
+              {/* En móvil: nombre truncado. En sm+: nombre completo */}
+              <div className="font-display text-sm sm:text-base lg:text-lg font-extrabold tracking-tight truncate max-w-[140px] sm:max-w-xs lg:max-w-none">
                 {empresa.name}
               </div>
-              <div className="text-[10px] sm:text-xs text-white/85 truncate flex items-center gap-1">
-                <Sparkles className="w-2.5 h-2.5" style={{ color: accentColor }} />
-                {empresa.tagline}
+              {/* El tagline solo se muestra en sm+ para no saturar el header móvil */}
+              <div className="hidden sm:flex text-[10px] sm:text-xs text-white/85 truncate items-center gap-1">
+                <Sparkles className="w-2.5 h-2.5 shrink-0" style={{ color: accentColor }} />
+                <span className="truncate max-w-[200px] lg:max-w-none">{empresa.tagline}</span>
               </div>
             </div>
           </button>
 
-          {/* Right: tabs + respaldo + configurar + dark/light */}
-          <div className="flex items-center gap-2">
+          {/* Right: botones esenciales */}
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             <nav className="hidden md:flex items-center gap-1">
               {TABS.map((t) => (
                 <button
@@ -211,7 +215,7 @@ function SIGTHPage() {
           </div>
         </div>
 
-        {/* Mobile tabs */}
+        {/* Mobile tabs — fila 2 del header solo en móvil */}
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-white/10 bg-black/20 animate-rb-fade-up">
             <div className="max-w-[1600px] mx-auto px-2 py-2 grid grid-cols-2 gap-1">
@@ -231,6 +235,30 @@ function SIGTHPage() {
                   <span className="truncate">{t.short}</span>
                 </button>
               ))}
+              {/* Botón Empresa visible solo en móvil (en desktop está en el header principal) */}
+              <button
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent("sigth-open-empresa-modal"));
+                  setMobileMenuOpen(false);
+                }}
+                className="flex items-center justify-center gap-1.5 px-2 py-2 rounded-md text-xs font-semibold transition-colors rb-tab-inactive"
+              >
+                <Building2 className="w-4 h-4" />
+                <span>Empresa</span>
+              </button>
+              {/* Botón Restaurar visible solo en móvil */}
+              <button
+                onClick={() => {
+                  // Disparar click en el botón Restaurar del BackupBar (que está oculto en móvil)
+                  const restoreBtn = document.querySelector('[aria-label="Restaurar respaldo"]') as HTMLButtonElement;
+                  if (restoreBtn) restoreBtn.click();
+                  setMobileMenuOpen(false);
+                }}
+                className="flex items-center justify-center gap-1.5 px-2 py-2 rounded-md text-xs font-semibold transition-colors rb-tab-inactive"
+              >
+                <Upload className="w-4 h-4" />
+                <span>Restaurar</span>
+              </button>
             </div>
           </div>
         )}
@@ -239,7 +267,7 @@ function SIGTHPage() {
       {/* ===================== MAIN ===================== */}
       <main
         className={cn(
-          "flex-1 w-full mx-auto px-3 sm:px-6 py-6 space-y-4",
+          "flex-1 w-full mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-6 space-y-3 sm:space-y-4",
           "max-w-[1600px]",
         )}
       >

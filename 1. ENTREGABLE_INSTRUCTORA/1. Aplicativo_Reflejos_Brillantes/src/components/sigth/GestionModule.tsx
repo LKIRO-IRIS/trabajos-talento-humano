@@ -509,7 +509,7 @@ export function GestionModule({
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-3 lg:gap-4">
+    <div className="flex flex-col lg:flex-row gap-2 sm:gap-3 lg:gap-4">
       {/* ===== Sidebar ===== */}
       <aside
         className={cn(
@@ -723,25 +723,25 @@ export function GestionModule({
       </aside>
 
       {/* ===== Main content ===== */}
-      <main className="flex-1 min-w-0 space-y-3" ref={mainRef}>
+      <main className="flex-1 min-w-0 space-y-2 sm:space-y-3" ref={mainRef}>
         {/* Breadcrumb / mobile menu toggle */}
         <div className="rb-no-print flex items-center justify-between gap-2 flex-wrap">
-          <div className="flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-2 text-xs sm:text-sm min-w-0 flex-1">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-1.5 rounded-md border border-border hover:bg-muted"
+              className="lg:hidden p-1.5 rounded-md border border-border hover:bg-muted shrink-0"
               aria-label="Abrir menú"
             >
               <Menu className="w-4 h-4" />
             </button>
-            <FolderOpen className="w-4 h-4" style={{ color: `#${theme.accent}` }} />
-            <span className="text-muted-foreground">Gestión /</span>
-            <span className="font-bold text-primary">
+            <FolderOpen className="w-4 h-4 shrink-0" style={{ color: `#${theme.accent}` }} />
+            <span className="text-muted-foreground hidden sm:inline">Gestión /</span>
+            <span className="font-bold text-primary truncate">
               {activeEntry?.id} — {activeEntry?.name}
             </span>
             {analyzedHvs.length > 0 && (
               <span
-                className="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                className="hidden md:inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0"
                 style={{ background: "#16A34A", color: "#fff" }}
                 title={`${analyzedHvs.length} hoja(s) de vida analizada(s) disponibles`}
               >

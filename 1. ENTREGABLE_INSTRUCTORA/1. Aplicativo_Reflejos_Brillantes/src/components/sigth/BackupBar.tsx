@@ -177,7 +177,7 @@ export function BackupBar({ showConfigEmpresa = true, compact }: BackupBarProps)
           <Button
             variant="ghost"
             size={compact ? "icon" : "sm"}
-            className="text-white hover:bg-white/10 h-8"
+            className="text-white hover:bg-white/10 h-8 hidden md:inline-flex"
             onClick={() => {
               window.dispatchEvent(new CustomEvent("sigth-open-empresa-modal"));
             }}
@@ -211,7 +211,7 @@ export function BackupBar({ showConfigEmpresa = true, compact }: BackupBarProps)
         <Button
           variant="ghost"
           size={compact ? "icon" : "sm"}
-          className="text-white hover:bg-white/10 h-8"
+          className="text-white hover:bg-white/10 h-8 hidden sm:inline-flex"
           onClick={openRestore}
           disabled={busy !== null}
           title="Restaurar respaldo"

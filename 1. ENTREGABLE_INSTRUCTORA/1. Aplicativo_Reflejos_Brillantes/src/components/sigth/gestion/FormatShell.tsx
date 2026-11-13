@@ -314,7 +314,7 @@ export function FormatShell({
     >
       {/* ============ Header ============ */}
       <div
-        className="rb-gestion-header px-4 sm:px-6 py-4 text-white flex flex-wrap items-start gap-4 justify-between"
+        className="rb-gestion-header px-3 sm:px-5 lg:px-6 py-3 sm:py-4 text-white flex flex-wrap items-start gap-3 sm:gap-4 justify-between"
         style={{ background: headerBg }}
       >
         <div className="flex items-start gap-3 flex-1 min-w-0">
@@ -323,7 +323,7 @@ export function FormatShell({
             <button
               type="button"
               onClick={() => fileLogoRef.current?.click()}
-              className="rb-no-print group relative w-20 h-20 rounded-md bg-white/15 border-2 border-dashed border-white/40 flex items-center justify-center overflow-hidden hover:bg-white/25 transition-colors"
+              className="rb-no-print group relative w-14 h-14 sm:w-20 sm:h-20 rounded-md bg-white/15 border-2 border-dashed border-white/40 flex items-center justify-center overflow-hidden hover:bg-white/25 transition-colors"
               title="Subir logo"
             >
               {logo ? (
@@ -408,11 +408,11 @@ export function FormatShell({
       </div>
 
       {/* ============ Body ============ */}
-      <div className="px-4 sm:px-6 py-5 text-foreground" style={{ backgroundColor: "var(--rb-bg-card, #FFFFFF)" }}>{children}</div>
+      <div className="px-3 sm:px-5 lg:px-6 py-4 sm:py-5 text-foreground" style={{ backgroundColor: "var(--rb-bg-card, #FFFFFF)" }}>{children}</div>
 
       {/* ============ Action buttons ============ */}
       <div
-        className="rb-no-print border-t px-4 sm:px-6 py-3 bg-muted/40 flex flex-wrap items-center gap-2"
+        className="rb-no-print border-t px-3 sm:px-5 lg:px-6 py-2 sm:py-3 bg-muted/40 flex flex-wrap items-center gap-1.5 sm:gap-2"
         style={{ borderColor: `#${theme.primary}22` }}
       >
         <Button
