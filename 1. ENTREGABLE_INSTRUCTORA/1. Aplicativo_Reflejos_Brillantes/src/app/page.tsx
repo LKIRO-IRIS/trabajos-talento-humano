@@ -70,14 +70,55 @@ function SIGTHPage() {
   }, [darkMode]);
 
   /* ---- Apply CSS vars from empresa ---- */
+  // Genera colores suaves para el fondo en modo claro, derivados de los
+  // colores de la empresa configurada. Esto hace que TODO el aplicativo
+  // se vea "teñido" con la identidad corporativa, no solo el header.
   React.useEffect(() => {
     const root = document.documentElement;
     root.style.setProperty("--rb-primary", primaryColor);
     root.style.setProperty("--rb-accent", accentColor);
     root.style.setProperty("--primary", accentColor);
     root.style.setProperty("--ring", accentColor);
+
+    // Convertir hex a RGB para crear variantes con alpha (fondos suaves)
+    const hexToRgb = (hex: string) => {
+      const h = hex.replace("#", "");
+      return {
+        r: parseInt(h.slice(0, 2), 16),
+        g: parseInt(h.slice(2, 4), 16),
+        b: parseInt(h.slice(4, 6), 16),
+      };
+    };
+    const mixWithWhite = (hex: string, alpha: number) => {
+      // Mezcla el color con blanco: alpha 0.0 = blanco, alpha 1.0 = color puro
+      const { r, g, b } = hexToRgb(hex);
+      const mix = (c: number) => Math.round(c * alpha + 255 * (1 - alpha));
+      return `rgb(${mix(r)}, ${mix(g)}, ${mix(b)})`;
+    };
+
+    // Fondo principal de la página (modo claro): blanco con 6% del color
+    // primario de la empresa → se ve casi blanco pero con un "tinte" sutil
+    root.style.setProperty("--rb-bg-page", mixWithWhite(primaryColor, 0.06));
+    // Fondo de tarjetas (cards): blanco con 2% del accent → casi blanco
+    root.style.setProperty("--rb-bg-card", mixWithWhite(accentColor, 0.02));
+    // Variante suave del accent para gradientes (10% opacity sobre blanco)
+    root.style.setProperty("--rb-bg-accent-soft", mixWithWhite(accentColor, 0.10));
+    // Variante suave del primary para gradientes (8% opacity sobre blanco)
+    root.style.setProperty("--rb-bg-primary-soft", mixWithWhite(primaryColor, 0.08));
+    // Color RGB puro (sin alpha) para usar en radial-gradient con rgba()
+    const pRgb = hexToRgb(primaryColor);
+    const aRgb = hexToRgb(accentColor);
+    root.style.setProperty("--rb-primary-rgb", `${pRgb.r}, ${pRgb.g}, ${pRgb.b}`);
+    root.style.setProperty("--rb-accent-rgb", `${aRgb.r}, ${aRgb.g}, ${aRgb.b}`);
+
+    // En modo oscuro: invertir, el fondo es el primary oscuro
+    if (darkMode) {
+      root.style.setProperty("--rb-bg-page", mixWithWhite(primaryColor, 0.18));
+      root.style.setProperty("--rb-bg-card", mixWithWhite(primaryColor, 0.30));
+    }
+
     root.setAttribute("data-company", "reflejos_brillantes");
-  }, [primaryColor, accentColor]);
+  }, [primaryColor, accentColor, darkMode]);
 
   const toggleDarkMode = React.useCallback(() => {
     setDarkMode((v) => !v);

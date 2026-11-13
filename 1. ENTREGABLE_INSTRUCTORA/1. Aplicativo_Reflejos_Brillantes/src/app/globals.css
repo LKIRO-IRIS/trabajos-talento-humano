@@ -286,34 +286,40 @@ html {
   -webkit-text-fill-color: transparent;
 }
 
-/* Subtle paper texture for the page background */
+/* Subtle paper texture for the page background
+ * Uses CSS vars --rb-bg-page, --rb-bg-primary-soft, --rb-bg-accent-soft
+ * and --rb-primary-rgb/--rb-accent-rgb that are set dynamically in
+ * page.tsx from the configured empresa colors. So the WHOLE app gets
+ * a subtle tint of the company palette, not just the header. */
 .rb-paper {
-  background-color: #FFFFFF;
+  background-color: var(--rb-bg-page, #FFFFFF);
   background-image:
-    radial-gradient(circle at 12% 18%, rgba(146, 208, 80, 0.05) 0, transparent 35%),
-    radial-gradient(circle at 88% 8%, rgba(44, 62, 80, 0.04) 0, transparent 30%),
-    radial-gradient(circle at 50% 100%, rgba(255, 152, 0, 0.03) 0, transparent 40%);
+    radial-gradient(circle at 12% 18%, rgba(var(--rb-accent-rgb, 146, 208, 80), 0.08) 0, transparent 35%),
+    radial-gradient(circle at 88% 8%, rgba(var(--rb-primary-rgb, 44, 62, 80), 0.06) 0, transparent 30%),
+    radial-gradient(circle at 50% 100%, rgba(var(--rb-accent-rgb, 146, 208, 80), 0.05) 0, transparent 40%);
 }
 .dark .rb-paper {
-  background-color: #1B2A38;
+  background-color: var(--rb-bg-page, #1B2A38);
   background-image:
-    radial-gradient(circle at 12% 18%, rgba(146, 208, 80, 0.08) 0, transparent 35%),
-    radial-gradient(circle at 88% 8%, rgba(146, 208, 80, 0.05) 0, transparent 30%);
+    radial-gradient(circle at 12% 18%, rgba(var(--rb-accent-rgb, 146, 208, 80), 0.10) 0, transparent 35%),
+    radial-gradient(circle at 88% 8%, rgba(var(--rb-accent-rgb, 146, 208, 80), 0.06) 0, transparent 30%);
 }
-/* Royal Eventos — wine + gold paper texture */
+/* Royal Eventos — wine + gold paper texture
+ * Now uses the same dynamic vars from page.tsx. If a user configures
+ * Royal Eventos via the modal, the bg will be tinted wine. */
 html[data-company="royal_eventos"] .rb-paper {
-  background-color: #FFF8E7;
+  background-color: var(--rb-bg-page, #FFF8E7);
   background-image:
-    radial-gradient(circle at 12% 18%, rgba(184, 148, 31, 0.10) 0, transparent 35%),
-    radial-gradient(circle at 88% 8%, rgba(107, 31, 46, 0.07) 0, transparent 30%),
-    radial-gradient(circle at 50% 100%, rgba(184, 148, 31, 0.05) 0, transparent 40%);
+    radial-gradient(circle at 12% 18%, rgba(var(--rb-accent-rgb, 184, 148, 31), 0.10) 0, transparent 35%),
+    radial-gradient(circle at 88% 8%, rgba(var(--rb-primary-rgb, 107, 31, 46), 0.07) 0, transparent 30%),
+    radial-gradient(circle at 50% 100%, rgba(var(--rb-accent-rgb, 184, 148, 31), 0.05) 0, transparent 40%);
 }
 html[data-company="royal_eventos"].dark .rb-paper,
 html[data-company="royal_eventos"] .dark .rb-paper {
-  background-color: #2C1A1F;
+  background-color: var(--rb-bg-page, #2C1A1F);
   background-image:
-    radial-gradient(circle at 12% 18%, rgba(212, 175, 55, 0.12) 0, transparent 35%),
-    radial-gradient(circle at 88% 8%, rgba(184, 148, 31, 0.08) 0, transparent 30%);
+    radial-gradient(circle at 12% 18%, rgba(var(--rb-accent-rgb, 212, 175, 55), 0.12) 0, transparent 35%),
+    radial-gradient(circle at 88% 8%, rgba(var(--rb-accent-rgb, 184, 148, 31), 0.08) 0, transparent 30%);
 }
 
 /* Chat/scroll slim scrollbar */

@@ -304,10 +304,13 @@ export function FormatShell({
   return (
     <div
       className={cn(
-        "rb-gestion-format bg-white text-foreground border rounded-lg overflow-hidden shadow-sm",
+        "rb-gestion-format text-foreground border rounded-lg overflow-hidden shadow-sm",
         className,
       )}
-      style={{ borderColor: `#${theme.primary}33` }}
+      style={{
+        borderColor: `#${theme.primary}33`,
+        backgroundColor: "var(--rb-bg-card, #FFFFFF)",
+      }}
     >
       {/* ============ Header ============ */}
       <div
@@ -405,7 +408,7 @@ export function FormatShell({
       </div>
 
       {/* ============ Body ============ */}
-      <div className="px-4 sm:px-6 py-5 bg-white text-foreground">{children}</div>
+      <div className="px-4 sm:px-6 py-5 text-foreground" style={{ backgroundColor: "var(--rb-bg-card, #FFFFFF)" }}>{children}</div>
 
       {/* ============ Action buttons ============ */}
       <div
