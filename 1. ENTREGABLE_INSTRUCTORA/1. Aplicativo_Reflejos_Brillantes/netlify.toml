@@ -1,38 +1,40 @@
 # ===========================================================
 #  Netlify configuration — SIGTH (Reflejos Brillantes)
-#  Aplicativo de Gestión de Talento Humano — SENA
+#  Optimizado para que el build NO se quede pegado
 # ===========================================================
 
 [build]
-  command = "npm run build:netlify"
+  command = "npm install --legacy-peer-deps && npm run build"
   publish = ".next"
 
 [build.environment]
   NODE_VERSION = "20"
   NPM_FLAGS = "--legacy-peer-deps"
   NEXT_TELEMETRY_DISABLED = "1"
-  NETLIFY_NEXT_PLUGIN_SKIP = "false"
+  # Evita que prisma intente generar el cliente (ya no lo usamos)
+  PRISMA_SKIP_POSTINSTALL_GENERATE = "true"
+  # DATABASE_URL dummy (algunas libs lo piden)
+  DATABASE_URL = "file:./dev.db"
 
-# Plugin oficial de Next.js para Netlify
+# Plugin oficial de Next.js
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-# Headers de seguridad básicos
+# Headers de seguridad
 [[headers]]
   for = "/*"
   [headers.values]
     X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 
-# Cache largo para assets estáticos de Next.js
+# Cache largo para assets estáticos
 [[headers]]
   for = "/_next/static/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-# Cache medio para los .docx de contratos y afiliaciones
+# Cache para los .docx de contratos y afiliaciones
 [[headers]]
   for = "/download/*"
   [headers.values]
