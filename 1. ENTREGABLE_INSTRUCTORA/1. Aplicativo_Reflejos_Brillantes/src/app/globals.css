@@ -74,11 +74,11 @@ html[data-company="royal_eventos"] {
   --secondary: #FFF3D6;
   --secondary-foreground: #6B1F2E;
   --muted: #FBF5E6;
-  --muted-foreground: #6B5B3E;
+  --muted-foreground: #4A3D2A;
   --accent: #B8941F;
   --accent-foreground: #FFFFFF;
   --destructive: #C62828;
-  --border: #E8D9B5;
+  --border: #C9B78E;
   --input: #FBF5E6;
   --ring: #B8941F;
   --chart-1: #6B1F2E;
@@ -145,11 +145,11 @@ html[data-company="reflejos_brillantes"] {
   --secondary: #E8F5E9;
   --secondary-foreground: #2C3E50;
   --muted: #F5F7F5;
-  --muted-foreground: #666666;
+  --muted-foreground: #3F3F3F;
   --accent: #92D050;
   --accent-foreground: #1B1B1B;
   --destructive: #C62828;
-  --border: #E0E5E0;
+  --border: #BFC7BF;
   --input: #F5F7F5;
   --ring: #92D050;
   --chart-1: #92D050;
@@ -159,12 +159,12 @@ html[data-company="reflejos_brillantes"] {
   --chart-5: #4F8C28;
   --sidebar: #FFFFFF;
   --sidebar-foreground: #1B1B1B;
-  --sidebar-primary: #92D050;
-  --sidebar-primary-foreground: #1B1B1B;
+  --sidebar-primary: #2C3E50;
+  --sidebar-primary-foreground: #FFFFFF;
   --sidebar-accent: #E8F5E9;
   --sidebar-accent-foreground: #2C3E50;
-  --sidebar-border: #E0E5E0;
-  --sidebar-ring: #92D050;
+  --sidebar-border: #BFC7BF;
+  --sidebar-ring: #2C3E50;
 }
 
 html[data-company="reflejos_brillantes"].dark,

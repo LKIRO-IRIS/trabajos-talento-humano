@@ -555,6 +555,15 @@ export function EmpresaConfigModal({
           </div>
           <Button
             type="button"
+            variant="ghost"
+            onClick={() => onOpenChange(false)}
+            className="w-full sm:w-auto"
+            title="Cerrar sin guardar"
+          >
+            <X className="w-4 h-4 mr-1" /> Cerrar
+          </Button>
+          <Button
+            type="button"
             onClick={handleSave}
             className="w-full sm:w-auto"
             style={{

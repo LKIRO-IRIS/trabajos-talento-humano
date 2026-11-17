@@ -292,7 +292,8 @@ function SIGTHPage() {
       <EmpresaConfigModal
         open={empresaModalOpen}
         onOpenChange={(v) => {
-          if (!v && forceConfig && empresa.id === "default") return;
+          // Permitir cerrar el modal siempre (la X y el botón Cerrar funcionan)
+          // Solo forzar configuración obligatoria la primera vez si no hay empresa
           setEmpresaModalOpen(v);
           if (!v) setForceConfig(false);
         }}

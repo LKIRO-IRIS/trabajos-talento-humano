@@ -634,7 +634,7 @@ export function GestionModule({
                                 setSidebarOpen(false);
                               }}
                               className={cn(
-                                "w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-xs text-left transition-all duration-300",
+                                "w-full flex items-center gap-2 px-3 py-2.5 rounded-md text-sm text-left transition-all duration-300 min-h-[44px]",
                                 isActive
                                   ? "font-bold shadow-sm ring-1 ring-offset-0"
                                   : "hover:bg-muted hover:translate-x-0.5",
@@ -781,17 +781,17 @@ export function GestionModule({
             onClick={() => setSidebarOpen(false)}
             aria-hidden
           />
-          <div className="relative z-10 w-80 max-w-[85vw] bg-card border-r shadow-xl overflow-y-auto rb-chat-scroll">
+          <div className="relative z-10 w-[88vw] max-w-sm bg-card border-r shadow-xl overflow-y-auto rb-chat-scroll">
             <div className="flex flex-col">
-              <div className="flex items-center justify-between p-3 border-b sticky top-0 bg-card z-10">
-                <span className="text-sm font-bold uppercase text-primary">
+              <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-card z-10">
+                <span className="text-base font-bold uppercase text-primary">
                   Menú de formatos
                 </span>
-                <button onClick={() => setSidebarOpen(false)} className="p-1 rounded hover:bg-muted">
-                  <X className="w-4 h-4" />
+                <button onClick={() => setSidebarOpen(false)} className="p-2 rounded hover:bg-muted min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="Cerrar menú">
+                  <X className="w-5 h-5" />
                 </button>
               </div>
-              <nav className="p-2">
+              <nav className="p-3">
                 {PROCESS_ACCORDION.map((proc) => {
                   const isOpen = openAccordions[proc.id] ?? false;
                   const Icon = ICONS[proc.id] ?? FileText;
@@ -857,7 +857,7 @@ export function GestionModule({
                                     setSidebarOpen(false);
                                   }}
                                   className={cn(
-                                    "w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-xs text-left transition-colors",
+                                    "w-full flex items-center gap-2 px-3 py-2.5 rounded-md text-sm text-left transition-colors min-h-[44px]",
                                     isActive
                                       ? "font-bold shadow-sm"
                                       : "hover:bg-muted",
