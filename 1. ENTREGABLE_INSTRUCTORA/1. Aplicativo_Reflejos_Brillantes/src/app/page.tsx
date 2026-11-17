@@ -97,25 +97,26 @@ function SIGTHPage() {
       return `rgb(${mix(r)}, ${mix(g)}, ${mix(b)})`;
     };
 
-    // Fondo principal de la página (modo claro): blanco con 6% del color
-    // primario de la empresa → se ve casi blanco pero con un "tinte" sutil
-    root.style.setProperty("--rb-bg-page", mixWithWhite(primaryColor, 0.06));
-    // Fondo de tarjetas (cards): blanco con 2% del accent → casi blanco
-    root.style.setProperty("--rb-bg-card", mixWithWhite(accentColor, 0.02));
-    // Variante suave del accent para gradientes (10% opacity sobre blanco)
-    root.style.setProperty("--rb-bg-accent-soft", mixWithWhite(accentColor, 0.10));
-    // Variante suave del primary para gradientes (8% opacity sobre blanco)
-    root.style.setProperty("--rb-bg-primary-soft", mixWithWhite(primaryColor, 0.08));
+    // Fondo principal de la página (modo claro): BLANCO PURO — más profesional,
+    // los formatos TH deben verse limpios. El color de la empresa aparece
+    // en el header, bordes, botones y acentos, NO en el fondo.
+    root.style.setProperty("--rb-bg-page", "#FFFFFF");
+    // Fondo de tarjetas (cards): BLANCO PURO también
+    root.style.setProperty("--rb-bg-card", "#FFFFFF");
+    // Variante suave del accent para gradientes (ahora al 25% — más visible)
+    root.style.setProperty("--rb-bg-accent-soft", mixWithWhite(accentColor, 0.25));
+    // Variante suave del primary para gradientes (al 20% — más visible)
+    root.style.setProperty("--rb-bg-primary-soft", mixWithWhite(primaryColor, 0.20));
     // Color RGB puro (sin alpha) para usar en radial-gradient con rgba()
     const pRgb = hexToRgb(primaryColor);
     const aRgb = hexToRgb(accentColor);
     root.style.setProperty("--rb-primary-rgb", `${pRgb.r}, ${pRgb.g}, ${pRgb.b}`);
     root.style.setProperty("--rb-accent-rgb", `${aRgb.r}, ${aRgb.g}, ${aRgb.b}`);
 
-    // En modo oscuro: invertir, el fondo es el primary oscuro
+    // En modo oscuro: fondo oscuro derivado del primary de la empresa
     if (darkMode) {
-      root.style.setProperty("--rb-bg-page", mixWithWhite(primaryColor, 0.18));
-      root.style.setProperty("--rb-bg-card", mixWithWhite(primaryColor, 0.30));
+      root.style.setProperty("--rb-bg-page", mixWithWhite(primaryColor, 0.12));
+      root.style.setProperty("--rb-bg-card", mixWithWhite(primaryColor, 0.20));
     }
 
     root.setAttribute("data-company", "reflejos_brillantes");

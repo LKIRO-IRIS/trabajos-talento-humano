@@ -12,6 +12,9 @@ import {
   Settings2,
   X,
   Check,
+  FileText,
+  FileType,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -234,6 +237,131 @@ export function FormatShell({
     window.print();
   };
 
+  // ============ Descargar como Word (.docx) con identidad corporativa ============
+  // Genera un .docx con: marca de agua (logo o nombre), encabezado APA,
+  // cajas de calidad, tabla de datos, pie de página con NIT/tel/email,
+  // y firmas (elaborado/revisado/aprobado).
+  const [downloading, setDownloading] = React.useState<"docx" | "pdf" | null>(null);
+
+  const buildPayload = () => {
+    // Leer empresa configurada del localStorage (igual que hace FormatShell)
+    let empresa: Record<string, unknown> = {
+      id: company,
+      name: empresaName,
+      tagline: empresaTagline,
+      logo: logo,
+      primaryColor: `#${theme.primary}`,
+      accentColor: `#${theme.accent}`,
+    };
+    try {
+      if (typeof window !== "undefined") {
+        const cfg = window.localStorage.getItem("sigth-empresa-config");
+        if (cfg) {
+          const parsed = JSON.parse(cfg);
+          empresa = { ...empresa, ...parsed };
+          // Asegurar colores con #
+          if (parsed.primaryColor && !String(parsed.primaryColor).startsWith("#")) {
+            empresa.primaryColor = `#${parsed.primaryColor}`;
+          }
+          if (parsed.accentColor && !String(parsed.accentColor).startsWith("#")) {
+            empresa.accentColor = `#${parsed.accentColor}`;
+          }
+        }
+      }
+    } catch {}
+
+    // Leer headerFields del localStorage (DocHeaderEditor guarda ahí)
+    let headerFields: Record<string, string> = {
+      codigo: formatId,
+      version: version,
+      fecha: date,
+      pagina: "1 de 1",
+      elaboradoPor: "",
+      revisadoPor: "",
+      aprobadoPor: "",
+    };
+    try {
+      if (typeof window !== "undefined") {
+        const g = window.localStorage.getItem("sigth-gestion-doc-header");
+        if (g) headerFields = { ...headerFields, ...JSON.parse(g) };
+        const p = window.localStorage.getItem(`sigth-gestion-format-${formatId}-header`);
+        if (p) {
+          const parsed = JSON.parse(p);
+          if (parsed.enabled && parsed.fields) {
+            headerFields = { ...headerFields, ...parsed.fields };
+          }
+        }
+      }
+    } catch {}
+
+    return {
+      formatId,
+      formatName,
+      data: exportData ?? {},
+      empresa,
+      headerFields,
+      logo: logo || (empresa.logo as string) || "",
+    };
+  };
+
+  const handleDownloadDocx = async () => {
+    setDownloading("docx");
+    try {
+      const res = await fetch("/api/generate-format-docx", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(buildPayload()),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || "No se pudo generar el Word");
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${formatId}_${formatName.replace(/\s+/g, "_")}.docx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success("Word descargado correctamente");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Error al generar el Word");
+    } finally {
+      setDownloading(null);
+    }
+  };
+
+  const handleDownloadPdf = async () => {
+    setDownloading("pdf");
+    try {
+      const res = await fetch("/api/generate-format-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(buildPayload()),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || "No se pudo generar el PDF");
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${formatId}_${formatName.replace(/\s+/g, "_")}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success("PDF descargado correctamente");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Error al generar el PDF");
+    } finally {
+      setDownloading(null);
+    }
+  };
+
   const handleExport = () => {
     try {
       const payload = exportData ?? {};
@@ -430,6 +558,46 @@ export function FormatShell({
         </Button>
         <Button size="sm" variant="outline" onClick={handlePrint}>
           <Printer className="w-3.5 h-3.5 mr-1" /> Imprimir
+        </Button>
+        {/* ============ Descargar como Word (.docx) con identidad corporativa ============ */}
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={handleDownloadDocx}
+          disabled={downloading !== null}
+          title="Descargar como Word con marca de agua, normas APA, cajas de calidad y datos de la empresa"
+          style={{
+            borderColor: `#${theme.accent}`,
+            color: `#${theme.dark}`,
+            background: `#${theme.accent}15`,
+          }}
+        >
+          {downloading === "docx" ? (
+            <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" />
+          ) : (
+            <FileText className="w-3.5 h-3.5 mr-1" />
+          )}
+          Word
+        </Button>
+        {/* ============ Descargar como PDF con identidad corporativa ============ */}
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={handleDownloadPdf}
+          disabled={downloading !== null}
+          title="Descargar como PDF con marca de agua, normas APA, cajas de calidad y datos de la empresa"
+          style={{
+            borderColor: `#${theme.primary}`,
+            color: `#${theme.dark}`,
+            background: `#${theme.primary}15`,
+          }}
+        >
+          {downloading === "pdf" ? (
+            <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" />
+          ) : (
+            <FileType className="w-3.5 h-3.5 mr-1" />
+          )}
+          PDF
         </Button>
         <Button size="sm" variant="outline" onClick={handleExport}>
           <Download className="w-3.5 h-3.5 mr-1" /> Exportar
