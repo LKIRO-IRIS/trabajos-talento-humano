@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   Settings,
@@ -58,8 +57,7 @@ import { formatDate, getIniciales } from "@/lib/utils";
 import type { EmpresaConfig, User } from "@/lib/types";
 
 export default function ConfiguracionPage() {
-  const router = useRouter();
-  const { user, isAdmin, refresh } = useAuthContext();
+  const { user, isAdmin, requireAuth } = useAuthContext();
   const { config, update } = useConfig();
   const [draft, setDraft] = useState<EmpresaConfig | null>(null);
   const [users, setUsers] = useState<User[]>([]);
@@ -69,22 +67,15 @@ export default function ConfiguracionPage() {
   }, [config]);
 
   useEffect(() => {
-    if (!isAdmin) {
-      toast.error("Solo el administrador puede acceder a la configuración.");
-      router.replace("/dashboard");
-    }
-  }, [isAdmin, router]);
-
-  useEffect(() => {
     setUsers(listUsers());
-  }, []);
+  }, [user]);
 
-  if (!isAdmin || !draft) {
+  if (!draft) {
     return (
       <MainLayout>
         <Card>
           <CardContent className="py-16 text-center text-sm text-muted-foreground">
-            Redirigiendo…
+            Cargando configuración…
           </CardContent>
         </Card>
       </MainLayout>
@@ -92,11 +83,18 @@ export default function ConfiguracionPage() {
   }
 
   const guardarTodo = () => {
-    update(draft);
-    toast.success("Configuración guardada correctamente.");
+    requireAuth(() => {
+      if (!isAdmin) {
+        toast.error("Solo el administrador puede modificar la configuración.");
+        return;
+      }
+      update(draft);
+      toast.success("Configuración guardada correctamente.");
+    });
   };
 
   const handleExport = () => {
+    // Exportar JSON es solo lectura: no requiere autenticación.
     const json = exportData();
     const blob = new Blob([json], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -113,36 +111,54 @@ export default function ConfiguracionPage() {
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        importData(reader.result as string);
-        toast.success("Datos importados correctamente. Recargando…");
-        setTimeout(() => window.location.reload(), 800);
-      } catch (err) {
-        toast.error(
-          err instanceof Error ? err.message : "Error al importar el archivo."
-        );
+    requireAuth(() => {
+      if (!isAdmin) {
+        toast.error("Solo el administrador puede modificar la configuración.");
+        return;
       }
-    };
-    reader.readAsText(file);
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          importData(reader.result as string);
+          toast.success("Datos importados correctamente. Recargando…");
+          setTimeout(() => window.location.reload(), 800);
+        } catch (err) {
+          toast.error(
+            err instanceof Error ? err.message : "Error al importar el archivo."
+          );
+        }
+      };
+      reader.readAsText(file);
+    });
     e.target.value = "";
   };
 
   const handleReset = () => {
-    resetData(false);
-    toast.success("Datos reiniciados a los valores por defecto. Recargando…");
-    setTimeout(() => window.location.reload(), 800);
+    requireAuth(() => {
+      if (!isAdmin) {
+        toast.error("Solo el administrador puede modificar la configuración.");
+        return;
+      }
+      resetData(false);
+      toast.success("Datos reiniciados a los valores por defecto. Recargando…");
+      setTimeout(() => window.location.reload(), 800);
+    });
   };
 
   const handleDeleteUser = (id: string) => {
-    const res = deleteUser(id);
-    if (res.ok) {
-      setUsers(listUsers());
-      toast.success("Usuario eliminado.");
-    } else {
-      toast.error(res.error ?? "No se pudo eliminar.");
-    }
+    requireAuth(() => {
+      if (!isAdmin) {
+        toast.error("Solo el administrador puede modificar la configuración.");
+        return;
+      }
+      const res = deleteUser(id);
+      if (res.ok) {
+        setUsers(listUsers());
+        toast.success("Usuario eliminado.");
+      } else {
+        toast.error(res.error ?? "No se pudo eliminar.");
+      }
+    });
   };
 
   return (

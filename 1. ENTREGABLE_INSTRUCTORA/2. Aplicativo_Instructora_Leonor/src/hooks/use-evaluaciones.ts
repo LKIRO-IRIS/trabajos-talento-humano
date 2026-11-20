@@ -8,6 +8,7 @@ import {
   saveEmpleados,
   saveEvaluaciones,
 } from "@/lib/storage";
+import { getCurrentUser } from "@/lib/auth";
 import { construirEvaluacion } from "@/lib/evaluacion";
 import type { Criterio } from "@/lib/types";
 import type { PuntajeCriterio } from "@/lib/types";
@@ -38,9 +39,14 @@ export function useEvaluaciones(
     };
   }, [reload]);
 
-  /** Si es admin ve todas; si es evaluador solo las suyas. */
+  /**
+   * Si es admin ve todas; si es evaluador solo las suyas.
+   * Si no hay sesión (usuario anónimo en modo consulta), ve todas las
+   * evaluaciones (solo lectura). Esto permite navegar el dashboard,
+   * empleados y ficha individual sin login.
+   */
   const visibles = useCallback(() => {
-    if (!currentUser) return [];
+    if (!currentUser) return evaluaciones;
     if (currentUser.role === "admin") return evaluaciones;
     return evaluaciones.filter((e) => e.evaluadorId === currentUser.id);
   }, [evaluaciones, currentUser]);
@@ -86,11 +92,15 @@ export function useEvaluaciones(
       periodo: string;
       comentarios: string;
     }) => {
-      if (!currentUser) return null;
+      // Lee el usuario ACTUAL desde la sesión en cada llamada, en lugar de
+      // depender del `currentUser` capturado en el closure. Esto permite que
+      // la acción se ejecute correctamente tras un login diferido (modal).
+      const user = getCurrentUser();
+      if (!user) return null;
       const nueva = construirEvaluacion({
         empleadoId: params.empleadoId,
-        evaluadorId: currentUser.id,
-        evaluadorNombre: currentUser.nombre,
+        evaluadorId: user.id,
+        evaluadorNombre: user.nombre,
         periodo: params.periodo,
         criterios: params.criterios,
         configCriterios,
@@ -103,7 +113,7 @@ export function useEvaluaciones(
       window.dispatchEvent(new Event("app-leonor:changed"));
       return nueva;
     },
-    [currentUser, configCriterios]
+    [configCriterios]
   );
 
   const updateEvaluacion = useCallback(

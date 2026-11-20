@@ -9,7 +9,6 @@ import {
   Settings,
   type LucideIcon,
 } from "lucide-react";
-import { useAuthContext } from "@/components/auth/auth-context";
 import { useConfig } from "@/hooks/use-config";
 import { cn } from "@/lib/utils";
 
@@ -29,9 +28,10 @@ const NAV_ITEMS: NavItem[] = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { isAdmin } = useAuthContext();
   const { config } = useConfig();
-  const items = NAV_ITEMS.filter((i) => !i.adminOnly || isAdmin);
+  // Mostrar TODOS los items de navegación. La configuración es visible
+  // para todos; el guardado se restringe a admin dentro de la propia página.
+  const items = NAV_ITEMS;
 
   return (
     <aside className="hidden md:flex md:w-60 md:flex-col md:fixed md:inset-y-0 md:top-16 md:border-r bg-sidebar">

@@ -8,6 +8,7 @@ import {
   Users,
   Settings,
   LogOut,
+  LogIn,
   Menu,
   Moon,
   Sun,
@@ -79,17 +80,19 @@ function ThemeToggle() {
 }
 
 export function Header() {
-  const { user, logout, isAdmin } = useAuthContext();
+  const { user, logout, setLoginModalOpen } = useAuthContext();
   const { config } = useConfig();
   const pathname = usePathname();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const items = NAV_ITEMS.filter((i) => !i.adminOnly || isAdmin);
+  // Mostrar TODOS los items de navegación, sin filtrar por rol.
+  // La configuración es visible para todos; el guardado se restringe a admin.
+  const items = NAV_ITEMS;
 
   const handleLogout = () => {
     logout();
-    router.push("/");
+    router.push("/dashboard");
   };
 
   const NavLinks = ({ onNavigate }: { onNavigate?: () => void }) => (
@@ -153,7 +156,11 @@ export function Header() {
                 {config?.nombre ?? "Evaluación de Desempeño"}
               </span>
               <span className="text-[11px] text-muted-foreground">
-                {user?.role === "admin" ? "Panel de Administrador" : "Panel de Evaluador"}
+                {!user
+                  ? "Modo consulta"
+                  : user.role === "admin"
+                  ? "Panel de Administrador"
+                  : "Panel de Evaluador"}
               </span>
             </div>
           </Link>
@@ -166,37 +173,54 @@ export function Header() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="gap-2 px-2">
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback className="bg-brand text-brand-foreground text-xs font-semibold">
-                    {getIniciales(user?.nombre ?? "U")}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="hidden sm:flex flex-col items-start leading-none">
-                  <span className="text-sm font-medium">{user?.nombre}</span>
-                  <span className="text-[11px] text-muted-foreground capitalize">
-                    {user?.role}
-                  </span>
-                </div>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel className="flex items-center gap-2">
-                <UserCircle2 className="h-4 w-4" />
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium">{user?.nombre}</span>
-                  <span className="text-xs text-muted-foreground">@{user?.username}</span>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
-                <LogOut className="mr-2 h-4 w-4" />
-                Cerrar sesión
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="gap-2 px-2">
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback className="bg-brand text-brand-foreground text-xs font-semibold">
+                      {getIniciales(user.nombre)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="hidden sm:flex flex-col items-start leading-none">
+                    <span className="text-sm font-medium">{user.nombre}</span>
+                    <span className="text-[11px] text-muted-foreground capitalize">
+                      {user.role}
+                    </span>
+                  </div>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="flex items-center gap-2">
+                  <UserCircle2 className="h-4 w-4" />
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium">{user.nombre}</span>
+                    <span className="text-xs text-muted-foreground">
+                      @{user.username}
+                    </span>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Cerrar sesión
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button
+              onClick={() => setLoginModalOpen(true)}
+              className="gap-2"
+              size="sm"
+            >
+              <LogIn className="h-4 w-4" />
+              <span className="hidden sm:inline">Iniciar sesión</span>
+              <span className="sm:hidden">Entrar</span>
+            </Button>
+          )}
         </div>
       </div>
     </header>

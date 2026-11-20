@@ -14,9 +14,9 @@ import type { Empleado, Evaluacion } from "@/lib/types";
 export default function EmpleadoDetailPage() {
   const params = useParams<{ id: string }>();
   const id = params?.id;
-  const { user } = useAuthContext();
+  const { user, requireAuth } = useAuthContext();
   const { config } = useConfig();
-  const { visibles, empleados, setPlanEstado, reload } = useEvaluaciones(
+  const { visibles, empleados, reload } = useEvaluaciones(
     user,
     config?.criterios ?? []
   );
@@ -37,21 +37,24 @@ export default function EmpleadoDetailPage() {
   }, [id, empleados, visibles]);
 
   const handlePlanEstado = (evalId: string, estado: "Pendiente" | "En curso" | "Completado") => {
-    const all = getEvaluaciones();
-    const idx = all.findIndex((e) => e.id === evalId);
-    if (idx >= 0 && all[idx].planMejora) {
-      all[idx].planMejora!.estado = estado;
-      saveEvaluaciones(all);
-      reload();
-      // Actualiza el estado local
-      setEvaluaciones((prev) =>
-        prev.map((e) =>
-          e.id === evalId && e.planMejora
-            ? { ...e, planMejora: { ...e.planMejora, estado } }
-            : e
-        )
-      );
-    }
+    // Cambiar el estado del plan es una mutación: requiere autenticación.
+    requireAuth(() => {
+      const all = getEvaluaciones();
+      const idx = all.findIndex((e) => e.id === evalId);
+      if (idx >= 0 && all[idx].planMejora) {
+        all[idx].planMejora!.estado = estado;
+        saveEvaluaciones(all);
+        reload();
+        // Actualiza el estado local
+        setEvaluaciones((prev) =>
+          prev.map((e) =>
+            e.id === evalId && e.planMejora
+              ? { ...e, planMejora: { ...e.planMejora, estado } }
+              : e
+          )
+        );
+      }
+    });
   };
 
   if (!empleado) {

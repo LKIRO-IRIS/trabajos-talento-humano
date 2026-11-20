@@ -42,7 +42,7 @@ interface Props {
 }
 
 export function EvaluationForm({ empleadoIdInicial, onGuardado }: Props) {
-  const { user } = useAuthContext();
+  const { user, requireAuth } = useAuthContext();
   const { config } = useConfig();
   const router = useRouter();
   const { empleados, addEmpleado, crearEvaluacion, reload } = useEvaluaciones(
@@ -110,26 +110,32 @@ export function EvaluationForm({ empleadoIdInicial, onGuardado }: Props) {
   };
 
   const handleGuardar = () => {
-    if (!user) return;
     if (!validar()) return;
-    const nueva = crearEvaluacion({
-      empleadoId,
-      criterios: puntajesArray,
-      periodo,
-      comentarios,
-    });
-    if (nueva) {
-      toast.success("Evaluación guardada correctamente.", {
-        description: `${empleadoSeleccionado?.nombre} — ${calificacion} (${nueva.puntuacionFinal.toFixed(1)})`,
+    // Si no hay sesión, abre el modal de login. Tras un login exitoso,
+    // la acción se completa automáticamente (crearEvaluacion lee el usuario
+    // actual desde la sesión en el momento de ejecutarse).
+    requireAuth(() => {
+      const nueva = crearEvaluacion({
+        empleadoId,
+        criterios: puntajesArray,
+        periodo,
+        comentarios,
       });
-      if (nueva.planMejora) {
-        toast.info("Se generó un plan de mejora automático.", {
-          description: `Criterio más bajo: ${nueva.planMejora.criterioMasBajo}`,
+      if (nueva) {
+        toast.success("Evaluación guardada correctamente.", {
+          description: `${empleadoSeleccionado?.nombre} — ${calificacion} (${nueva.puntuacionFinal.toFixed(1)})`,
         });
+        if (nueva.planMejora) {
+          toast.info("Se generó un plan de mejora automático.", {
+            description: `Criterio más bajo: ${nueva.planMejora.criterioMasBajo}`,
+          });
+        }
+        onGuardado?.();
+        router.push(`/empleado/${empleadoId}`);
+      } else {
+        toast.error("No se pudo guardar la evaluación.");
       }
-      onGuardado?.();
-      router.push(`/empleado/${empleadoId}`);
-    }
+    });
   };
 
   const handleAddEmpleado = () => {

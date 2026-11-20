@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ClipboardList,
   Award,
@@ -47,7 +48,8 @@ import { getCalificacion } from "@/lib/evaluacion";
 import type { Calificacion } from "@/lib/types";
 
 export default function DashboardPage() {
-  const { user } = useAuthContext();
+  const { user, requireAuth } = useAuthContext();
+  const router = useRouter();
   const { config } = useConfig();
   const { visibles, empleados } = useEvaluaciones(user, config?.criterios ?? []);
 
@@ -134,16 +136,17 @@ export default function DashboardPage() {
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
             <p className="text-sm text-muted-foreground">
-              {user?.role === "admin"
-                ? "Visión global de todas las evaluaciones registradas."
-                : "Resumen de tus evaluaciones registradas."}
+              {user && user.role !== "admin"
+                ? "Resumen de tus evaluaciones registradas."
+                : "Visión global de todas las evaluaciones registradas."}
             </p>
           </div>
-          <Button asChild className="gap-2">
-            <Link href="/evaluar">
-              <ClipboardList className="h-4 w-4" />
-              Nueva Evaluación
-            </Link>
+          <Button
+            onClick={() => requireAuth(() => router.push("/evaluar"))}
+            className="gap-2"
+          >
+            <ClipboardList className="h-4 w-4" />
+            Nueva Evaluación
           </Button>
         </div>
 
