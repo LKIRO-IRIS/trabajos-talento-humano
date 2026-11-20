@@ -3,6 +3,17 @@ import { buildDefaultData } from "./default-data";
 
 const STORAGE_KEY = "app-leonor:data:v1";
 
+/* ===================== LOCK ANTI-RACE-CONDITION ===================== */
+// Serializa las mutaciones de localStorage para que doble-click o
+// múltiples tabs no pierdan datos (read-modify-write atómico).
+let mutationQueue: Promise<unknown> = Promise.resolve();
+
+function withLock<T>(fn: () => T): Promise<T> {
+  const result = mutationQueue.then(fn);
+  mutationQueue = result.then(() => undefined, () => undefined);
+  return result;
+}
+
 function isBrowser(): boolean {
   return typeof window !== "undefined" && typeof localStorage !== "undefined";
 }
@@ -18,14 +29,24 @@ export function loadData(): AppData {
       return def;
     }
     const parsed = JSON.parse(raw) as AppData;
-    // saneamiento mínimo
-    if (!parsed.users || parsed.users.length === 0) {
-      const def = buildDefaultData();
-      parsed.users = def.users;
+    // Saneamiento: validar que cada campo tenga la estructura correcta
+    if (!Array.isArray(parsed.users) || parsed.users.length === 0) {
+      parsed.users = buildDefaultData().users;
     }
-    if (!parsed.config) parsed.config = defConfig();
-    if (!parsed.empleados) parsed.empleados = [];
-    if (!parsed.evaluaciones) parsed.evaluaciones = [];
+    if (!parsed.config || typeof parsed.config !== "object") {
+      parsed.config = buildDefaultData().config;
+    } else {
+      // Validar campos mínimos de config
+      const def = buildDefaultData().config;
+      if (!Array.isArray(parsed.config.criterios) || parsed.config.criterios.length === 0) {
+        parsed.config.criterios = def.criterios;
+      }
+      if (typeof parsed.config.nombre !== "string") parsed.config.nombre = def.nombre;
+      if (typeof parsed.config.primaryColor !== "string") parsed.config.primaryColor = def.primaryColor;
+      if (typeof parsed.config.secondaryColor !== "string") parsed.config.secondaryColor = def.secondaryColor;
+    }
+    if (!Array.isArray(parsed.empleados)) parsed.empleados = [];
+    if (!Array.isArray(parsed.evaluaciones)) parsed.evaluaciones = [];
     return parsed;
   } catch {
     const def = buildDefaultData();
@@ -34,14 +55,19 @@ export function loadData(): AppData {
   }
 }
 
-function defConfig(): EmpresaConfig {
-  return buildDefaultData().config;
-}
-
-/** Persiste todos los datos. */
+/** Persiste todos los datos con manejo de errores (no crashea si localStorage se llena). */
 export function saveData(data: AppData): void {
   if (!isBrowser()) return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch (e) {
+    // QuotaExceededError, modo privado de Safari, o disco lleno
+    console.error("No se pudo guardar en localStorage:", e);
+    // Disparar evento para que la UI muestre un toast
+    window.dispatchEvent(new CustomEvent("app-leonor:storage-error", {
+      detail: "No se pudo guardar. Es posible que el almacenamiento del navegador esté lleno."
+    }));
+  }
 }
 
 /** Reinicia a los datos por defecto (manteniendo usuarios registrados opcional). */
@@ -52,7 +78,7 @@ export function resetData(keepUsers = false): AppData {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as AppData;
-        if (parsed.users?.length) def.users = parsed.users;
+        if (Array.isArray(parsed.users) && parsed.users.length) def.users = parsed.users;
       }
     } catch {
       /* ignore */
@@ -62,15 +88,29 @@ export function resetData(keepUsers = false): AppData {
   return def;
 }
 
+/* ===================== MUTACIÓN ATÓMICA ===================== */
+/**
+ * Mutación atómica: lee, aplica la función mutadora y guarda en una sola
+ * operación serializada. Evita race conditions cuando hay múltiples
+ * mutaciones concurrentes (doble click, múltiples tabs).
+ */
+export function mutateData(fn: (draft: AppData) => void): void {
+  withLock(() => {
+    const data = loadData();
+    fn(data);
+    saveData(data);
+  });
+}
+
 /* ===================== USERS ===================== */
 export function getUsers(): User[] {
   return loadData().users;
 }
 
 export function saveUsers(users: User[]): void {
-  const data = loadData();
-  data.users = users;
-  saveData(data);
+  mutateData((data) => {
+    data.users = users;
+  });
 }
 
 /* ===================== EMPLEADOS ===================== */
@@ -79,9 +119,9 @@ export function getEmpleados(): Empleado[] {
 }
 
 export function saveEmpleados(empleados: Empleado[]): void {
-  const data = loadData();
-  data.empleados = empleados;
-  saveData(data);
+  mutateData((data) => {
+    data.empleados = empleados;
+  });
 }
 
 /* ===================== EVALUACIONES ===================== */
@@ -90,9 +130,9 @@ export function getEvaluaciones(): Evaluacion[] {
 }
 
 export function saveEvaluaciones(evaluaciones: Evaluacion[]): void {
-  const data = loadData();
-  data.evaluaciones = evaluaciones;
-  saveData(data);
+  mutateData((data) => {
+    data.evaluaciones = evaluaciones;
+  });
 }
 
 /* ===================== CONFIG ===================== */
@@ -101,9 +141,9 @@ export function getConfig(): EmpresaConfig {
 }
 
 export function saveConfig(config: EmpresaConfig): void {
-  const data = loadData();
-  data.config = config;
-  saveData(data);
+  mutateData((data) => {
+    data.config = config;
+  });
 }
 
 /* ===================== IMPORT/EXPORT ===================== */
@@ -111,13 +151,50 @@ export function exportData(): string {
   return JSON.stringify(loadData(), null, 2);
 }
 
-export function importData(json: string): AppData {
-  const parsed = JSON.parse(json) as AppData;
-  if (!parsed.users || !parsed.config) {
-    throw new Error("JSON inválido: faltan usuarios o configuración.");
+/**
+ * Valida que un objeto unknown tenga la estructura mínima de AppData.
+ * Evita que un JSON corrupto o malicioso rompa toda la app.
+ */
+function isValidAppData(d: unknown): d is AppData {
+  if (!d || typeof d !== "object") return false;
+  const o = d as Record<string, unknown>;
+  // Campos obligatorios
+  if (!Array.isArray(o.users)) return false;
+  if (!o.config || typeof o.config !== "object") return false;
+  // Campos opcionales pero si existen deben ser arrays
+  if (o.empleados !== undefined && !Array.isArray(o.empleados)) return false;
+  if (o.evaluaciones !== undefined && !Array.isArray(o.evaluaciones)) return false;
+  // Validar que cada user tenga los campos mínimos
+  for (const u of o.users) {
+    if (!u || typeof u !== "object") return false;
+    const uu = u as Record<string, unknown>;
+    if (typeof uu.id !== "string") return false;
+    if (typeof uu.username !== "string") return false;
+    if (typeof uu.role !== "string") return false;
   }
-  if (!parsed.empleados) parsed.empleados = [];
-  if (!parsed.evaluaciones) parsed.evaluaciones = [];
-  saveData(parsed);
-  return parsed;
+  // Validar config mínima
+  const c = o.config as Record<string, unknown>;
+  if (typeof c.nombre !== "string") return false;
+  if (!Array.isArray(c.criterios)) return false;
+  return true;
+}
+
+export function importData(json: string): AppData {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(json);
+  } catch {
+    throw new Error("El archivo no es un JSON válido. Verifica que el archivo no esté corrupto.");
+  }
+  if (!isValidAppData(parsed)) {
+    throw new Error(
+      "El JSON no tiene la estructura esperada. Asegúrate de que sea un archivo exportado desde esta aplicación."
+    );
+  }
+  // Asegurar campos opcionales
+  const data = parsed as AppData;
+  if (!data.empleados) data.empleados = [];
+  if (!data.evaluaciones) data.evaluaciones = [];
+  saveData(data);
+  return data;
 }

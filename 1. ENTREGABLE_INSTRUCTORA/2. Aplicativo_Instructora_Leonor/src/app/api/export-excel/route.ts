@@ -20,22 +20,42 @@ interface Body {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = (await req.json()) as Body;
+    // Validar tamaño del body (máximo 1MB para prevenir DoS)
+    const text = await req.text();
+    if (text.length > 1_000_000) {
+      return NextResponse.json({ error: "El cuerpo de la solicitud es demasiado grande" }, { status: 413 });
+    }
+
+    let body: Body;
+    try {
+      body = JSON.parse(text) as Body;
+    } catch {
+      return NextResponse.json({ error: "JSON inválido" }, { status: 400 });
+    }
+
+    // Validar estructura del body
+    if (!body || !Array.isArray(body.filas)) {
+      return NextResponse.json({ error: "El cuerpo debe contener un array 'filas'" }, { status: 400 });
+    }
+    if (typeof body.empresa !== "string") {
+      body.empresa = "Empresa";
+    }
 
     const wb = XLSX.utils.book_new();
 
     // Hoja 1: Resumen comparativo
     const resumen = body.filas.map((f, i) => ({
       "#": i + 1,
-      ID: f.id,
-      Nombre: f.nombre,
-      Departamento: f.departamento,
-      Cargo: f.cargo,
-      "Promedio General": Number(f.promedio.toFixed(2)),
-      "Última Calificación": f.ultimaCalificacion,
-      "Última Puntuación": f.ultimaPuntuacion ?? "",
-      "Nº Evaluaciones": f.evaluaciones,
-      "Último Periodo": f.periodo,
+      ID: f.id || "",
+      Nombre: f.nombre || "",
+      Departamento: f.departamento || "",
+      Cargo: f.cargo || "",
+      "Promedio General": typeof f.promedio === "number" && !isNaN(f.promedio)
+        ? Number(f.promedio.toFixed(2)) : 0,
+      "Última Calificación": f.ultimaCalificacion || "",
+      "Última Puntuación": typeof f.ultimaPuntuacion === "number" ? f.ultimaPuntuacion : "",
+      "Nº Evaluaciones": typeof f.evaluaciones === "number" ? f.evaluaciones : 0,
+      "Último Periodo": f.periodo || "",
     }));
 
     const ws1 = XLSX.utils.json_to_sheet(resumen, {

@@ -21,6 +21,7 @@ interface FilaEmpleado {
 interface BodyEmpleado {
   tipo: "empleado";
   empresa: string;
+  config?: { nombre: string; primaryColor: string; secondaryColor: string };
   empleado: FilaEmpleado;
   evaluaciones: Array<{
     id: string;
@@ -46,6 +47,7 @@ interface BodyEmpleado {
 interface BodyComparativo {
   tipo: "comparativo";
   empresa: string;
+  config?: { nombre: string; primaryColor: string; secondaryColor: string };
   filas: FilaComparativa[];
 }
 
@@ -68,7 +70,35 @@ function colorCalificacion(cal: string): [number, number, number] {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = (await req.json()) as Body;
+    // Validar tamaño del body (máximo 2MB para prevenir DoS)
+    const text = await req.text();
+    if (text.length > 2_000_000) {
+      return NextResponse.json({ error: "El cuerpo de la solicitud es demasiado grande" }, { status: 413 });
+    }
+
+    let body: Body;
+    try {
+      body = JSON.parse(text) as Body;
+    } catch {
+      return NextResponse.json({ error: "JSON inválido" }, { status: 400 });
+    }
+
+    // Validar estructura mínima
+    if (!body || (body.tipo !== "empleado" && body.tipo !== "comparativo")) {
+      return NextResponse.json({ error: "El campo 'tipo' debe ser 'empleado' o 'comparativo'" }, { status: 400 });
+    }
+    if (!body.empresa || typeof body.empresa !== "string") {
+      body.empresa = "Evaluación de Desempeño";
+    }
+    if (body.tipo === "comparativo" && !Array.isArray((body as BodyComparativo).filas)) {
+      return NextResponse.json({ error: "El tipo 'comparativo' requiere el array 'filas'" }, { status: 400 });
+    }
+    if (body.tipo === "empleado") {
+      const b = body as BodyEmpleado;
+      if (!b.empleado || !Array.isArray(b.evaluaciones)) {
+        return NextResponse.json({ error: "El tipo 'empleado' requiere 'empleado' y 'evaluaciones'" }, { status: 400 });
+      }
+    }
 
     const doc = new jsPDF({ unit: "pt", format: "a4" });
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -180,7 +210,9 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 24;
+      // Cast seguro: si autoTable no seteó finalY, usar y actual
+      const finalY1 = (doc as unknown as { lastAutoTable?: { finalY?: number } }).lastAutoTable?.finalY;
+      y = typeof finalY1 === "number" ? finalY1 + 24 : y;
 
       if (evaluaciones.length > 0) {
         const ultima = evaluaciones[evaluaciones.length - 1];
@@ -213,7 +245,9 @@ export async function POST(req: NextRequest) {
           margin: { left: margin, right: margin },
         });
 
-        y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 24;
+        // Cast seguro: si autoTable no seteó finalY, usar y actual
+        const finalY2 = (doc as unknown as { lastAutoTable?: { finalY?: number } }).lastAutoTable?.finalY;
+        y = typeof finalY2 === "number" ? finalY2 + 24 : y;
 
         // Comentarios
         if (ultima.comentarios) {
@@ -267,7 +301,9 @@ export async function POST(req: NextRequest) {
           doc.text("Acciones recomendadas:", margin, y);
           y += 14;
           doc.setFont("helvetica", "normal");
-          ultima.planMejora.acciones.forEach((a, i) => {
+          // Validar que acciones sea un array antes de iterar
+          const acciones = Array.isArray(ultima.planMejora?.acciones) ? ultima.planMejora.acciones : [];
+          acciones.forEach((a, i) => {
             const lines = doc.splitTextToSize(`${i + 1}. ${a}`, pageWidth - margin * 2 - 10);
             doc.text(lines, margin + 4, y);
             y += lines.length * 12 + 2;
@@ -287,12 +323,17 @@ export async function POST(req: NextRequest) {
       margin,
       pageHeight - 16
     );
-    doc.text(
-      `Página 1`,
-      pageWidth - margin,
-      pageHeight - 16,
-      { align: "right" }
-    );
+    // Pie de página con numeración dinámica en todas las páginas
+    const totalPages = doc.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      doc.text(
+        `Página ${i} de ${totalPages}`,
+        pageWidth - margin,
+        pageHeight - 16,
+        { align: "right" }
+      );
+    }
 
     const pdfBytes = doc.output("arraybuffer");
     return new NextResponse(pdfBytes, {

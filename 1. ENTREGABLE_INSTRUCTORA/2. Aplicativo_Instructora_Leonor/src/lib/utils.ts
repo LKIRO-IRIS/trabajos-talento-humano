@@ -88,9 +88,15 @@ export function getPeriodoActual(): string {
   return `${year}-Q${quarter}`;
 }
 
-/** Suma 30 días a una fecha y devuelve ISO. */
+/** Suma 30 días a una fecha y devuelve ISO. Valida fecha inválida. */
 export function fechaMas30dias(iso?: string): string {
   const base = iso ? new Date(iso) : new Date();
+  // Si la fecha es inválida, usar fecha actual
+  if (Number.isNaN(base.getTime())) {
+    const now = new Date();
+    now.setDate(now.getDate() + 30);
+    return now.toISOString();
+  }
   base.setDate(base.getDate() + 30);
   return base.toISOString();
 }
@@ -150,5 +156,6 @@ export function downloadBlob(blob: Blob, filename: string) {
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  // 10 segundos para dar tiempo a descargas grandes
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
 }
