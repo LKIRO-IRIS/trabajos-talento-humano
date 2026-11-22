@@ -6,6 +6,8 @@ import {
   LayoutDashboard,
   ClipboardList,
   Users,
+  BarChart3,
+  FileText,
   Settings,
   type LucideIcon,
 } from "lucide-react";
@@ -23,6 +25,8 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, adminOnly: false },
   { href: "/evaluar", label: "Nueva Evaluación", icon: ClipboardList, adminOnly: false },
   { href: "/empleados", label: "Empleados", icon: Users, adminOnly: false },
+  { href: "/analisis", label: "Análisis", icon: BarChart3, adminOnly: false },
+  { href: "/conclusiones", label: "Conclusiones", icon: FileText, adminOnly: false },
   { href: "/configuracion", label: "Configuración", icon: Settings, adminOnly: true },
 ];
 

@@ -1,7 +1,8 @@
-import type { AppData, Empleado, EmpresaConfig, Evaluacion, User } from "./types";
+import type { AppData, Conclusion, Empleado, EmpresaConfig, Evaluacion, PlanMejora, User } from "./types";
 import { buildDefaultData } from "./default-data";
 
 const STORAGE_KEY = "app-leonor:data:v1";
+const CONCLUSIONES_KEY = "app-leonor:conclusiones:v1";
 
 /* ===================== LOCK ANTI-RACE-CONDITION ===================== */
 // Serializa las mutaciones de localStorage para que doble-click o
@@ -197,4 +198,71 @@ export function importData(json: string): AppData {
   if (!data.evaluaciones) data.evaluaciones = [];
   saveData(data);
   return data;
+}
+
+/* ===================== CONCLUSIONES ===================== */
+
+/** Lee todas las conclusiones guardadas en localStorage. */
+export function loadConclusiones(): Record<string, Conclusion> {
+  if (!isBrowser()) return {};
+  try {
+    const raw = localStorage.getItem(CONCLUSIONES_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw) as Record<string, Conclusion>;
+    if (!parsed || typeof parsed !== "object") return {};
+    return parsed;
+  } catch {
+    return {};
+  }
+}
+
+/** Persiste todas las conclusiones. */
+export function saveConclusiones(conclusiones: Record<string, Conclusion>): void {
+  if (!isBrowser()) return;
+  try {
+    localStorage.setItem(CONCLUSIONES_KEY, JSON.stringify(conclusiones));
+    window.dispatchEvent(new Event("app-leonor:conclusiones-changed"));
+  } catch (e) {
+    console.error("No se pudieron guardar las conclusiones:", e);
+    window.dispatchEvent(
+      new CustomEvent("app-leonor:storage-error", {
+        detail:
+          "No se pudieron guardar las conclusiones. Es posible que el almacenamiento del navegador esté lleno.",
+      })
+    );
+  }
+}
+
+/** Guarda o actualiza una conclusión individual. */
+export function setConclusion(areaId: string, texto: string): void {
+  const all = loadConclusiones();
+  all[areaId] = {
+    areaId,
+    texto,
+    ultimaEdicion: new Date().toISOString(),
+  };
+  saveConclusiones(all);
+}
+
+/** Borra una conclusión individual. */
+export function deleteConclusion(areaId: string): void {
+  const all = loadConclusiones();
+  delete all[areaId];
+  saveConclusiones(all);
+}
+
+/* ===================== PLAN DE MEJORA EDITABLE ===================== */
+
+/**
+ * Sustituye el plan de mejora de una evaluación específica.
+ * Si la evaluación no existe, no hace nada.
+ */
+export function updatePlanMejora(evalId: string, plan: PlanMejora): void {
+  mutateData((data) => {
+    const idx = data.evaluaciones.findIndex((e) => e.id === evalId);
+    if (idx >= 0) {
+      data.evaluaciones[idx].planMejora = plan;
+    }
+  });
+  window.dispatchEvent(new Event("app-leonor:changed"));
 }

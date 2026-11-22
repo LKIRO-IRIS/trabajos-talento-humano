@@ -35,6 +35,7 @@ import {
 } from "@/lib/evaluacion";
 import { getPeriodoActual } from "@/lib/utils";
 import type { Empleado } from "@/lib/types";
+import { AREAS_ORGANIZACIONALES } from "@/lib/types";
 
 interface Props {
   empleadoIdInicial?: string;
@@ -233,14 +234,24 @@ export function EvaluationForm({ empleadoIdInicial, onGuardado }: Props) {
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
-                      <Label htmlFor="ne-dep">Departamento</Label>
-                      <Input
-                        id="ne-dep"
+                      <Label htmlFor="ne-dep">Departamento / Área</Label>
+                      <Select
                         value={nuevoEmp.departamento}
-                        onChange={(e) =>
-                          setNuevoEmp((s) => ({ ...s, departamento: e.target.value }))
+                        onValueChange={(v) =>
+                          setNuevoEmp((s) => ({ ...s, departamento: v }))
                         }
-                      />
+                      >
+                        <SelectTrigger id="ne-dep">
+                          <SelectValue placeholder="Selecciona un área" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {AREAS_ORGANIZACIONALES.map((a) => (
+                            <SelectItem key={a} value={a}>
+                              {a}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-1.5">
                       <Label htmlFor="ne-cargo">Cargo</Label>

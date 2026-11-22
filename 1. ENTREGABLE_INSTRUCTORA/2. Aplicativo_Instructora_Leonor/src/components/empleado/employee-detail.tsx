@@ -40,22 +40,25 @@ import {
 import { RadarChartCard } from "@/components/dashboard/radar-chart";
 import { ImprovementPlan } from "./improvement-plan";
 import { useConfig } from "@/hooks/use-config";
-import type { Criterio, Empleado, Evaluacion } from "@/lib/types";
+import type { Criterio, Empleado, Evaluacion, PlanMejora } from "@/lib/types";
 import { toast } from "sonner";
 
 interface Props {
   empleado: Empleado;
   evaluaciones: Evaluacion[];
+  configCriterios: Criterio[];
   onPlanEstadoChange?: (evalId: string, estado: "Pendiente" | "En curso" | "Completado") => void;
+  onPlanSave?: (evalId: string, plan: PlanMejora) => void;
 }
 
 export function EmployeeDetail({
   empleado,
   evaluaciones,
+  configCriterios,
   onPlanEstadoChange,
+  onPlanSave,
 }: Props) {
   const { config } = useConfig();
-  const criterios = config?.criterios ?? [];
   const [tab, setTab] = useState("resumen");
 
   const ultima = evaluaciones[evaluaciones.length - 1] ?? null;
@@ -67,7 +70,7 @@ export function EmployeeDetail({
 
   // Radar: promedio por criterio a partir de todas las evaluaciones
   const radarData = useMemo(() => {
-    return criterios.map((c) => {
+    return configCriterios.map((c) => {
       const puntajes = evaluaciones
         .flatMap((e) => e.criterios.filter((p) => p.criterioId === c.id))
         .map((p) => p.puntaje);
@@ -77,7 +80,7 @@ export function EmployeeDetail({
           : 0;
       return { criterio: c.nombre, puntaje: Number(prom.toFixed(1)) };
     });
-  }, [criterios, evaluaciones]);
+  }, [configCriterios, evaluaciones]);
 
   const color = getAvatarColor(empleado.nombre);
 
@@ -91,7 +94,7 @@ export function EmployeeDetail({
           empresa: config?.nombre ?? "Evaluación de Desempeño",
           empleado,
           evaluaciones,
-          criterios,
+          criterios: configCriterios,
         }),
       });
       if (!res.ok) throw new Error("Error al generar PDF");
@@ -329,9 +332,10 @@ export function EmployeeDetail({
           {ultima?.planMejora ? (
             <ImprovementPlan
               plan={ultima.planMejora}
-              onEstadoChange={(estado) =>
-                onPlanEstadoChange?.(ultima.id, estado)
-              }
+              empleado={empleado}
+              ultima={ultima}
+              configCriterios={configCriterios}
+              onSave={(plan) => onPlanSave?.(ultima.id, plan)}
             />
           ) : (
             <Card>

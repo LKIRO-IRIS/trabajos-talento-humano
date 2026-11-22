@@ -8,17 +8,19 @@ import { useAuthContext } from "@/components/auth/auth-context";
 import { useEvaluaciones } from "@/hooks/use-evaluaciones";
 import { useConfig } from "@/hooks/use-config";
 import { Card, CardContent } from "@/components/ui/card";
+import { toast } from "sonner";
 import { getEvaluaciones, saveEvaluaciones } from "@/lib/storage";
-import type { Empleado, Evaluacion } from "@/lib/types";
+import type { Empleado, Evaluacion, PlanMejora } from "@/lib/types";
 
 export default function EmpleadoDetailPage() {
   const params = useParams<{ id: string }>();
   const id = params?.id;
   const { user, requireAuth } = useAuthContext();
   const { config } = useConfig();
-  const { visibles, empleados, reload } = useEvaluaciones(
+  const criterios = config?.criterios ?? [];
+  const { visibles, empleados, reload, updatePlan } = useEvaluaciones(
     user,
-    config?.criterios ?? []
+    criterios
   );
 
   const [empleado, setEmpleado] = useState<Empleado | null>(null);
@@ -36,7 +38,13 @@ export default function EmpleadoDetailPage() {
     );
   }, [id, empleados, visibles]);
 
-  const handlePlanEstado = (evalId: string, estado: "Pendiente" | "En curso" | "Completado") => {
+  // Estado del plan en vivo (para reflejar ediciones inmediatamente)
+  const evaluacionesVivas = useMemo(() => evaluaciones, [evaluaciones]);
+
+  const handlePlanEstado = (
+    evalId: string,
+    estado: "Pendiente" | "En curso" | "Completado"
+  ) => {
     // Cambiar el estado del plan es una mutación: requiere autenticación.
     requireAuth(() => {
       const all = getEvaluaciones();
@@ -45,7 +53,6 @@ export default function EmpleadoDetailPage() {
         all[idx].planMejora!.estado = estado;
         saveEvaluaciones(all);
         reload();
-        // Actualiza el estado local
         setEvaluaciones((prev) =>
           prev.map((e) =>
             e.id === evalId && e.planMejora
@@ -54,6 +61,21 @@ export default function EmpleadoDetailPage() {
           )
         );
       }
+    });
+  };
+
+  const handlePlanSave = (evalId: string, plan: PlanMejora) => {
+    // Guardar el plan editado es una mutación: requiere autenticación.
+    requireAuth(() => {
+      updatePlan(evalId, plan);
+      setEvaluaciones((prev) =>
+        prev.map((e) =>
+          e.id === evalId ? { ...e, planMejora: plan } : e
+        )
+      );
+      toast.success("Plan de mejora actualizado.", {
+        description: `${plan.acciones.length} acción(es) · ${plan.estado}`,
+      });
     });
   };
 
@@ -73,8 +95,10 @@ export default function EmpleadoDetailPage() {
     <MainLayout>
       <EmployeeDetail
         empleado={empleado}
-        evaluaciones={evaluaciones}
+        evaluaciones={evaluacionesVivas}
+        configCriterios={criterios}
         onPlanEstadoChange={handlePlanEstado}
+        onPlanSave={handlePlanSave}
       />
     </MainLayout>
   );

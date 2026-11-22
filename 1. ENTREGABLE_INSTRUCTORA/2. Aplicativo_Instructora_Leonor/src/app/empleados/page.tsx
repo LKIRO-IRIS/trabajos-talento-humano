@@ -50,6 +50,7 @@ import {
   getIniciales,
 } from "@/lib/utils";
 import type { Calificacion, Empleado, Evaluacion } from "@/lib/types";
+import { AREAS_ORGANIZACIONALES } from "@/lib/types";
 
 type SortKey = "nombre" | "departamento" | "cargo" | "puntuacion" | "calificacion";
 type SortDir = "asc" | "desc";
@@ -85,7 +86,10 @@ export default function EmpleadosPage() {
   const [sortDir, setSortDir] = useState<SortDir>("desc");
 
   const departamentos = useMemo(() => {
-    const set = new Set(empleados.map((e) => e.departamento));
+    // Combina las áreas organizacionales predefinidas con cualquier
+    // departamento adicional que el usuario haya creado en los empleados.
+    const set = new Set<string>(AREAS_ORGANIZACIONALES);
+    for (const e of empleados) set.add(e.departamento);
     return Array.from(set).sort();
   }, [empleados]);
 

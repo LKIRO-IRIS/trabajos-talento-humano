@@ -4,6 +4,8 @@ import type {
   Evaluacion,
   PuntajeCriterio,
   PlanMejora,
+  Empleado,
+  TipoCompetencia,
 } from "./types";
 import { fechaMas30dias, genId } from "./utils";
 
@@ -191,4 +193,263 @@ export function validarPesos(criterios: Criterio[]): {
       ? "Los pesos suman 100%."
       : `Los pesos suman ${total.toFixed(1)}%. Deben sumar 100%.`,
   };
+}
+
+/* ===================== ANÁLISIS DE COMPETENCIAS ===================== */
+
+/**
+ * Clasifica un criterio en uno de los 3 tipos de competencia:
+ * - "tecnica": cumplimiento de objetivos, dominio técnico del puesto.
+ * - "blanda": comunicación, liderazgo, trabajo en equipo.
+ * - "organizacional": asistencia, puntualidad, compromiso con políticas.
+ *
+ * El mapeo se hace por ID (default) o por palabras clave en el nombre.
+ */
+export function getTipoCompetencia(criterio: Criterio): TipoCompetencia {
+  const id = criterio.id.toLowerCase();
+  const nombre = criterio.nombre.toLowerCase();
+
+  // Blanda: contiene "blanda", "competencias blandas", "comunicación",
+  // "liderazgo", "trabajo en equipo".
+  if (
+    id.includes("competencias") ||
+    nombre.includes("blanda") ||
+    nombre.includes("comunicación") ||
+    nombre.includes("liderazgo") ||
+    nombre.includes("trabajo en equipo")
+  ) {
+    return "blanda";
+  }
+  // Organizacional: asistencia, puntualidad, conducta, disciplina.
+  if (
+    id.includes("asistencia") ||
+    nombre.includes("asistencia") ||
+    nombre.includes("puntual") ||
+    nombre.includes("conducta") ||
+    nombre.includes("disciplina") ||
+    nombre.includes("organizac")
+  ) {
+    return "organizacional";
+  }
+  // Por defecto → técnica (objetivos, metas, conocimiento técnico, etc.)
+  return "tecnica";
+}
+
+/** Devuelve el puntaje promedio de un criterio en una evaluación. */
+export function getPuntajeCriterio(
+  evaluacion: Evaluacion,
+  criterioId: string
+): number {
+  const p = evaluacion.criterios.find((c) => c.criterioId === criterioId);
+  return p?.puntaje ?? 0;
+}
+
+/**
+ * Para una evaluación, calcula el promedio de los criterios que pertenecen
+ * a un tipo de competencia. Si no hay criterios de ese tipo, devuelve 0.
+ */
+export function getPromedioPorTipo(
+  evaluacion: Evaluacion,
+  configCriterios: Criterio[],
+  tipo: TipoCompetencia
+): number {
+  const ids = configCriterios
+    .filter((c) => getTipoCompetencia(c) === tipo)
+    .map((c) => c.id);
+  const puntajes = evaluacion.criterios
+    .filter((c) => ids.includes(c.criterioId))
+    .map((c) => c.puntaje);
+  if (puntajes.length === 0) return 0;
+  return puntajes.reduce((a, b) => a + b, 0) / puntajes.length;
+}
+
+/** Resultado del análisis por área y por tipo de competencia. */
+export interface AnalisisPorArea {
+  area: string;
+  totalEmpleados: number;
+  promedioPorTipo: Record<TipoCompetencia, number>;
+  promedioGeneral: number;
+  empleados: Array<{
+    empleado: Empleado;
+    evaluacion: Evaluacion | null;
+    promedioPorTipo: Record<TipoCompetencia, number>;
+    promedioGeneral: number;
+  }>;
+}
+
+/** Resultado global del análisis. */
+export interface AnalisisGlobal {
+  porArea: AnalisisPorArea[];
+  promedioPorTipoGlobal: Record<TipoCompetencia, number>;
+  promedioGeneral: number;
+  areaMejor: AnalisisPorArea | null;
+  areaPeor: AnalisisPorArea | null;
+  tipoMasFuerte: TipoCompetencia;
+  tipoMasDebil: TipoCompetencia;
+  totalEvaluados: number;
+  distribucionBlandas: {
+    sobresaliente: number;
+    satisfactorio: number;
+    necesitaMejora: number;
+    insatisfactorio: number;
+  };
+}
+
+/** Toma solo la última evaluación por empleado. */
+export function ultimasEvaluaciones(
+  evaluaciones: Evaluacion[]
+): Evaluacion[] {
+  const map = new Map<string, Evaluacion>();
+  for (const ev of evaluaciones) {
+    const prev = map.get(ev.empleadoId);
+    if (!prev || new Date(ev.fecha) > new Date(prev.fecha)) {
+      map.set(ev.empleadoId, ev);
+    }
+  }
+  return Array.from(map.values());
+}
+
+/**
+ * Genera el análisis completo por área y por tipo de competencia.
+ * Recibe todas las evaluaciones visibles y los empleados, y devuelve
+ * un objeto listo para pintar el Heat Map y el resumen automático.
+ */
+export function analizarDatos(
+  empleados: Empleado[],
+  evaluaciones: Evaluacion[],
+  configCriterios: Criterio[],
+  areas: readonly string[]
+): AnalisisGlobal {
+  const ultimas = ultimasEvaluaciones(evaluaciones);
+  const empleadoToEval = new Map<string, Evaluacion>();
+  for (const ev of ultimas) empleadoToEval.set(ev.empleadoId, ev);
+
+  const tipos: TipoCompetencia[] = ["tecnica", "blanda", "organizacional"];
+
+  const porArea: AnalisisPorArea[] = areas.map((area) => {
+    const empsArea = empleados.filter((e) => e.departamento === area);
+    const detalles = empsArea.map((empleado) => {
+      const ev = empleadoToEval.get(empleado.id) ?? null;
+      const promedioPorTipo = {
+        tecnica: ev ? getPromedioPorTipo(ev, configCriterios, "tecnica") : 0,
+        blanda: ev ? getPromedioPorTipo(ev, configCriterios, "blanda") : 0,
+        organizacional: ev
+          ? getPromedioPorTipo(ev, configCriterios, "organizacional")
+          : 0,
+      } as Record<TipoCompetencia, number>;
+      const promedioGeneral = ev?.puntuacionFinal ?? 0;
+      return {
+        empleado,
+        evaluacion: ev,
+        promedioPorTipo,
+        promedioGeneral,
+      };
+    });
+    const evaluadosArea = detalles.filter((d) => d.evaluacion);
+    const promedioPorTipo = {
+      tecnica: avg(evaluadosArea.map((d) => d.promedioPorTipo.tecnica)),
+      blanda: avg(evaluadosArea.map((d) => d.promedioPorTipo.blanda)),
+      organizacional: avg(
+        evaluadosArea.map((d) => d.promedioPorTipo.organizacional)
+      ),
+    } as Record<TipoCompetencia, number>;
+    const promedioGeneral = avg(evaluadosArea.map((d) => d.promedioGeneral));
+    return {
+      area,
+      totalEmpleados: empsArea.length,
+      promedioPorTipo,
+      promedioGeneral,
+      empleados: detalles,
+    };
+  });
+
+  // Promedios globales por tipo: promedio de las áreas evaluadas.
+  const areasEvaluadas = porArea.filter((a) => a.totalEmpleados > 0);
+  const promedioPorTipoGlobal = {
+    tecnica: avg(areasEvaluadas.map((a) => a.promedioPorTipo.tecnica)),
+    blanda: avg(areasEvaluadas.map((a) => a.promedioPorTipo.blanda)),
+    organizacional: avg(
+      areasEvaluadas.map((a) => a.promedioPorTipo.organizacional)
+    ),
+  } as Record<TipoCompetencia, number>;
+  const promedioGeneral = avg(areasEvaluadas.map((a) => a.promedioGeneral));
+
+  // Mejor y peor área (solo con empleados)
+  const areasConDatos = areasEvaluadas.filter(
+    (a) => a.promedioGeneral > 0 || a.totalEmpleados > 0
+  );
+  const sorted = [...areasConDatos].sort(
+    (a, b) => b.promedioGeneral - a.promedioGeneral
+  );
+  const areaMejor = sorted[0] ?? null;
+  const areaPeor = sorted[sorted.length - 1] ?? null;
+
+  // Tipo más fuerte / débil
+  let tipoMasFuerte: TipoCompetencia = "tecnica";
+  let tipoMasDebil: TipoCompetencia = "tecnica";
+  let max = -1;
+  let min = 101;
+  for (const t of tipos) {
+    const v = promedioPorTipoGlobal[t];
+    if (v > max) {
+      max = v;
+      tipoMasFuerte = t;
+    }
+    if (v < min) {
+      min = v;
+      tipoMasDebil = t;
+    }
+  }
+
+  // Distribución de calificaciones de competencias blandas.
+  // Para cada empleado evaluado, miramos su puntaje en "blanda" y lo clasificamos.
+  const distribucionBlandas = {
+    sobresaliente: 0,
+    satisfactorio: 0,
+    necesitaMejora: 0,
+    insatisfactorio: 0,
+  };
+  for (const ev of ultimas) {
+    const puntaje = getPromedioPorTipo(ev, configCriterios, "blanda");
+    const cal = getCalificacion(puntaje);
+    if (cal === "Sobresaliente") distribucionBlandas.sobresaliente++;
+    else if (cal === "Satisfactorio") distribucionBlandas.satisfactorio++;
+    else if (cal === "Necesita Mejora") distribucionBlandas.necesitaMejora++;
+    else distribucionBlandas.insatisfactorio++;
+  }
+
+  return {
+    porArea,
+    promedioPorTipoGlobal,
+    promedioGeneral,
+    areaMejor,
+    areaPeor,
+    tipoMasFuerte,
+    tipoMasDebil,
+    totalEvaluados: ultimas.length,
+    distribucionBlandas,
+  };
+}
+
+function avg(nums: number[]): number {
+  if (nums.length === 0) return 0;
+  return nums.reduce((a, b) => a + b, 0) / nums.length;
+}
+
+/** Color de fondo Tailwind para el heat map según el puntaje. */
+export function heatColor(score: number): string {
+  if (score >= 90) return "bg-emerald-500 text-white";
+  if (score >= 75) return "bg-lime-400 text-emerald-950";
+  if (score >= 60) return "bg-amber-400 text-amber-950";
+  if (score > 0) return "bg-red-500 text-white";
+  return "bg-muted text-muted-foreground";
+}
+
+/** Color hex para usar en celdas / charts. */
+export function heatHex(score: number): string {
+  if (score >= 90) return "#10B981"; // emerald-500
+  if (score >= 75) return "#84CC16"; // lime-500
+  if (score >= 60) return "#F59E0B"; // amber-500
+  if (score > 0) return "#EF4444"; // red-500
+  return "#94A3B8"; // slate-400
 }

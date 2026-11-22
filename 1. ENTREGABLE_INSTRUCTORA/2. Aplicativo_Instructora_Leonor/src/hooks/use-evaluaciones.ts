@@ -1,12 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import type { Empleado, Evaluacion, User } from "@/lib/types";
+import type { Empleado, Evaluacion, PlanMejora, User } from "@/lib/types";
 import {
   getEmpleados,
   getEvaluaciones,
   saveEmpleados,
   saveEvaluaciones,
+  updatePlanMejora as updatePlanMejoraStorage,
 } from "@/lib/storage";
 import { getCurrentUser } from "@/lib/auth";
 import { construirEvaluacion } from "@/lib/evaluacion";
@@ -155,6 +156,15 @@ export function useEvaluaciones(
     []
   );
 
+  /**
+   * Sustituye por completo el plan de mejora de una evaluación.
+   * Lo usa el estudiante para editar acciones, fechas, responsable, etc.
+   */
+  const updatePlan = useCallback((evalId: string, plan: PlanMejora) => {
+    updatePlanMejoraStorage(evalId, plan);
+    setEvaluaciones(getEvaluaciones());
+  }, []);
+
   return {
     evaluaciones,
     empleados,
@@ -167,6 +177,7 @@ export function useEvaluaciones(
     updateEvaluacion,
     deleteEvaluacion,
     setPlanEstado,
+    updatePlan,
     reload,
   };
 }

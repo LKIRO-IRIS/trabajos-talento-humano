@@ -18,6 +18,33 @@ interface FilaEmpleado {
   cargo: string;
 }
 
+interface ConclusionItem {
+  areaId: string;
+  areaLabel: string;
+  pregunta: string;
+  texto: string;
+  ultimaEdicion: string;
+}
+
+interface AnalisisConclusiones {
+  areaMejor: string;
+  areaMejorPromedio: number;
+  areaPeor: string;
+  areaPeorPromedio: number;
+  tipoMasFuerte: string;
+  tipoMasDebil: string;
+  promedioGeneral: number;
+  totalEvaluados: number;
+  porArea: Array<{
+    area: string;
+    tecnica: number;
+    blanda: number;
+    organizacional: number;
+    promedio: number;
+    total: number;
+  }>;
+}
+
 interface BodyEmpleado {
   tipo: "empleado";
   empresa: string;
@@ -51,7 +78,15 @@ interface BodyComparativo {
   filas: FilaComparativa[];
 }
 
-type Body = BodyEmpleado | BodyComparativo;
+interface BodyConclusiones {
+  tipo: "conclusiones";
+  empresa: string;
+  config?: { nombre: string; primaryColor: string; secondaryColor: string };
+  conclusiones: ConclusionItem[];
+  analisis: AnalisisConclusiones;
+}
+
+type Body = BodyEmpleado | BodyComparativo | BodyConclusiones;
 
 function colorCalificacion(cal: string): [number, number, number] {
   switch (cal) {
@@ -84,8 +119,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Validar estructura mínima
-    if (!body || (body.tipo !== "empleado" && body.tipo !== "comparativo")) {
-      return NextResponse.json({ error: "El campo 'tipo' debe ser 'empleado' o 'comparativo'" }, { status: 400 });
+    if (!body || (body.tipo !== "empleado" && body.tipo !== "comparativo" && body.tipo !== "conclusiones")) {
+      return NextResponse.json({ error: "El campo 'tipo' debe ser 'empleado', 'comparativo' o 'conclusiones'" }, { status: 400 });
     }
     if (!body.empresa || typeof body.empresa !== "string") {
       body.empresa = "Evaluación de Desempeño";
@@ -97,6 +132,12 @@ export async function POST(req: NextRequest) {
       const b = body as BodyEmpleado;
       if (!b.empleado || !Array.isArray(b.evaluaciones)) {
         return NextResponse.json({ error: "El tipo 'empleado' requiere 'empleado' y 'evaluaciones'" }, { status: 400 });
+      }
+    }
+    if (body.tipo === "conclusiones") {
+      const b = body as BodyConclusiones;
+      if (!Array.isArray(b.conclusiones) || !b.analisis) {
+        return NextResponse.json({ error: "El tipo 'conclusiones' requiere 'conclusiones' y 'analisis'" }, { status: 400 });
       }
     }
 
@@ -161,6 +202,148 @@ export async function POST(req: NextRequest) {
         },
         margin: { left: margin, right: margin },
       });
+    } else if (body.tipo === "conclusiones") {
+      // Informe de conclusiones del estudiante
+      const { conclusiones, analisis } = body;
+
+      doc.setTextColor(15, 23, 42);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(15);
+      doc.text("Informe de Conclusiones", margin, y);
+      y += 16;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.setTextColor(100, 116, 139);
+      doc.text(
+        `Generado: ${new Date().toLocaleDateString("es-CO")} · Evaluados: ${analisis.totalEvaluados}`,
+        margin,
+        y
+      );
+      y += 18;
+
+      // Cuadro resumen del análisis
+      doc.setFillColor(241, 245, 249);
+      doc.roundedRect(margin, y, pageWidth - margin * 2, 70, 4, 4, "F");
+      doc.setTextColor(15, 23, 42);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
+      doc.text("Resumen del análisis", margin + 12, y + 18);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.text(
+        `Promedio general: ${analisis.promedioGeneral.toFixed(1)} / 100`,
+        margin + 12,
+        y + 32
+      );
+      doc.text(
+        `Área más fuerte: ${analisis.areaMejor} (${analisis.areaMejorPromedio.toFixed(1)})`,
+        margin + 12,
+        y + 44
+      );
+      doc.text(
+        `Área a mejorar: ${analisis.areaPeor} (${analisis.areaPeorPromedio.toFixed(1)})`,
+        margin + 12,
+        y + 56
+      );
+      doc.text(
+        `Competencia más fuerte: ${analisis.tipoMasFuerte}`,
+        pageWidth / 2,
+        y + 32
+      );
+      doc.text(
+        `Competencia más débil: ${analisis.tipoMasDebil}`,
+        pageWidth / 2,
+        y + 44
+      );
+      y += 86;
+
+      // Tabla de promedios por área
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.setTextColor(15, 23, 42);
+      doc.text("Promedios por área y tipo de competencia", margin, y);
+      y += 8;
+      autoTable(doc, {
+        startY: y,
+        head: [["Área", "Técnicas", "Blandas", "Organiz.", "Promedio", "Empl."]],
+        body: analisis.porArea.map((a) => [
+          a.area,
+          a.tecnica.toFixed(1),
+          a.blanda.toFixed(1),
+          a.organizacional.toFixed(1),
+          a.promedio.toFixed(1),
+          String(a.total),
+        ]),
+        theme: "grid",
+        headStyles: { fillColor: [13, 148, 136], textColor: 255, fontSize: 9 },
+        bodyStyles: { fontSize: 9 },
+        columnStyles: {
+          4: { halign: "right", fontStyle: "bold" },
+          5: { halign: "center" },
+        },
+        margin: { left: margin, right: margin },
+      });
+      const finalY1 = (doc as unknown as { lastAutoTable?: { finalY?: number } }).lastAutoTable?.finalY;
+      y = typeof finalY1 === "number" ? finalY1 + 24 : y;
+
+      // Conclusiones del estudiante
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.setTextColor(15, 23, 42);
+      doc.text("Conclusiones del estudiante", margin, y);
+      y += 16;
+
+      for (const c of conclusiones) {
+        if (!c.texto || !c.texto.trim()) continue;
+        // Nueva página si no cabe el título
+        if (y > doc.internal.pageSize.getHeight() - 100) {
+          doc.addPage();
+          y = 60;
+        }
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(11);
+        doc.setTextColor(13, 148, 136);
+        doc.text(c.areaLabel, margin, y);
+        y += 12;
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(8);
+        doc.setTextColor(100, 116, 139);
+        const preguntaLines = doc.splitTextToSize(c.pregunta, pageWidth - margin * 2);
+        doc.text(preguntaLines, margin, y);
+        y += preguntaLines.length * 10 + 4;
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.setTextColor(15, 23, 42);
+        const lines = doc.splitTextToSize(c.texto, pageWidth - margin * 2);
+        // Paginación por si la conclusión es muy larga
+        const lineHeight = 13;
+        for (const line of lines) {
+          if (y > doc.internal.pageSize.getHeight() - 60) {
+            doc.addPage();
+            y = 60;
+          }
+          doc.text(line, margin, y);
+          y += lineHeight;
+        }
+        y += 10;
+      }
+
+      // Firmas
+      if (y > doc.internal.pageSize.getHeight() - 100) {
+        doc.addPage();
+        y = 60;
+      }
+      y += 20;
+      doc.setDrawColor(15, 23, 42);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.text("_____________________", margin, y);
+      doc.text("_____________________", pageWidth - margin - 110, y);
+      y += 14;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.text("Evaluador", margin, y);
+      doc.text("Responsable", pageWidth - margin - 110, y);
     } else {
       // Ficha individual de empleado
       const { empleado, evaluaciones, criterios } = body;
