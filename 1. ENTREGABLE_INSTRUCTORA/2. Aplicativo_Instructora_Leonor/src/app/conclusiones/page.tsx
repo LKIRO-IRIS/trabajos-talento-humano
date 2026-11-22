@@ -10,11 +10,9 @@ import {
   Target,
   CalendarClock,
   CheckSquare,
-  Eye,
   FileDown,
   PenLine,
   ChevronRight,
-  RefreshCw,
   Save,
   Trash2,
 } from "lucide-react";
@@ -32,11 +30,13 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { useAuthContext } from "@/components/auth/auth-context";
 import { useEvaluaciones } from "@/hooks/use-evaluaciones";
 import { useConfig } from "@/hooks/use-config";
@@ -119,7 +119,8 @@ export default function ConclusionesPage() {
     plan: "",
     finales: "",
   });
-  const [activeTab, setActiveTab] = useState<AreaId>("analisis");
+  // Área actualmente abierta en el modal (null = modal cerrado)
+  const [activeArea, setActiveArea] = useState<AreaId | null>(null);
   const [exporting, setExporting] = useState(false);
 
   // Cargar al montar
@@ -214,18 +215,18 @@ export default function ConclusionesPage() {
     };
   }, []);
 
-  // Insertar texto en el área activa
-  const insertText = (texto: string) => {
-    const current = draft[activeTab];
+  // Insertar texto en el área indicada (modal)
+  const insertText = (texto: string, areaId: AreaId) => {
+    const current = draft[areaId];
     const next = current ? `${current}\n\n${texto}` : texto;
-    handleChange(activeTab, next);
-    toast.success("Texto insertado en el área activa.");
+    handleChange(areaId, next);
+    toast.success(`Texto insertado en "${AREAS_CONFIG[areaId].label}".`);
   };
 
-  // Limpiar área activa
-  const clearArea = () => {
-    handleChange(activeTab, "");
-    toast.info(`Área "${AREAS_CONFIG[activeTab].label}" vaciada.`);
+  // Limpiar área indicada (modal)
+  const clearArea = (areaId: AreaId) => {
+    handleChange(areaId, "");
+    toast.info(`Área "${AREAS_CONFIG[areaId].label}" vaciada.`);
   };
 
   // Word count
@@ -297,320 +298,167 @@ export default function ConclusionesPage() {
 
   return (
     <MainLayout>
-      <div className="space-y-6">
+      <div className="space-y-8">
         {/* Header */}
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight">
-              <FileText className="h-6 w-6 text-brand" />
-              Conclusiones
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Redacta tus conclusiones a partir del análisis. Las sugerencias se generan
-              automáticamente desde la página de Análisis.
-            </p>
+        <div className="space-y-5">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="space-y-2">
+              <h1 className="flex items-center gap-3 text-3xl font-bold tracking-tight">
+                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand/10">
+                  <FileText className="h-6 w-6 text-brand" />
+                </span>
+                Conclusiones
+              </h1>
+              <p className="max-w-2xl text-base text-muted-foreground">
+                Redacta tus conclusiones a partir del análisis. Cada sección se
+                abre en su propio editor amplio, con sugerencias automáticas
+                generadas desde la página de Análisis.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button asChild variant="outline" className="gap-2">
+                <Link href="/analisis">
+                  <BarChart3 className="h-4 w-4" />
+                  Ver Análisis
+                </Link>
+              </Button>
+              <Button
+                onClick={exportarPDF}
+                disabled={exporting}
+                className="gap-2"
+              >
+                <FileDown className="h-4 w-4" />
+                {exporting ? "Generando…" : "Exportar a PDF"}
+              </Button>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <Button asChild variant="outline" size="sm" className="gap-2">
-              <Link href="/analisis">
-                <BarChart3 className="h-4 w-4" />
-                Ver Análisis
-              </Link>
-            </Button>
-            <Button
-              onClick={exportarPDF}
-              disabled={exporting}
-              className="gap-2"
-              size="sm"
-            >
-              <FileDown className="h-4 w-4" />
-              {exporting ? "Generando…" : "Exportar a PDF"}
-            </Button>
+
+          {/* Resumen global */}
+          <div className="flex flex-wrap items-center gap-3 text-sm">
+            <Badge variant="secondary" className="gap-1.5 px-3 py-1">
+              <Save className="h-3.5 w-3.5" />
+              {totalPalabras} palabras en total
+            </Badge>
+            <Badge variant="secondary" className="px-3 py-1">
+              {totalSecciones}/{AREA_IDS.length} secciones redactadas
+            </Badge>
+            <span className="text-xs text-muted-foreground">
+              Auto-guardado activo · se requiere sesión para persistir
+            </span>
           </div>
         </div>
 
-        {/* Layout: 3 columnas */}
-        <div className="grid gap-4 lg:grid-cols-[320px_1fr_360px]">
-          {/* A. Panel de ayuda (izquierda) */}
-          <div className="space-y-4 lg:order-1 order-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Lightbulb className="h-4 w-4 text-amber-500" />
-                  Sugerencias automáticas
-                </CardTitle>
-                <CardDescription>
-                  Inserta estas frases en tu editor. Aparecerán en el área activa.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {resumenes.map((r, i) => (
-                  <div
-                    key={i}
-                    className="rounded-lg border bg-muted/30 p-2.5 text-xs"
-                  >
-                    <p>{r}</p>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="mt-1.5 h-6 gap-1 px-2 text-[11px]"
-                      onClick={() => insertText(r)}
+        {/* Grid 2×2 de tarjetas */}
+        <div className="grid gap-6 sm:grid-cols-2">
+          {AREA_IDS.map((id) => {
+            const Icon = AREAS_CONFIG[id].icon;
+            const texto = draft[id];
+            const wc = wordCount(texto);
+            const trimmed = texto.trim();
+            const preview = trimmed.slice(0, 160);
+            const hasMore = trimmed.length > 160;
+            return (
+              <Card
+                key={id}
+                role="button"
+                tabIndex={0}
+                onClick={() => setActiveArea(id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setActiveArea(id);
+                  }
+                }}
+                className="group relative cursor-pointer overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                {/* Banda superior de color */}
+                <div
+                  className="h-1.5 w-full"
+                  style={{ backgroundColor: AREAS_CONFIG[id].color }}
+                />
+                <CardHeader className="space-y-4 p-6 pb-2">
+                  <div className="flex items-start justify-between gap-3">
+                    <div
+                      className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl"
+                      style={{
+                        backgroundColor: `${AREAS_CONFIG[id].color}1A`,
+                      }}
                     >
-                      <ChevronRight className="h-3 w-3" />
-                      Insertar en &quot;{AREAS_CONFIG[activeTab].label}&quot;
-                    </Button>
+                      <Icon
+                        className="h-7 w-7"
+                        style={{ color: AREAS_CONFIG[id].color }}
+                      />
+                    </div>
+                    <Badge
+                      variant={wc > 0 ? "default" : "outline"}
+                      className="gap-1 px-2.5 py-1"
+                    >
+                      {wc} {wc === 1 ? "palabra" : "palabras"}
+                    </Badge>
                   </div>
-                ))}
-              </CardContent>
-            </Card>
+                  <div className="space-y-1.5">
+                    <CardTitle className="text-xl leading-tight">
+                      {AREAS_CONFIG[id].label}
+                    </CardTitle>
+                    <CardDescription className="text-sm leading-relaxed">
+                      {AREAS_CONFIG[id].pregunta}
+                    </CardDescription>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-3 p-6 pt-3">
+                  <div className="min-h-[5rem] rounded-lg border bg-muted/30 p-3">
+                    {preview ? (
+                      <p className="line-clamp-3 text-sm leading-relaxed text-foreground/80">
+                        {preview}
+                        {hasMore ? "…" : ""}
+                      </p>
+                    ) : (
+                      <p className="text-sm italic text-muted-foreground">
+                        Sin redactar — haz clic para empezar a escribir.
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>{savedHint[id] || "Sin cambios"}</span>
+                    <span className="flex items-center gap-1 font-medium text-foreground transition-colors group-hover:text-brand">
+                      Abrir editor
+                      <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <BarChart3 className="h-4 w-4 text-brand" />
-                  Estadísticas clave
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2 text-sm">
+        {/* Estadísticas clave del análisis */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <BarChart3 className="h-4 w-4 text-brand" />
+              Estadísticas clave del análisis
+            </CardTitle>
+            <CardDescription>
+              Datos contextuales generados desde la página de Análisis.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-8 md:grid-cols-2">
+              <div className="space-y-2.5 text-sm">
                 <Row label="Promedio general">
-                  <span className="font-bold">{formatScore(analisis.promedioGeneral)}</span>
+                  <span className="font-bold">
+                    {formatScore(analisis.promedioGeneral)}
+                  </span>
                 </Row>
                 <Row label="Empleados evaluados">
                   <span className="font-bold">{analisis.totalEvaluados}</span>
                 </Row>
                 <Row label="Áreas analizadas">
-                  <span className="font-bold">{AREAS_ORGANIZACIONALES.length}</span>
+                  <span className="font-bold">
+                    {AREAS_ORGANIZACIONALES.length}
+                  </span>
                 </Row>
-                <Separator className="my-2" />
-                <div>
-                  <p className="mb-1 text-xs text-muted-foreground">
-                    Distribución de competencias blandas
-                  </p>
-                  <div className="space-y-1">
-                    <DistRow
-                      label="Sobresaliente"
-                      value={analisis.distribucionBlandas.sobresaliente}
-                      total={analisis.totalEvaluados}
-                      color="#16A34A"
-                    />
-                    <DistRow
-                      label="Satisfactorio"
-                      value={analisis.distribucionBlandas.satisfactorio}
-                      total={analisis.totalEvaluados}
-                      color="#2563EB"
-                    />
-                    <DistRow
-                      label="Necesita Mejora"
-                      value={analisis.distribucionBlandas.necesitaMejora}
-                      total={analisis.totalEvaluados}
-                      color="#F59E0B"
-                    />
-                    <DistRow
-                      label="Insatisfactorio"
-                      value={analisis.distribucionBlandas.insatisfactorio}
-                      total={analisis.totalEvaluados}
-                      color="#DC2626"
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* B. Editor (centro) */}
-          <div className="space-y-4 lg:order-2 order-1">
-            <Card>
-              <CardHeader>
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div>
-                    <CardTitle className="flex items-center gap-2 text-base">
-                      <PenLine className="h-4 w-4 text-brand" />
-                      Editor de conclusiones
-                    </CardTitle>
-                    <CardDescription>
-                      Auto-guardado activo. Para guardar necesitas iniciar sesión.
-                    </CardDescription>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Badge variant="outline" className="gap-1">
-                      <Save className="h-3 w-3" />
-                      {totalPalabras} palabras
-                    </Badge>
-                    <Badge variant="outline">
-                      {totalSecciones}/{AREA_IDS.length} secciones
-                    </Badge>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as AreaId)}>
-                  <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
-                    {AREA_IDS.map((id) => {
-                      const Icon = AREAS_CONFIG[id].icon;
-                      return (
-                        <TabsTrigger key={id} value={id} className="gap-1.5 text-xs">
-                          <Icon className="h-3.5 w-3.5" />
-                          <span className="hidden sm:inline">{AREAS_CONFIG[id].label}</span>
-                          <span className="sm:hidden">{AREAS_CONFIG[id].label.split(" ")[0]}</span>
-                        </TabsTrigger>
-                      );
-                    })}
-                  </TabsList>
-
-                  {AREA_IDS.map((id) => {
-                    const Icon = AREAS_CONFIG[id].icon;
-                    return (
-                      <TabsContent key={id} value={id} className="mt-3 space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Icon
-                            className="h-4 w-4"
-                            style={{ color: AREAS_CONFIG[id].color }}
-                          />
-                          <Label className="text-sm font-semibold">
-                            {AREAS_CONFIG[id].label}
-                          </Label>
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          {AREAS_CONFIG[id].pregunta}
-                        </p>
-                        <Textarea
-                          value={draft[id]}
-                          onChange={(e) => handleChange(id, e.target.value)}
-                          placeholder={AREAS_CONFIG[id].placeholder}
-                          rows={10}
-                          className="resize-y"
-                        />
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                          <span className="text-xs text-muted-foreground">
-                            {wordCount(draft[id])} palabras ·{" "}
-                            {savedHint[id] || "Sin cambios"}
-                          </span>
-                          <div className="flex gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-7 gap-1 text-xs text-destructive"
-                              onClick={clearArea}
-                            >
-                              <Trash2 className="h-3 w-3" />
-                              Limpiar
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="h-7 gap-1 text-xs"
-                              onClick={() => handleManualSave(id)}
-                            >
-                              <Save className="h-3 w-3" />
-                              Guardar
-                            </Button>
-                          </div>
-                        </div>
-                      </TabsContent>
-                    );
-                  })}
-                </Tabs>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* C. Vista previa (derecha) */}
-          <div className="space-y-4 lg:order-3 order-3">
-            <Card>
-              <CardHeader>
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <Eye className="h-4 w-4 text-brand" />
-                    Vista previa
-                  </CardTitle>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7"
-                    onClick={exportarPDF}
-                    disabled={exporting}
-                    aria-label="Actualizar vista previa"
-                  >
-                    <RefreshCw className={`h-3.5 w-3.5 ${exporting ? "animate-spin" : ""}`} />
-                  </Button>
-                </div>
-                <CardDescription>
-                  Informe final con las conclusiones escritas.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="max-h-[600px] overflow-y-auto pr-1">
-                <article className="space-y-4 rounded-lg border bg-white p-4 text-sm dark:bg-zinc-950">
-                  <header className="border-b pb-3">
-                    <p className="text-xs uppercase tracking-widest text-muted-foreground">
-                      Informe de conclusiones
-                    </p>
-                    <h2 className="mt-1 text-lg font-bold">
-                      {config?.nombre ?? "Evaluación de Desempeño"}
-                    </h2>
-                    <p className="text-xs text-muted-foreground">
-                      Generado: {formatDate(new Date().toISOString())}
-                    </p>
-                  </header>
-
-                  {totalSecciones === 0 ? (
-                    <p className="py-6 text-center text-xs text-muted-foreground">
-                      Escribe tus conclusiones para verlas aquí.
-                    </p>
-                  ) : (
-                    AREA_IDS.map((id) => {
-                      const Icon = AREAS_CONFIG[id].icon;
-                      const texto = draft[id].trim();
-                      if (!texto) return null;
-                      return (
-                        <section key={id} className="space-y-1">
-                          <h3
-                            className="flex items-center gap-2 text-sm font-semibold"
-                            style={{ color: AREAS_CONFIG[id].color }}
-                          >
-                            <Icon className="h-3.5 w-3.5" />
-                            {AREAS_CONFIG[id].label}
-                          </h3>
-                          <p className="whitespace-pre-wrap text-xs leading-relaxed">
-                            {texto}
-                          </p>
-                          <p className="text-[10px] text-muted-foreground">
-                            Última edición:{" "}
-                            {conclusiones[id]?.ultimaEdicion
-                              ? formatDate(conclusiones[id]!.ultimaEdicion)
-                              : "—"}
-                          </p>
-                        </section>
-                      );
-                    })
-                  )}
-
-                  <footer className="mt-4 border-t pt-3">
-                    <div className="grid grid-cols-2 gap-3 text-xs">
-                      <div>
-                        <p className="font-semibold">Firma del evaluador</p>
-                        <div className="mt-3 border-b border-dashed" />
-                        <p className="mt-1 text-muted-foreground">
-                          {user?.nombre ?? "—"}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="font-semibold">Firma del responsable</p>
-                        <div className="mt-3 border-b border-dashed" />
-                        <p className="mt-1 text-muted-foreground">
-                          ____________________
-                        </p>
-                      </div>
-                    </div>
-                  </footer>
-                </article>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm">Resumen del análisis</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-1.5 text-xs">
+                <Separator className="my-3" />
                 <Row label="Área más fuerte">
                   <span className="font-medium">
                     {analisis.areaMejor?.area ?? "—"}
@@ -631,10 +479,174 @@ export default function ConclusionesPage() {
                     {LABEL_TIPO[analisis.tipoMasDebil]}
                   </span>
                 </Row>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+              </div>
+              <div className="space-y-2">
+                <p className="text-xs text-muted-foreground">
+                  Distribución de competencias blandas
+                </p>
+                <div className="space-y-2.5">
+                  <DistRow
+                    label="Sobresaliente"
+                    value={analisis.distribucionBlandas.sobresaliente}
+                    total={analisis.totalEvaluados}
+                    color="#16A34A"
+                  />
+                  <DistRow
+                    label="Satisfactorio"
+                    value={analisis.distribucionBlandas.satisfactorio}
+                    total={analisis.totalEvaluados}
+                    color="#2563EB"
+                  />
+                  <DistRow
+                    label="Necesita Mejora"
+                    value={analisis.distribucionBlandas.necesitaMejora}
+                    total={analisis.totalEvaluados}
+                    color="#F59E0B"
+                  />
+                  <DistRow
+                    label="Insatisfactorio"
+                    value={analisis.distribucionBlandas.insatisfactorio}
+                    total={analisis.totalEvaluados}
+                    color="#DC2626"
+                  />
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Modal de edición */}
+        <Dialog
+          open={activeArea !== null}
+          onOpenChange={(open) => {
+            if (!open) setActiveArea(null);
+          }}
+        >
+          <DialogContent className="flex max-w-4xl flex-col gap-0 overflow-hidden p-0 sm:max-w-4xl max-h-[90vh]">
+            {activeArea && (
+              <>
+                {/* Header del modal */}
+                <DialogHeader className="shrink-0 gap-0 border-b p-6 pb-4">
+                  <div className="flex items-start gap-4">
+                    <div
+                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
+                      style={{
+                        backgroundColor: `${AREAS_CONFIG[activeArea].color}1A`,
+                      }}
+                    >
+                      {(() => {
+                        const Icon = AREAS_CONFIG[activeArea].icon;
+                        return (
+                          <Icon
+                            className="h-6 w-6"
+                            style={{ color: AREAS_CONFIG[activeArea].color }}
+                          />
+                        );
+                      })()}
+                    </div>
+                    <div className="space-y-1">
+                      <DialogTitle className="text-2xl leading-tight">
+                        {AREAS_CONFIG[activeArea].label}
+                      </DialogTitle>
+                      <DialogDescription className="text-sm leading-relaxed">
+                        {AREAS_CONFIG[activeArea].pregunta}
+                      </DialogDescription>
+                    </div>
+                  </div>
+                </DialogHeader>
+
+                {/* Cuerpo: 2 columnas (60% editor / 40% sugerencias) */}
+                <div className="grid flex-1 gap-6 overflow-y-auto p-6 md:grid-cols-[3fr_2fr]">
+                  {/* Columna izquierda: Editor */}
+                  <div className="flex flex-col gap-3">
+                    <Label className="flex items-center gap-2 text-sm font-semibold">
+                      <PenLine className="h-4 w-4 text-brand" />
+                      Tu redacción
+                    </Label>
+                    <Textarea
+                      value={draft[activeArea]}
+                      onChange={(e) =>
+                        handleChange(activeArea, e.target.value)
+                      }
+                      placeholder={AREAS_CONFIG[activeArea].placeholder}
+                      rows={14}
+                      className="min-h-[18rem] flex-1 resize-y text-sm leading-relaxed"
+                      autoFocus
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {wordCount(draft[activeArea])} palabras ·{" "}
+                      {savedHint[activeArea] || "Sin cambios"}
+                    </p>
+                  </div>
+
+                  {/* Columna derecha: Sugerencias automáticas */}
+                  <div className="flex min-h-0 flex-col gap-3">
+                    <Label className="flex items-center gap-2 text-sm font-semibold">
+                      <Lightbulb className="h-4 w-4 text-amber-500" />
+                      Sugerencias automáticas
+                    </Label>
+                    <p className="text-xs leading-relaxed text-muted-foreground">
+                      Pulsa &quot;Insertar&quot; para añadir la frase al final
+                      de tu redacción.
+                    </p>
+                    <div className="flex flex-col gap-2.5 overflow-y-auto pr-1">
+                      {resumenes.map((r, i) => (
+                        <div
+                          key={i}
+                          className="rounded-lg border bg-muted/30 p-3 text-xs"
+                        >
+                          <p className="leading-relaxed">{r}</p>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="mt-2 h-7 gap-1 text-xs"
+                            onClick={() => insertText(r, activeArea)}
+                          >
+                            <ChevronRight className="h-3 w-3" />
+                            Insertar
+                          </Button>
+                        </div>
+                      ))}
+                      {resumenes.length === 0 && (
+                        <p className="text-xs italic text-muted-foreground">
+                          No hay sugerencias disponibles todavía.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer: contador + acciones */}
+                <DialogFooter className="flex shrink-0 flex-row items-center justify-between gap-3 border-t p-6 pt-4 sm:justify-between">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="gap-1.5 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                    onClick={() => clearArea(activeArea)}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    Limpiar
+                  </Button>
+                  <div className="flex items-center gap-3">
+                    <Badge variant="outline" className="gap-1 px-2.5 py-1">
+                      {wordCount(draft[activeArea])} palabras
+                    </Badge>
+                    <Button
+                      onClick={() => {
+                        handleManualSave(activeArea);
+                        setActiveArea(null);
+                      }}
+                      className="gap-1.5"
+                    >
+                      <Save className="h-3.5 w-3.5" />
+                      Guardar y cerrar
+                    </Button>
+                  </div>
+                </DialogFooter>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </MainLayout>
   );
