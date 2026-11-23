@@ -1,0 +1,33 @@
+# Reflejos Brillantes S.A.S. - Configuración Netlify
+# Sitio estático (HTML + CSS + JS vanilla)
+
+[build]
+  publish = "."
+  command = ""
+
+# Headers de seguridad y cacheo
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+
+# Cache de assets estáticos
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Página por defecto
+[[redirects]]
+  from = "/"
+  to = "/index.html"
+  status = 200
+
+# Fallback para páginas no encontradas
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 404

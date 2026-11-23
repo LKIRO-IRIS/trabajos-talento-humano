@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Entregables | Reflejos Brillantes S.A.S.</title>
+  <meta name="description" content="Documentos organizados en 3 trimestres: Trimestre 1 completo con 4 ventanas (Operar Herramientas, Servicio al Cliente, Atención al Cliente, Tarjeta), Trimestres 2 y 3 próximamente." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/shared.css" />
+  <style>
+    /* Modal de documento */
+    .doc-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 10, 15, 0.75);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .doc-modal-backdrop.open {
+      display: flex;
+      animation: fadeIn 0.2s ease-out;
+    }
+    .doc-modal {
+      background: rgba(44, 62, 80, 0.97);
+      border: 1px solid rgba(146, 208, 80, 0.25);
+      border-radius: 18px;
+      width: 100%;
+      max-width: 720px;
+      max-height: 88vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+    .doc-modal-header {
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: linear-gradient(135deg, #2C3E50, #1a2530);
+    }
+    .doc-modal-title {
+      font-family: var(--font-title);
+      font-weight: 600;
+      font-size: 16px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .doc-modal-close {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.65);
+      font-size: 24px;
+      cursor: pointer;
+      line-height: 1;
+      transition: color 0.2s ease;
+    }
+    .doc-modal-close:hover { color: #fff; }
+    .doc-modal-body {
+      padding: 24px;
+      overflow-y: auto;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    .doc-modal-body h4 {
+      font-family: var(--font-title);
+      color: var(--color-secondary);
+      font-size: 15px;
+      margin: 16px 0 8px;
+    }
+    .doc-modal-body p { margin-bottom: 10px; }
+    .doc-modal-body ul {
+      padding-left: 20px;
+      margin-bottom: 12px;
+    }
+    .doc-modal-body li { margin-bottom: 4px; }
+
+    .gantt-chart {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    .gantt-chart th, .gantt-chart td {
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 7px 6px;
+      text-align: center;
+    }
+    .gantt-chart th {
+      background: rgba(146,208,80,0.15);
+      color: #92D050;
+      font-weight: 600;
+    }
+    .gantt-chart .task {
+      text-align: left;
+      color: #fff;
+      font-weight: 500;
+    }
+    .gantt-bar {
+      background: linear-gradient(90deg, #92D050, #6FBF3A);
+      border-radius: 4px;
+      height: 18px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .gantt-bar--soft {
+      background: rgba(146,208,80,0.35);
+    }
+
+    .qr-box {
+      width: 180px;
+      height: 180px;
+      background: #fff;
+      border-radius: 12px;
+      padding: 10px;
+      margin: 12px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .qr-box svg { width: 100%; height: 100%; }
+
+    .doc-preview-card {
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 14px;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Video de fondo -->
+  <video class="video-bg" autoplay muted loop playsinline>
+    <source src="assets/video-fondo.mp4" type="video/mp4" />
+  </video>
+  <div class="video-overlay"></div>
+
+  <div class="page-wrap">
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="index.html" class="navbar-logo">
+          <div class="navbar-logo-badge">RB</div>
+          <span>Reflejos Brillantes</span>
+        </a>
+        <button class="navbar-toggle" aria-label="Menú">&#9776;</button>
+        <ul class="navbar-links">
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="nosotros.html">Nosotros</a></li>
+          <li><a href="productos.html">Productos</a></li>
+          <li><a href="entregables.html" class="active">Entregables</a></li>
+          <li><a href="contacto.html">Contacto</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main class="main-content">
+      <!-- Encabezado -->
+      <section class="section" style="padding-top:48px;padding-bottom:32px;">
+        <div class="container">
+          <h1 class="section-title">Entregables</h1>
+          <p class="section-subtitle" style="max-width:780px;margin-left:auto;margin-right:auto;">
+            Documentación organizada por trimestres. Cada ventana contiene los entregables
+            correspondientes a los procesos del área de Talento Humano.
+          </p>
+        </div>
+      </section>
+
+      <section class="section" style="padding-top:0;padding-bottom:80px;">
+        <div class="container">
+
+          <!-- ================= TRIMESTRE 1 ================= -->
+          <div class="trimester-block">
+            <div class="trimester-header">
+              <div>
+                <span class="trimester-badge">&#10003; Completo</span>
+                <h2 class="trimester-title">Trimestre 1</h2>
+                <p class="trimester-desc">
+                  Entregables del primer trimestre, organizados en 4 ventanas temáticas.
+                </p>
+              </div>
+            </div>
+
+            <div class="ventana-grid">
+
+              <!-- Ventana 1: Operar Herramientas -->
+              <details class="ventana" open>
+                <summary>
+                  <div class="ventana-summary-content">
+                    <div class="ventana-num">1</div>
+                    <div class="ventana-title">Operar Herramientas</div>
+                  </div>
+                  <span class="ventana-chevron">&#9662;</span>
+                </summary>
+                <div class="ventana-body">
+                  <div class="doc-row">
+                    <div class="doc-row-info">
+                      <div class="doc-icon">&#128197;</div>
+                      <div>
+                        <div class="doc-name">Diagrama de Gantt</div>
+                        <div class="doc-meta">Plan de actividades T1 · PDF</div>
+                      </div>
+                    </div>
+                    <button class="btn-tr btn-tr--verde btn-tr--sm" data-doc="gantt">Abrir</button>
+                  </div>
+                </div>
+              </details>
+
+              <!-- Ventana 2: Servicio al Cliente -->
+              <details class="ventana">
+                <summary>
+                  <div class="ventana-summary-content">
+                    <div class="ventana-num">2</div>
+                    <div class="ventana-title">Servicio al Cliente</div>
+                  </div>
+                  <span class="ventana-chevron">&#9662;</span>
+                </summary>
+                <div class="ventana-body">
+                  <div class="doc-row">
+                    <div class="doc-row-info">
+                      <div class="doc-icon">&#128196;</div>
+                      <div>
+                        <div class="doc-name">Protocolo de Atención al Cliente Interno</div>
+                        <div class="doc-meta">Pautas y procedimientos · PDF</div>
+                      </div>
+                    </div>
+                    <button class="btn-tr btn-tr--verde btn-tr--sm" data-doc="protocolo-interno">Abrir</button>
+                  </div>
+                  <div class="doc-row">
+                    <div class="doc-row-info">
+                      <div class="doc-icon">&#128196;</div>
+                      <div>
+                        <div class="doc-name">Protocolo de Atención al Cliente Externo</div>
+                        <div class="doc-meta">Pautas y procedimientos · PDF</div>
+                      </div>
+                    </div>
+                    <button class="btn-tr btn-tr--verde btn-tr--sm" data-doc="protocolo-externo">Abrir</button>
+                  </div>
+                  <div class="doc-row">
+                    <div class="doc-row-info">
+                      <div class="doc-icon">&#128221;</div>
+                      <div>
+                        <div class="doc-name">PQRSF</div>
+                        <div class="doc-meta">Formato de petition, quejas, reclamos · PDF</div>
+                      </div>
+                    </div>
+                    <button class="btn-tr btn-tr--verde btn-tr--sm" data-doc="pqrsf">Abrir</button>
+                  </div>
+                </div>
+              </details>
+
+              <!-- Ventana 3: Atención al Cliente -->
+              <details class="ventana">
+                <summary>
+                  <div class="ventana-summary-content">
+                    <div class="ventana-num">3</div>
+                    <div class="ventana-title">Atención al Cliente</div>
+                  </div>
+                  <span class="ventana-chevron">&#9662;</span>
+                </summary>
+                <div class="ventana-body">
+                  <div class="doc-row">
+                    <div class="doc-row-info">
+                      <div class="doc-icon">&#128214;</div>
+                      <div>
+                        <div class="doc-name">Cartilla</div>
+                        <div class="doc-meta">Material informativo · PDF</div>
+                      </div>
+                    </div>
+                    <button class="btn-tr btn-tr--verde btn-tr--sm" data-doc="cartilla">Abrir</button>
+                  </div>
+                  <div class="doc-row">
+                    <div class="doc-row-info">
+                      <div class="doc-icon">&#128188;</div>
+                      <div>
+                        <div class="doc-name">Portafolio</div>
+                        <div class="doc-meta">Portafolio de servicios · PDF</div>
+                      </div>
+                    </div>
+                    <button class="btn-tr btn-tr--verde btn-tr--sm" data-doc="portafolio">Abrir</button>
+                  </div>
+                </div>
+              </details>
+
+              <!-- Ventana 4: Tarjeta -->
+              <details class="ventana">
+                <summary>
+                  <div class="ventana-summary-content">
+                    <div class="ventana-num">4</div>
+                    <div class="ventana-title">Tarjeta</div>
+                  </div>
+                  <span class="ventana-chevron">&#9662;</span>
+                </summary>
+                <div class="ventana-body">
+                  <div class="doc-row">
+                    <div class="doc-row-info">
+                      <div class="doc-icon">&#127903;</div>
+                      <div>
+                        <div class="doc-name">Tarjeta con QR</div>
+                        <div class="doc-meta">Tarjeta de presentación digital · PDF</div>
+                      </div>
+                    </div>
+                    <button class="btn-tr btn-tr--verde btn-tr--sm" data-doc="tarjeta-qr">Abrir</button>
+                  </div>
+                </div>
+              </details>
+
+            </div>
+          </div>
+
+          <!-- ================= TRIMESTRE 2 ================= -->
+          <div class="trimester-block">
+            <div class="trimester-header">
+              <div>
+                <span class="trimester-badge" style="background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);">En desarrollo</span>
+                <h2 class="trimester-title">Trimestre 2</h2>
+                <p class="trimester-desc">Documentación del segundo trimestre.</p>
+              </div>
+            </div>
+            <div class="coming-soon">
+              <div class="coming-soon-icon">&#9201;</div>
+              <h3>Próximamente</h3>
+              <p>Estamos trabajando en los entregables de este trimestre.</p>
+            </div>
+          </div>
+
+          <!-- ================= TRIMESTRE 3 ================= -->
+          <div class="trimester-block">
+            <div class="trimester-header">
+              <div>
+                <span class="trimester-badge" style="background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);">En desarrollo</span>
+                <h2 class="trimester-title">Trimestre 3</h2>
+                <p class="trimester-desc">Documentación del tercer trimestre.</p>
+              </div>
+            </div>
+            <div class="coming-soon">
+              <div class="coming-soon-icon">&#9201;</div>
+              <h3>Próximamente</h3>
+              <p>Estamos trabajando en los entregables de este trimestre.</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div>
+          <div class="footer-brand">
+            <div class="navbar-logo-badge">RB</div>
+            <span class="footer-brand-name">Reflejos Brillantes S.A.S.</span>
+          </div>
+          <p class="footer-desc">
+            Empresa colombiana dedicada a la fabricación de productos de aseo
+            ecológicos, comprometida con el cuidado del hogar y del planeta.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4>Navegación</h4>
+          <ul>
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="nosotros.html">Nosotros</a></li>
+            <li><a href="productos.html">Productos</a></li>
+            <li><a href="entregables.html">Entregables</a></li>
+            <li><a href="contacto.html">Contacto</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contacto</h4>
+          <ul>
+            <li><a href="mailto:contacto@reflejosbrillantes.com">contacto@reflejosbrillantes.com</a></li>
+            <li><a href="tel:+576012345678">+57 601 234 5678</a></li>
+            <li>Medellín, Colombia</li>
+            <li>Lunes a Viernes, 8am - 5pm</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; 2025 Reflejos Brillantes S.A.S. - Todos los derechos reservados.
+      </div>
+    </footer>
+  </div>
+
+  <!-- Chatbot "Brillante" -->
+  <div class="chatbot-bubble" id="chatbotToggle" role="button" aria-label="Abrir asistente Brillante">
+    <div class="chatbot-icon">&#127807;</div>
+    <span class="chatbot-label">Brillante</span>
+  </div>
+  <div class="chatbot-window" id="chatbotWindow" role="dialog" aria-label="Chat con Brillante">
+    <div class="chatbot-header">
+      <div class="chatbot-header-info">
+        <div class="chatbot-header-avatar">&#127807;</div>
+        <div>
+          <div class="chatbot-header-name">Brillante</div>
+          <div class="chatbot-header-status">En línea</div>
+        </div>
+      </div>
+      <button class="chatbot-close" aria-label="Cerrar chat">&times;</button>
+    </div>
+    <div class="chatbot-messages"></div>
+    <div class="chatbot-quick">
+      <button type="button">productos</button>
+      <button type="button">contacto</button>
+      <button type="button">entregables</button>
+      <button type="button">nosotros</button>
+    </div>
+    <div class="chatbot-input">
+      <input type="text" placeholder="Escribe tu mensaje..." aria-label="Mensaje" />
+      <button type="button" aria-label="Enviar">&#10148;</button>
+    </div>
+  </div>
+
+  <!-- Modal de documento -->
+  <div class="doc-modal-backdrop" id="docModal" role="dialog" aria-modal="true" aria-label="Vista previa del documento">
+    <div class="doc-modal">
+      <div class="doc-modal-header">
+        <div class="doc-modal-title" id="docModalTitle">&#128196; Documento</div>
+        <button class="doc-modal-close" id="docModalClose" aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="doc-modal-body" id="docModalBody"></div>
+    </div>
+  </div>
+
+  <script src="assets/shared.js"></script>
+  <script>
+    // Contenido de cada documento
+    const DOC_CONTENT = {
+      'gantt': {
+        title: 'Diagrama de Gantt - Trimestre 1',
+        icon: '&#128197;',
+        body: `
+          <p>Cronograma de actividades del primer trimestre para el área de Talento Humano.</p>
+          <table class="gantt-chart">
+            <thead>
+              <tr>
+                <th>Actividad</th>
+                <th>Sem 1</th>
+                <th>Sem 2</th>
+                <th>Sem 3</th>
+                <th>Sem 4</th>
+                <th>Sem 5</th>
+                <th>Sem 6</th>
+                <th>Sem 7</th>
+                <th>Sem 8</th>
+                <th>Sem 9</th>
+                <th>Sem 10</th>
+                <th>Sem 11</th>
+                <th>Sem 12</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="task">Inducción personal</td>
+                <td colspan="2"><span class="gantt-bar" style="width:90%;"></span></td>
+                <td colspan="10"></td>
+              </tr>
+              <tr>
+                <td class="task">Capacitación servicio al cliente</td>
+                <td></td>
+                <td colspan="3"><span class="gantt-bar" style="width:88%;"></span></td>
+                <td colspan="8"></td>
+              </tr>
+              <tr>
+                <td class="task">Elaboración de protocolos</td>
+                <td colspan="2"></td>
+                <td colspan="4"><span class="gantt-bar" style="width:90%;"></span></td>
+                <td colspan="6"></td>
+              </tr>
+              <tr>
+                <td class="task">Diseño de cartilla y portafolio</td>
+                <td colspan="4"></td>
+                <td colspan="3"><span class="gantt-bar" style="width:85%;"></span></td>
+                <td colspan="5"></td>
+              </tr>
+              <tr>
+                <td class="task">Implementación PQRSF</td>
+                <td colspan="6"></td>
+                <td colspan="3"><span class="gantt-bar" style="width:90%;"></span></td>
+                <td colspan="3"></td>
+              </tr>
+              <tr>
+                <td class="task">Tarjeta con QR</td>
+                <td colspan="9"></td>
+                <td colspan="2"><span class="gantt-bar" style="width:85%;"></span></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td class="task">Evaluación y cierre T1</td>
+                <td colspan="11"></td>
+                <td><span class="gantt-bar gantt-bar--soft" style="width:80%;"></span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="doc-preview-card">
+            <strong style="color:#92D050;">Estado:</strong> En ejecución &nbsp;·&nbsp;
+            <strong style="color:#92D050;">Responsable:</strong> Talento Humano &nbsp;·&nbsp;
+            <strong style="color:#92D050;">Periodo:</strong> Enero - Marzo
+          </div>
+        `,
+      },
+      'protocolo-interno': {
+        title: 'Protocolo de Atención al Cliente Interno',
+        icon: '&#128196;',
+        body: `
+          <p><strong>Objetivo:</strong> Establecer los lineamientos para la atención entre
+          colaboradores y áreas de la organización, garantizando un servicio ágil y respetuoso.</p>
+          <h4>Lineamientos generales</h4>
+          <ul>
+            <li>Trato cordial y respetuoso en todo momento.</li>
+            <li>Tiempos de respuesta máximo: 24 horas hábiles para correos internos.</li>
+            <li>Uso de canales oficiales (correo corporativo y chat institucional).</li>
+            <li>Confidencialidad de la información sensible.</li>
+          </ul>
+          <h4>Procedimiento</h4>
+          <ul>
+            <li>1. Recepción de la solicitud vía canal oficial.</li>
+            <li>2. Confirmación de recibido en un plazo de 2 horas.</li>
+            <li>3. Gestión y respuesta en el tiempo establecido.</li>
+            <li>4. Cierre y retroalimentación.</li>
+          </ul>
+          <div class="doc-preview-card">
+            <strong style="color:#92D050;">Versión:</strong> 1.0 &nbsp;·&nbsp;
+            <strong style="color:#92D050;">Aprobado por:</strong> Gerencia General
+          </div>
+        `,
+      },
+      'protocolo-externo': {
+        title: 'Protocolo de Atención al Cliente Externo',
+        icon: '&#128196;',
+        body: `
+          <p><strong>Objetivo:</strong> Brindar una atención excepcional a nuestros clientes
+          externos, reflejando los valores de sostenibilidad y compromiso de la empresa.</p>
+          <h4>Pautas de atención</h4>
+          <ul>
+            <li>Saludo cordial e identificación del cliente.</li>
+            <li>Escucha activa de la necesidad o solicitud.</li>
+            <li>Presentación clara de productos y beneficios.</li>
+            <li>Manejo de objeciones con empatía y argumentos técnicos.</li>
+            <li>Cierre con confirmación de satisfacción del cliente.</li>
+          </ul>
+          <h4>Canales de atención</h4>
+          <ul>
+            <li>Correo: contacto@reflejosbrillantes.com</li>
+            <li>Teléfono: +57 601 234 5678 (L-V 8am - 5pm)</li>
+            <li>WhatsApp y redes sociales institucionales.</li>
+          </ul>
+          <div class="doc-preview-card">
+            <strong style="color:#92D050;">Versión:</strong> 1.0 &nbsp;·&nbsp;
+            <strong style="color:#92D050;">Aprobado por:</strong> Gerencia Comercial
+          </div>
+        `,
+      },
+      'pqrsf': {
+        title: 'PQRSF - Peticiones, Quejas, Reclamos, Sugerencias y Felicitaciones',
+        icon: '&#128221;',
+        body: `
+          <p>Formato institucional para la recepción y gestión de PQRSF de clientes y partes interesadas.</p>
+          <h4>Datos del solicitante</h4>
+          <ul>
+            <li>Nombre completo y documento de identidad.</li>
+            <li>Correo electrónico y teléfono de contacto.</li>
+            <li>Tipo de solicitud (Petición / Queja / Reclamo / Sugerencia / Felicitación).</li>
+          </ul>
+          <h4>Descripción</h4>
+          <ul>
+            <li>Descripción detallada del motivo.</li>
+            <li>Fecha y canal por el cual se contacta.</li>
+            <li>Soportes adjuntos (opcional).</li>
+          </ul>
+          <h4>Tiempos de respuesta</h4>
+          <ul>
+            <li>Petición: 5 días hábiles.</li>
+            <li>Queja o Reclamo: 10 días hábiles.</li>
+            <li>Sugerencia / Felicitación: 3 días hábiles.</li>
+          </ul>
+          <div class="doc-preview-card">
+            <strong style="color:#92D050;">Código:</strong> FOR-TH-001 &nbsp;·&nbsp;
+            <strong style="color:#92D050;">Versión:</strong> 1.0
+          </div>
+        `,
+      },
+      'cartilla': {
+        title: 'Cartilla Informativa',
+        icon: '&#128214;',
+        body: `
+          <p>Material informativo dirigido a clientes y colaboradores sobre el uso correcto
+          de los productos ecológicos Reflejos Brillantes y las prácticas sostenibles.</p>
+          <h4>Contenido</h4>
+          <ul>
+            <li>Presentación de la empresa y su misión verde.</li>
+            <li>Catálogo de productos y modo de uso.</li>
+            <li>Beneficios ambientales de cada producto.</li>
+            <li>Prácticas de ahorro de agua y energía en el hogar.</li>
+            <li>Proper disposal de envases reciclables.</li>
+          </ul>
+          <div class="doc-preview-card">
+            <strong style="color:#92D050;">Formato:</strong> A5 · 16 páginas &nbsp;·&nbsp;
+            <strong style="color:#92D050;">Diseño:</strong> Comunicaciones
+          </div>
+        `,
+      },
+      'portafolio': {
+        title: 'Portafolio de Servicios',
+        icon: '&#128188;',
+        body: `
+          <p>Portafolio institucional que presenta la oferta completa de productos y servicios
+          de Reflejos Brillantes S.A.S.</p>
+          <h4>Estructura</h4>
+          <ul>
+            <li>Resumen ejecutivo de la empresa.</li>
+            <li>Línea de productos ecológicos (6 referencias).</li>
+            <li>Servicios de asesoría en limpieza sostenible.</li>
+            <li>Planes institucionales y corporativos.</li>
+            <li>Casos de éxito y testimonios.</li>
+          </ul>
+          <div class="doc-preview-card">
+            <strong style="color:#92D050;">Versión:</strong> 2025-I &nbsp;·&nbsp;
+            <strong style="color:#92D050;">Aprobado por:</strong> Dirección Comercial
+          </div>
+        `,
+      },
+      'tarjeta-qr': {
+        title: 'Tarjeta de Presentación con QR',
+        icon: '&#127903;',
+        body: `
+          <p>Tarjeta de presentación digital con código QR que redirige al portafolio
+          y datos de contacto institucionales.</p>
+          <div style="text-align:center;">
+            <div class="qr-box">
+              <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <rect width="100" height="100" fill="#fff"/>
+                <g fill="#1a2530">
+                  <rect x="5" y="5" width="22" height="22"/>
+                  <rect x="10" y="10" width="12" height="12" fill="#fff"/>
+                  <rect x="13" y="13" width="6" height="6"/>
+                  <rect x="73" y="5" width="22" height="22"/>
+                  <rect x="78" y="10" width="12" height="12" fill="#fff"/>
+                  <rect x="81" y="13" width="6" height="6"/>
+                  <rect x="5" y="73" width="22" height="22"/>
+                  <rect x="10" y="78" width="12" height="12" fill="#fff"/>
+                  <rect x="13" y="81" width="6" height="6"/>
+                  <rect x="32" y="8" width="4" height="4"/>
+                  <rect x="40" y="8" width="4" height="4"/>
+                  <rect x="48" y="8" width="4" height="4"/>
+                  <rect x="56" y="8" width="4" height="4"/>
+                  <rect x="64" y="8" width="4" height="4"/>
+                  <rect x="32" y="16" width="4" height="4"/>
+                  <rect x="44" y="16" width="4" height="4"/>
+                  <rect x="60" y="16" width="4" height="4"/>
+                  <rect x="8" y="32" width="4" height="4"/>
+                  <rect x="16" y="32" width="4" height="4"/>
+                  <rect x="24" y="32" width="4" height="4"/>
+                  <rect x="32" y="32" width="4" height="4"/>
+                  <rect x="40" y="32" width="4" height="4"/>
+                  <rect x="48" y="32" width="4" height="4"/>
+                  <rect x="56" y="32" width="4" height="4"/>
+                  <rect x="64" y="32" width="4" height="4"/>
+                  <rect x="72" y="32" width="4" height="4"/>
+                  <rect x="80" y="32" width="4" height="4"/>
+                  <rect x="88" y="32" width="4" height="4"/>
+                  <rect x="12" y="40" width="4" height="4"/>
+                  <rect x="20" y="40" width="4" height="4"/>
+                  <rect x="32" y="40" width="4" height="4"/>
+                  <rect x="48" y="40" width="4" height="4"/>
+                  <rect x="60" y="40" width="4" height="4"/>
+                  <rect x="72" y="40" width="4" height="4"/>
+                  <rect x="84" y="40" width="4" height="4"/>
+                  <rect x="8" y="48" width="4" height="4"/>
+                  <rect x="24" y="48" width="4" height="4"/>
+                  <rect x="40" y="48" width="4" height="4"/>
+                  <rect x="56" y="48" width="4" height="4"/>
+                  <rect x="68" y="48" width="4" height="4"/>
+                  <rect x="80" y="48" width="4" height="4"/>
+                  <rect x="92" y="48" width="4" height="4"/>
+                  <rect x="16" y="56" width="4" height="4"/>
+                  <rect x="28" y="56" width="4" height="4"/>
+                  <rect x="44" y="56" width="4" height="4"/>
+                  <rect x="52" y="56" width="4" height="4"/>
+                  <rect x="64" y="56" width="4" height="4"/>
+                  <rect x="76" y="56" width="4" height="4"/>
+                  <rect x="88" y="56" width="4" height="4"/>
+                  <rect x="8" y="64" width="4" height="4"/>
+                  <rect x="20" y="64" width="4" height="4"/>
+                  <rect x="32" y="64" width="4" height="4"/>
+                  <rect x="48" y="64" width="4" height="4"/>
+                  <rect x="60" y="64" width="4" height="4"/>
+                  <rect x="72" y="64" width="4" height="4"/>
+                  <rect x="84" y="64" width="4" height="4"/>
+                  <rect x="32" y="72" width="4" height="4"/>
+                  <rect x="40" y="72" width="4" height="4"/>
+                  <rect x="52" y="72" width="4" height="4"/>
+                  <rect x="64" y="72" width="4" height="4"/>
+                  <rect x="76" y="72" width="4" height="4"/>
+                  <rect x="88" y="72" width="4" height="4"/>
+                  <rect x="36" y="80" width="4" height="4"/>
+                  <rect x="44" y="80" width="4" height="4"/>
+                  <rect x="56" y="80" width="4" height="4"/>
+                  <rect x="68" y="80" width="4" height="4"/>
+                  <rect x="80" y="80" width="4" height="4"/>
+                  <rect x="92" y="80" width="4" height="4"/>
+                  <rect x="32" y="88" width="4" height="4"/>
+                  <rect x="48" y="88" width="4" height="4"/>
+                  <rect x="60" y="88" width="4" height="4"/>
+                  <rect x="72" y="88" width="4" height="4"/>
+                  <rect x="84" y="88" width="4" height="4"/>
+                </g>
+              </svg>
+            </div>
+            <div style="font-family:var(--font-title);font-weight:700;font-size:18px;color:#fff;margin-top:8px;">Reflejos Brillantes S.A.S.</div>
+            <div style="color:#92D050;font-size:13px;">contacto@reflejosbrillantes.com · +57 601 234 5678</div>
+            <div style="color:rgba(255,255,255,0.55);font-size:12px;margin-top:4px;">Escanea para ver el portafolio digital</div>
+          </div>
+        `,
+      },
+    };
+
+    (function () {
+      const modal = document.getElementById('docModal');
+      const titleEl = document.getElementById('docModalTitle');
+      const bodyEl = document.getElementById('docModalBody');
+      const closeBtn = document.getElementById('docModalClose');
+
+      function openDoc(key) {
+        const doc = DOC_CONTENT[key];
+        if (!doc) return;
+        titleEl.innerHTML = doc.icon + ' ' + doc.title;
+        bodyEl.innerHTML = doc.body;
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeDoc() {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+
+      document.querySelectorAll('[data-doc]').forEach((btn) => {
+        btn.addEventListener('click', () => openDoc(btn.dataset.doc));
+      });
+      closeBtn.addEventListener('click', closeDoc);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeDoc();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('open')) closeDoc();
+      });
+    })();
+  </script>
+</body>
+</html>

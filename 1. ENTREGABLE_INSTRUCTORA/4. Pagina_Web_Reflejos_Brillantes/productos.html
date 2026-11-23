@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Productos | Reflejos Brillantes S.A.S.</title>
+  <meta name="description" content="6 productos ecológicos: limpiador, detergente, desinfectante, limpiavidrios, pasta limpiadora y jabón de manos. Arma tu kit sostenible." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/shared.css" />
+</head>
+<body>
+  <!-- Video de fondo -->
+  <video class="video-bg" autoplay muted loop playsinline>
+    <source src="assets/video-fondo.mp4" type="video/mp4" />
+  </video>
+  <div class="video-overlay"></div>
+
+  <div class="page-wrap">
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="index.html" class="navbar-logo">
+          <div class="navbar-logo-badge">RB</div>
+          <span>Reflejos Brillantes</span>
+        </a>
+        <button class="navbar-toggle" aria-label="Menú">&#9776;</button>
+        <ul class="navbar-links">
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="nosotros.html">Nosotros</a></li>
+          <li><a href="productos.html" class="active">Productos</a></li>
+          <li><a href="entregables.html">Entregables</a></li>
+          <li><a href="contacto.html">Contacto</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main class="main-content">
+      <!-- Encabezado -->
+      <section class="section" style="padding-top:48px;padding-bottom:24px;">
+        <div class="container">
+          <h1 class="section-title">Nuestros <span class="accent">productos</span></h1>
+          <p class="section-subtitle" style="max-width:760px;margin-left:auto;margin-right:auto;">
+            Una línea completa de productos de aseo ecológicos, formulados con
+            ingredientes naturales y biodegradables. Eficaces para tu hogar, amables con el planeta.
+          </p>
+        </div>
+      </section>
+
+      <!-- Grid de productos -->
+      <section class="section" style="padding-top:0;">
+        <div class="container">
+          <div class="grid-3">
+            <div class="product-card">
+              <div class="product-icon">&#128317;</div>
+              <div class="product-name">Limpiador Multiusos</div>
+              <p class="product-desc">
+                Limpia y desodoriza cualquier superficie del hogar con fragancia
+                natural a cítricos. Biodegradable y libre de fosfatos.
+              </p>
+              <span class="product-tag">Biodegradable</span>
+            </div>
+            <div class="product-card">
+              <div class="product-icon">&#129532;</div>
+              <div class="product-name">Detergente para Ropa</div>
+              <p class="product-desc">
+                Concentrado y eficaz contra manchas difíciles. Protege las fibras
+                textiles y es seguro para pieles sensibles.
+              </p>
+              <span class="product-tag">Sin fosfatos</span>
+            </div>
+            <div class="product-card">
+              <div class="product-icon">&#129529;</div>
+              <div class="product-name">Desinfectante</div>
+              <p class="product-desc">
+                Elimina el 99.9% de bacterias y virus en superficies. Fórmula
+                con action antibacterial de origen vegetal.
+              </p>
+              <span class="product-tag">Antibacterial</span>
+            </div>
+            <div class="product-card">
+              <div class="product-icon">&#128247;</div>
+              <div class="product-name">Limpiavidrios</div>
+              <p class="product-desc">
+                Deja cristales y espejos sin manchas ni rayas. Secado rápido
+                y sin residuos, con fórmula libre de amoníaco.
+              </p>
+              <span class="product-tag">Sin amoníaco</span>
+            </div>
+            <div class="product-card">
+              <div class="product-icon">&#129528;</div>
+              <div class="product-name">Pasta Limpiadora</div>
+              <p class="product-desc">
+                Abrillantadora para metales, cerámicas y superficies opacas.
+                Devuelve el brillo natural sin rayar.
+              </p>
+              <span class="product-tag">Abrillantadora</span>
+            </div>
+            <div class="product-card">
+              <div class="product-icon">&#129530;</div>
+              <div class="product-name">Jabón de Manos</div>
+              <p class="product-desc">
+                Jabón líquido suave con humectantes naturales. Limpia profundamente
+                sin resecar la piel, con aroma herbal relajante.
+              </p>
+              <span class="product-tag">Hiporalergénico</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Arma tu kit -->
+      <section class="section" style="padding-top:0;padding-bottom:80px;">
+        <div class="container">
+          <h2 class="section-title">Arma tu <span class="accent">kit</span></h2>
+          <p class="section-subtitle">
+            Selecciona los productos que necesites y calcula el total de tu kit ecológico personalizado.
+          </p>
+
+          <div class="kit-card">
+            <div class="kit-options" id="kitOptions">
+              <div class="kit-option" data-name="Limpiador" data-price="12000">
+                <div class="kit-option-emoji">&#128317;</div>
+                <div class="kit-option-name">Limpiador Multiusos</div>
+                <div class="kit-option-price">$12.000</div>
+              </div>
+              <div class="kit-option" data-name="Detergente" data-price="18000">
+                <div class="kit-option-emoji">&#129532;</div>
+                <div class="kit-option-name">Detergente</div>
+                <div class="kit-option-price">$18.000</div>
+              </div>
+              <div class="kit-option" data-name="Desinfectante" data-price="15000">
+                <div class="kit-option-emoji">&#129529;</div>
+                <div class="kit-option-name">Desinfectante</div>
+                <div class="kit-option-price">$15.000</div>
+              </div>
+              <div class="kit-option" data-name="Limpiavidrios" data-price="10000">
+                <div class="kit-option-emoji">&#128247;</div>
+                <div class="kit-option-name">Limpiavidrios</div>
+                <div class="kit-option-price">$10.000</div>
+              </div>
+              <div class="kit-option" data-name="Pasta" data-price="14000">
+                <div class="kit-option-emoji">&#129528;</div>
+                <div class="kit-option-name">Pasta Limpiadora</div>
+                <div class="kit-option-price">$14.000</div>
+              </div>
+              <div class="kit-option" data-name="Jabón" data-price="9000">
+                <div class="kit-option-emoji">&#129530;</div>
+                <div class="kit-option-name">Jabón de Manos</div>
+                <div class="kit-option-price">$9.000</div>
+              </div>
+            </div>
+
+            <div class="kit-summary">
+              <div>
+                <div class="kit-count" id="kitCount">0 productos seleccionados</div>
+                <div class="kit-total" id="kitTotal">$0</div>
+              </div>
+              <a href="contacto.html" class="btn-tr btn-tr--verde">Solicitar kit</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div>
+          <div class="footer-brand">
+            <div class="navbar-logo-badge">RB</div>
+            <span class="footer-brand-name">Reflejos Brillantes S.A.S.</span>
+          </div>
+          <p class="footer-desc">
+            Empresa colombiana dedicada a la fabricación de productos de aseo
+            ecológicos, comprometida con el cuidado del hogar y del planeta.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4>Navegación</h4>
+          <ul>
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="nosotros.html">Nosotros</a></li>
+            <li><a href="productos.html">Productos</a></li>
+            <li><a href="entregables.html">Entregables</a></li>
+            <li><a href="contacto.html">Contacto</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contacto</h4>
+          <ul>
+            <li><a href="mailto:contacto@reflejosbrillantes.com">contacto@reflejosbrillantes.com</a></li>
+            <li><a href="tel:+576012345678">+57 601 234 5678</a></li>
+            <li>Medellín, Colombia</li>
+            <li>Lunes a Viernes, 8am - 5pm</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; 2025 Reflejos Brillantes S.A.S. - Todos los derechos reservados.
+      </div>
+    </footer>
+  </div>
+
+  <!-- Chatbot "Brillante" -->
+  <div class="chatbot-bubble" id="chatbotToggle" role="button" aria-label="Abrir asistente Brillante">
+    <div class="chatbot-icon">&#127807;</div>
+    <span class="chatbot-label">Brillante</span>
+  </div>
+  <div class="chatbot-window" id="chatbotWindow" role="dialog" aria-label="Chat con Brillante">
+    <div class="chatbot-header">
+      <div class="chatbot-header-info">
+        <div class="chatbot-header-avatar">&#127807;</div>
+        <div>
+          <div class="chatbot-header-name">Brillante</div>
+          <div class="chatbot-header-status">En línea</div>
+        </div>
+      </div>
+      <button class="chatbot-close" aria-label="Cerrar chat">&times;</button>
+    </div>
+    <div class="chatbot-messages"></div>
+    <div class="chatbot-quick">
+      <button type="button">productos</button>
+      <button type="button">contacto</button>
+      <button type="button">entregables</button>
+      <button type="button">nosotros</button>
+    </div>
+    <div class="chatbot-input">
+      <input type="text" placeholder="Escribe tu mensaje..." aria-label="Mensaje" />
+      <button type="button" aria-label="Enviar">&#10148;</button>
+    </div>
+  </div>
+
+  <script src="assets/shared.js"></script>
+  <script>
+    // Arma tu kit
+    (function () {
+      const options = document.querySelectorAll('.kit-option');
+      const countEl = document.getElementById('kitCount');
+      const totalEl = document.getElementById('kitTotal');
+
+      function formatCOP(value) {
+        return '$' + value.toLocaleString('es-CO');
+      }
+
+      function updateSummary() {
+        let count = 0;
+        let total = 0;
+        document.querySelectorAll('.kit-option.selected').forEach((el) => {
+          count += 1;
+          total += parseInt(el.dataset.price, 10);
+        });
+        countEl.textContent = count + (count === 1 ? ' producto seleccionado' : ' productos seleccionados');
+        totalEl.textContent = formatCOP(total);
+      }
+
+      options.forEach((el) => {
+        el.addEventListener('click', () => {
+          el.classList.toggle('selected');
+          updateSummary();
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

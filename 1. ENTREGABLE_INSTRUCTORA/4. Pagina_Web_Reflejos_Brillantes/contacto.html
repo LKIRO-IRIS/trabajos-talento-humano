@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contacto | Reflejos Brillantes S.A.S.</title>
+  <meta name="description" content="Contáctanos: formulario, datos de contacto y fundadoras de Reflejos Brillantes S.A.S." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/shared.css" />
+</head>
+<body>
+  <!-- Video de fondo -->
+  <video class="video-bg" autoplay muted loop playsinline>
+    <source src="assets/video-fondo.mp4" type="video/mp4" />
+  </video>
+  <div class="video-overlay"></div>
+
+  <div class="page-wrap">
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="index.html" class="navbar-logo">
+          <div class="navbar-logo-badge">RB</div>
+          <span>Reflejos Brillantes</span>
+        </a>
+        <button class="navbar-toggle" aria-label="Menú">&#9776;</button>
+        <ul class="navbar-links">
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="nosotros.html">Nosotros</a></li>
+          <li><a href="productos.html">Productos</a></li>
+          <li><a href="entregables.html">Entregables</a></li>
+          <li><a href="contacto.html" class="active">Contacto</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main class="main-content">
+      <!-- Encabezado -->
+      <section class="section" style="padding-top:48px;padding-bottom:24px;">
+        <div class="container">
+          <h1 class="section-title">Contáctanos</h1>
+          <p class="section-subtitle" style="max-width:760px;margin-left:auto;margin-right:auto;">
+            Estamos felices de ayudarte. Escríbenos para pedidos, información de productos,
+            alianzas institucionales o cualquier inquietud sobre nuestros productos ecológicos.
+          </p>
+        </div>
+      </section>
+
+      <!-- Formulario + info -->
+      <section class="section" style="padding-top:0;">
+        <div class="container">
+          <div class="contact-grid">
+
+            <!-- Formulario -->
+            <div class="form-card">
+              <h2 style="font-family:var(--font-title);font-size:22px;margin-bottom:6px;color:#fff;">Envíanos un mensaje</h2>
+              <p style="color:rgba(255,255,255,0.7);font-size:14px;margin-bottom:24px;">
+                Te responderemos en un plazo máximo de 24 horas hábiles.
+              </p>
+
+              <form id="contactForm" novalidate>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="nombre">Nombre completo</label>
+                    <input type="text" id="nombre" class="form-control" placeholder="Tu nombre" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="email">Correo electrónico</label>
+                    <input type="email" id="email" class="form-control" placeholder="tucorreo@email.com" required />
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="telefono">Teléfono</label>
+                    <input type="tel" id="telefono" class="form-control" placeholder="+57 ..." />
+                  </div>
+                  <div class="form-group">
+                    <label for="asunto">Asunto</label>
+                    <select id="asunto" class="form-control">
+                      <option value="" style="color:#000;">Selecciona un asunto</option>
+                      <option value="pedido" style="color:#000;">Pedido de productos</option>
+                      <option value="info" style="color:#000;">Información general</option>
+                      <option value="alianza" style="color:#000;">Alianzas / institucional</option>
+                      <option value="pqrsf" style="color:#000;">PQRSF</option>
+                      <option value="otro" style="color:#000;">Otro</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="mensaje">Mensaje</label>
+                  <textarea id="mensaje" class="form-control" rows="5" placeholder="Cuéntanos en qué podemos ayudarte..." required></textarea>
+                </div>
+                <button type="submit" class="btn-tr btn-tr--verde" style="width:100%;">Enviar mensaje &#10148;</button>
+                <div class="form-feedback" id="formFeedback"></div>
+              </form>
+            </div>
+
+            <!-- Info de contacto -->
+            <div>
+              <div class="contact-info-card">
+                <div class="contact-info-item">
+                  <div class="contact-info-icon">&#9993;</div>
+                  <div>
+                    <div class="contact-info-label">Correo</div>
+                    <div class="contact-info-value">contacto@reflejosbrillantes.com</div>
+                  </div>
+                </div>
+                <div class="contact-info-item">
+                  <div class="contact-info-icon">&#9742;</div>
+                  <div>
+                    <div class="contact-info-label">Teléfono</div>
+                    <div class="contact-info-value">+57 601 234 5678</div>
+                  </div>
+                </div>
+                <div class="contact-info-item">
+                  <div class="contact-info-icon">&#128205;</div>
+                  <div>
+                    <div class="contact-info-label">Dirección</div>
+                    <div class="contact-info-value">Medellín, Colombia</div>
+                  </div>
+                </div>
+                <div class="contact-info-item">
+                  <div class="contact-info-icon">&#128337;</div>
+                  <div>
+                    <div class="contact-info-label">Horario</div>
+                    <div class="contact-info-value">Lunes a Viernes, 8:00 am - 5:00 pm</div>
+                  </div>
+                </div>
+                <div class="contact-info-item">
+                  <div class="contact-info-icon">&#128241;</div>
+                  <div>
+                    <div class="contact-info-label">WhatsApp</div>
+                    <div class="contact-info-value">+57 300 000 0000</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Redes -->
+              <div class="card" style="margin-top:20px;">
+                <h4 style="font-family:var(--font-title);color:var(--color-secondary);font-size:14px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;">Síguenos</h4>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                  <a href="#" class="btn-tr btn-tr--sm">Instagram</a>
+                  <a href="#" class="btn-tr btn-tr--sm">Facebook</a>
+                  <a href="#" class="btn-tr btn-tr--sm">LinkedIn</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Fundadoras -->
+      <section class="section" style="padding-top:0;padding-bottom:80px;">
+        <div class="container">
+          <h2 class="section-title">Nuestras <span class="accent">fundadoras</span></h2>
+          <p class="section-subtitle">
+            Si prefieres contacto directo, escríbenos a sus correos institucionales.
+          </p>
+          <div class="grid-2" style="max-width:760px;margin:0 auto;">
+            <div class="founder-card">
+              <div class="founder-avatar">SM</div>
+              <div class="founder-name">Sara Mejía</div>
+              <div class="founder-role">Co-fundadora & Directora Comercial</div>
+              <p class="founder-bio">
+                <a href="mailto:sara.mejia@reflejosbrillantes.com" style="color:var(--color-secondary);text-decoration:none;">sara.mejia@reflejosbrillantes.com</a>
+              </p>
+            </div>
+            <div class="founder-card">
+              <div class="founder-avatar">LP</div>
+              <div class="founder-name">Laura Puerta</div>
+              <div class="founder-role">Co-fundadora & Directora de Producción</div>
+              <p class="founder-bio">
+                <a href="mailto:laura.puerta@reflejosbrillantes.com" style="color:var(--color-secondary);text-decoration:none;">laura.puerta@reflejosbrillantes.com</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div>
+          <div class="footer-brand">
+            <div class="navbar-logo-badge">RB</div>
+            <span class="footer-brand-name">Reflejos Brillantes S.A.S.</span>
+          </div>
+          <p class="footer-desc">
+            Empresa colombiana dedicada a la fabricación de productos de aseo
+            ecológicos, comprometida con el cuidado del hogar y del planeta.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4>Navegación</h4>
+          <ul>
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="nosotros.html">Nosotros</a></li>
+            <li><a href="productos.html">Productos</a></li>
+            <li><a href="entregables.html">Entregables</a></li>
+            <li><a href="contacto.html">Contacto</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contacto</h4>
+          <ul>
+            <li><a href="mailto:contacto@reflejosbrillantes.com">contacto@reflejosbrillantes.com</a></li>
+            <li><a href="tel:+576012345678">+57 601 234 5678</a></li>
+            <li>Medellín, Colombia</li>
+            <li>Lunes a Viernes, 8am - 5pm</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; 2025 Reflejos Brillantes S.A.S. - Todos los derechos reservados.
+      </div>
+    </footer>
+  </div>
+
+  <!-- Chatbot "Brillante" -->
+  <div class="chatbot-bubble" id="chatbotToggle" role="button" aria-label="Abrir asistente Brillante">
+    <div class="chatbot-icon">&#127807;</div>
+    <span class="chatbot-label">Brillante</span>
+  </div>
+  <div class="chatbot-window" id="chatbotWindow" role="dialog" aria-label="Chat con Brillante">
+    <div class="chatbot-header">
+      <div class="chatbot-header-info">
+        <div class="chatbot-header-avatar">&#127807;</div>
+        <div>
+          <div class="chatbot-header-name">Brillante</div>
+          <div class="chatbot-header-status">En línea</div>
+        </div>
+      </div>
+      <button class="chatbot-close" aria-label="Cerrar chat">&times;</button>
+    </div>
+    <div class="chatbot-messages"></div>
+    <div class="chatbot-quick">
+      <button type="button">productos</button>
+      <button type="button">contacto</button>
+      <button type="button">entregables</button>
+      <button type="button">nosotros</button>
+    </div>
+    <div class="chatbot-input">
+      <input type="text" placeholder="Escribe tu mensaje..." aria-label="Mensaje" />
+      <button type="button" aria-label="Enviar">&#10148;</button>
+    </div>
+  </div>
+
+  <script src="assets/shared.js"></script>
+  <script>
+    (function () {
+      const form = document.getElementById('contactForm');
+      const feedback = document.getElementById('formFeedback');
+      if (!form) return;
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const nombre = form.querySelector('#nombre').value.trim();
+        const email = form.querySelector('#email').value.trim();
+        const mensaje = form.querySelector('#mensaje').value.trim();
+
+        if (!nombre || !email || !mensaje) {
+          feedback.className = 'form-feedback show';
+          feedback.style.background = 'rgba(255, 100, 100, 0.15)';
+          feedback.style.borderColor = 'rgba(255, 100, 100, 0.4)';
+          feedback.style.color = '#ff9a9a';
+          feedback.textContent = 'Por favor completa los campos obligatorios.';
+          return;
+        }
+        // Validación simple de email
+        const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        if (!emailOk) {
+          feedback.className = 'form-feedback show';
+          feedback.style.background = 'rgba(255, 100, 100, 0.15)';
+          feedback.style.borderColor = 'rgba(255, 100, 100, 0.4)';
+          feedback.style.color = '#ff9a9a';
+          feedback.textContent = 'El correo electrónico no es válido.';
+          return;
+        }
+
+        feedback.className = 'form-feedback show success';
+        feedback.textContent = '¡Gracias, ' + nombre + '! Hemos recibido tu mensaje. Te responderemos muy pronto. 🌿';
+        form.reset();
+      });
+    })();
+  </script>
+</body>
+</html>
